@@ -1,9 +1,34 @@
+import axios from "axios";
 import { Heart, MessageCircle, Repeat2, Search } from "lucide-react";
+import { useContext, useEffect, useState } from "react";
+import { userContext } from "../context/userContext";
 
 
 export default function Tweet(){
+    const {token,refreshToken} = useContext(userContext)
+    const [tweetText , setTweetText] = useState("")
+    const [tweetList,setTweetList] = useState([])
+    async function addTweet(){
+        const response = await axios.post("http://localhost:3000/user/addTweet",{
+            text:tweetText
+        },{
+            headers:{
+                token:token,
+                refreshToken:refreshToken
+            }
+        })
+        console.log(response);   
+    }
 
+    async function getTweetList(){
+        const response = await axios.get("http://localhost:3000/user/tweetList")
+        setTweetList(response.data.tweetList)
+    }
 
+    useEffect(() => {
+        getTweetList()
+
+    },[])
 
     return(
     <div className="flex w-full md:min-h-[90vh] justify-center ">
@@ -12,28 +37,34 @@ export default function Tweet(){
             <div className="flex flex-col mt-5 md:mt-0 w-full  md:p-5">
                 {/* ADD TWEET */}
                 <div className="flex flex-col md:flex-row  w-full gap-5 mb-5 px-16 md:px-0 md:mx-16">
-                    <textarea placeholder="Tweet" className="outline-none border-2 p-3 w-full md:w-3/4 min-h-32 max-h-32 rounded-xl"/>
-                    <button className="bg-blue-200 hover:bg-blue-400 hover:text-white duration-300 px-4 py-1 rounded-xl">Add</button>
+                    <textarea value={tweetText} onChange={(e) => setTweetText(e.target.value)} placeholder="Tweet" className="outline-none border-2 p-3 w-full md:w-3/4 min-h-32 max-h-32 rounded-xl"/>
+                    <button onClick={addTweet} className="bg-blue-200 hover:bg-blue-400 hover:text-white duration-300 px-4 py-1 rounded-xl">Add</button>
                 </div>
                 {/* TWEET LIST */}
-                <div className="flex flex-col mx-16 gap-3 border-2 bg-blue-100 p-3 rounded-xl hover:shadow-xl duration-300">
-                    {/* USER */}
-                    <div className="flex items-center gap-5">
-                        <img className="w-10 h-10 rounded-full" src="https://randomuser.me/api/portraits/men/75.jpg" alt="" />
-                        <div className="flex flex-col">
-                            <a href="/userID">USER NAME</a>
-                            <p className="text-xs">12/12/2024 18:00</p>
+                <div className="flex flex-col gap-5">
+                {
+                    tweetList.map((tweet) => {
+                    return <div key={tweet.id} className="flex flex-col mx-16 gap-3 border-2 bg-blue-100 p-3 rounded-xl hover:shadow-xl duration-300">
+                        {/* USER */}
+                        <div className="flex items-center gap-5">
+                            <img className="w-10 h-10 rounded-full" src={`http://localhost:3000/user/profile/image/${tweet.userImage}`} alt="" />
+                            <div className="flex flex-col">
+                                <a href={`/user/${tweet.userId}`}>{tweet.userName}  {tweet.userSurname}</a>
+                                <p className="text-xs">{tweet.createAt}</p>
+                            </div>
+                        </div>
+                        {/* TWEET */}
+                        <div className="ms-10">
+                            <p>{tweet.text}</p>
+                        </div>
+                        <div className="flex justify-between md:px-32">
+                            <button className="flex gap-1 "><Heart  color="red" fill={`red`} /> {tweet.likes.length}</button>
+                            <button className="flex gap-1 "><Repeat2 /></button>
+                            <button className="flex gap-1 "> <MessageCircle />{tweet.comments.length}</button>
                         </div>
                     </div>
-                    {/* TWEET */}
-                    <div className="ms-10">
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis cum deleniti incidunt magni. Veritatis fugit eius, aspernatur cum deleniti consectetur, at recusandae soluta voluptates, blanditiis quisquam aperiam. Recusandae, molestias eos?</p>
-                    </div>
-                    <div className="flex justify-between md:px-32">
-                        <button className="flex gap-1 "><Heart  color="red" fill={`red`} /> 5</button>
-                        <button className="flex gap-1 "><Repeat2 />12</button>
-                        <button className="flex gap-1 "> <MessageCircle />20</button>
-                    </div>
+                    } )
+                }
                 </div>
             </div>
             

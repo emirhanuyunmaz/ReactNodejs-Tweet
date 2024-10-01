@@ -12,6 +12,7 @@ import Signup from './layout/Signup.jsx';
 import Tweet from './layout/Tweet.jsx';
 import ProtectedRoute from './utils/ProtectedRoute.jsx';
 import Profile from './layout/Profile.jsx';
+import { UserContextProvider } from './context/userContext.jsx';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -37,7 +38,9 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <Navbar/>
-    <RouterProvider router={router} />
+    <UserContextProvider>
+      <Navbar/>
+      <RouterProvider router={router} />
+    </UserContextProvider>
   </StrictMode>,
 )

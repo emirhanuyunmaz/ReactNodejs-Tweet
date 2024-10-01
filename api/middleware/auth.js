@@ -11,11 +11,10 @@ const authControl = async(req,res,next) => {
     console.log("ACCESS Token : ",token);
     
     if(!token){
-        // res.status(401).json({
-        //     succeded:false,
-        //     message:"Error",
-            
-        // })
+        res.status(401).json({
+            succeded:false,
+            message:"Error",            
+        })
     }else{
         jwt.verify(token,process.env.TOKEN_SECRET,async(err,decodedToken) => {
             if(err){

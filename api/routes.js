@@ -14,6 +14,7 @@ app.use(express.json({limit:"500mb"}))//Verilerin json olarak fe alınabilmesini
 app.use(cookieParser())
 dotenv.config()//.env dosyasına erişim için gerekli
 app.use(express.static('uploads'));
+
 //*******************ROUTERS*****************//
 
 app.use("/signup",signupRouter)

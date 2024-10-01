@@ -12,7 +12,7 @@ const imgconfig = multer.diskStorage({
     },
     filename:(req, file, callback)=>{
         const imageName = uuid.v4()
-        req.body.image = "../uploads/" + imageName + ".png"
+        req.body.image =  imageName + ".png"
         callback(null, `${imageName}.png`)
     }
 })

@@ -2,9 +2,13 @@ import axios from "axios"
 import { Camera, RefreshCw, Trash2 } from "lucide-react"
 import { useState } from "react"
 import ImageUploading from 'react-images-uploading';
+import { useNavigate } from "react-router-dom";
 
 
 export default function Signup(){
+
+    const navigate = useNavigate()
+
     const [name,setName] = useState("")
     const [surname , setSurname] = useState("")
     const [email,setEmail] = useState("")
@@ -33,6 +37,9 @@ export default function Signup(){
 
         const res =await axios.post("http://localhost:3000/signup",formData,config)
         console.log(res)
+        if(res.status === 201){
+            navigate("/login")
+        }
         
     }
 

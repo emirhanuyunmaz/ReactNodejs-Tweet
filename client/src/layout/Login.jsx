@@ -25,7 +25,8 @@ export default function Login(){
             const refreshToken = res.data.refreshToken
             Cookies.set("refreshToken",refreshToken)
 
-            navigate("/tweet")
+            navigate("/tweet",{replace:true})
+            window.location.reload()//Sayfa token bilgisi için tekrar yüklenme işlemi yapıldı.
         }
     }
 

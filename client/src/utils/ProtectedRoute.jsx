@@ -13,5 +13,5 @@ export default function ProtectedRoute({children}){
             navigate("/login")
         }
     },[])
-    return(children)
+    return(<>{children}</>)
 }

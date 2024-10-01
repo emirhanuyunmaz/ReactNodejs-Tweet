@@ -1,14 +1,21 @@
 import Cookies from "js-cookie"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
+import { userContext } from "../context/userContext"
 
 export default function Navbar(){
 
     const [settingsControl,setSettingsControl] = useState(false)
 
-    let token = Cookies.get("accessToken")
-    useEffect(()=> {
-        token = Cookies.get("accessToken")
-    },)
+    let {token} = useContext(userContext) 
+    console.log("Context Token :",token);
+    
+    // let token = Cookies.get("accessToken")
+    // useEffect(()=> {
+    //     token = Cookies.get("accessToken")
+    //     console.log("TOKEN:",token);
+        
+    // },[])
+
 
     return(
     <nav className="bg-blue-500 text-white px-16 md:px-32 py-4 flex items-center justify-between">
