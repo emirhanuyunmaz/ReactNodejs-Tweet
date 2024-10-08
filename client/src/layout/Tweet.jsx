@@ -1,17 +1,19 @@
-import axios from "axios";
 import { Heart, MessageCircle, Repeat2, Search } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
-import { userContext } from "../context/userContext";
-import { useAddTweetMutation, useGetTweetListQuery, useGetUserProfileQuery } from "../store/userApi/userApiSlicer";
+import { useAddTweetMutation, useGetTweetListQuery, useGetUserProfileQuery, useGetUserTweetLikeListQuery, useTweetLikeMutation, useUserTweetDislikeMutation } from "../store/userApi/userApiSlicer";
 
 export default function Tweet(){
     // const {token,refreshToken} = useContext(userContext)
     const {data,isLoading,isError,error,isSuccess,isFetching} = useGetTweetListQuery()
     const getuserP = useGetUserProfileQuery()
     const [userAddTweet,response] = useAddTweetMutation()
-    const [tweetText , setTweetText] = useState("")
+    const [userLikeTweet,responseLikeTweet] = useTweetLikeMutation()
+    const [tweetDislike,responseTweetDislike] = useUserTweetDislikeMutation()
+    const userTweetLikeList = useGetUserTweetLikeListQuery()
+    const [tweetText , setTweetText] = useState("") 
     const [tweetList,setTweetList] = useState([])
     const [userProfile,setUserProfile] = useState({})
+    const [userTweetLike,setUserTweetLike] = useState([])
 
      // Tarih bilgisini formatlama için kullanılan fonksiyon.
     function formatDate(date) {
@@ -29,7 +31,6 @@ export default function Tweet(){
     }
 
     async function getUserProfile(){
-        console.log(getuserP.data);
         setUserProfile(getuserP.data)
     }
 
@@ -42,27 +43,44 @@ export default function Tweet(){
         setTweetList(data.tweetList)
     }
 
-    // useEffect(() => {
-    //     getTweetList()
-    //     const interval = setInterval(getTweetList, (60000*5)); // 5 dakikada bir istekte bulunur
-    //     return () => clearInterval(interval); // Component unmount olduğunda interval'ı temizler
-    // },[])
+    async function setLikeTweet(tweetId){
+        const tweetLikeBody = {tweetId:tweetId} 
+        await userLikeTweet(tweetLikeBody)
+    }
+
+    async function getTweetLikeList(){
+        if(userTweetLikeList.data.data === null){
+            setUserTweetLike([])    
+        }else{
+            setUserTweetLike(userTweetLikeList?.data?.data?.tweetList)
+        }
+    }
+
+    async function userTweetDislike(tweetId){
+        console.log("sssaaa");
+        
+        tweetDislike({tweetId:tweetId})
+    } 
 
     useEffect(() => {
         // getUserProfile()
         if(isSuccess){
-            console.log(data.tweetList);
             getTweetList()
         }
     },[isLoading,isError,isSuccess,isFetching])
 
     useEffect(() => {
-        console.log("asddsa");
-        
         if(getuserP.isSuccess){
             getUserProfile()
         }
     },[getuserP])
+
+    useEffect(() => {
+        if(userTweetLikeList.isSuccess){
+            getTweetLikeList()
+        }
+
+    },[userTweetLikeList.isFetching,userTweetLikeList.isSuccess])
 
 
     return(
@@ -107,8 +125,10 @@ export default function Tweet(){
                             <p>{tweet.text}</p>
                         </div>
                         <div className="flex justify-between md:px-16">
-                            {/* <button className="flex gap-1 "><Heart  color="red" fill={`red`} /> {tweet.likes.length}</button> */}
-                            <button className="flex gap-1 "><Heart /> {tweet.likes.length}</button>
+                            {
+                                userTweetLike.includes(tweet._id) ? (<button onClick={() => userTweetDislike(tweet._id)} className="flex gap-1 "><Heart  color="red" fill={`red`} /> {tweet.likes.length}</button> ):( <button onClick={()=>setLikeTweet(tweet._id)} className="flex gap-1 "><Heart /> {tweet.likes.length}</button>)
+                            }
+                            
                             <button className="flex gap-1 "><Repeat2 /></button>
                             <button className="flex gap-1 "> <MessageCircle />{tweet.comments.length}</button>
                         </div>
@@ -119,11 +139,8 @@ export default function Tweet(){
             </div>
             
             <div className="flex flex-col w-full md:w-1/4 px-16 md:px-0 md:p-5">
-                <div className="flex justify-between w-full rounded-xl border-2 bg-white px-2">
-                    <input type="text" placeholder="Serach" className="outline-none px-2 py-1 "/>
-                    <button className="hover:text-blue-500 duration-300"><Search /></button>
-                </div>
-                <div className="mt-5 bg-blue-100 p-5 rounded-xl">
+                
+                <div className=" bg-blue-100 p-5 rounded-xl">
                     <h6 className="text-sm font-bold">Etiketler</h6>
                     <div className=" mx-3">
                         <ul className="flex flex-wrap md:flex-col gap-3">

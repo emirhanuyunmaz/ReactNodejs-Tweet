@@ -4,8 +4,6 @@ import Cookies from "js-cookie"
 const baseUrl = import.meta.env.VITE_BASE_URL
 
 
-
-
 export const userApiSlice = createApi({
     reducerPath:"userApi",
     tagTypes:["Tweet"],
@@ -60,9 +58,35 @@ export const userApiSlice = createApi({
                 query(){
                     return "/user/profile"
                 }
+            }),
+
+            tweetLike:builder.mutation({
+                query:(body) =>({
+                    url:"/user/likeTweet",
+                    method:"POST",
+                    body:body
+                }),
+                invalidatesTags:["Tweet"]
+
+            }),
+
+            getUserTweetLikeList:builder.query({
+                query:() => {
+                    return "/user/likeTweetList"
+                },
+                providesTags:["Tweet"]
+            }),
+
+            userTweetDislike:builder.mutation({
+                query:(body) => ({
+                    url:"/user/dislikeTweet",
+                    method:"POST",
+                    body:body
+                }),
+                invalidatesTags:["Tweet"]
             })
         }
     }
 })
 
-export const {useGetDemoQuery,useUserLoginMutation,useGetTweetListQuery,useAddTweetMutation,useGetUserProfileQuery} = userApiSlice
+export const {useGetDemoQuery,useUserLoginMutation,useGetTweetListQuery,useAddTweetMutation,useGetUserProfileQuery,useTweetLikeMutation,useGetUserTweetLikeListQuery,useUserTweetDislikeMutation} = userApiSlice
