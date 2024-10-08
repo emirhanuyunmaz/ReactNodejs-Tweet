@@ -7,11 +7,15 @@ function UserContextProvider({children}){
 
     let token = Cookies.get("accessToken")
     let refreshToken = Cookies.get("refreshToken")
+    function logout(){
+        Cookies.remove('accessToken')
+        Cookies.remove('refreshToken')
+        window.location.reload()
+    }
 
 
 
-
-    return(<userContext.Provider value={{token,refreshToken}} >{children}</userContext.Provider>)
+    return(<userContext.Provider value={{token,refreshToken,logout}} >{children}</userContext.Provider>)
 }
 
 

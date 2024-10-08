@@ -6,7 +6,7 @@ export default function ProtectedRoute({children}){
     const token = Cookies.get("accessToken")
     const navigate = useNavigate()
 
-    console.log("KULLANICI TOKEN BİLGİSİ:",token);
+    // console.log("KULLANICI TOKEN BİLGİSİ:",token);
     useEffect(() => {
         if(!token){
             console.log("Token bilgisi yok")    

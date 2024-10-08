@@ -1,34 +1,30 @@
 import axios from "axios"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {  useNavigate } from "react-router-dom"
 import Cookies from "js-cookie"
+import { useUserLoginMutation } from "../store/userApi/userApiSlicer"
 export default function Login(){
     const navigate = useNavigate()
-
+    console.log(import.meta.env.VITE_BASE_URL);
+    const [loginOnClick,result] = useUserLoginMutation()    
     const [email,setEmail] = useState("")
     const [password,setPassword] = useState("")
 
     async function loginOnSubmit(){
-        const res = await axios.post("http://localhost:3000/login",{
-            email:email,
-            password:password
-        }) 
-        console.log("YANIT:",res);
-        if(res.status === 200){
-            console.log("Giriş işlemi...:");
-            console.log("ACCES TOKEN:",res.data.accessToken);
-            console.log("REFRESH TOKEN:",res.data.refreshToken);
-            
-            const accesToken = res.data.accessToken
-            Cookies.set("accessToken",accesToken)
+        const r = await loginOnClick({email,password})
+    }
 
-            const refreshToken = res.data.refreshToken
-            Cookies.set("refreshToken",refreshToken)
-
+    useEffect(() => {
+        if(result.isSuccess){
+            const accessToken = result.data.accessToken
+            const refreshToken = result.data.refreshToken
+            // Tokenlerin kayıt işlemleri.
+            Cookies.set("accessToken",accessToken)
+            Cookies.set("refreshToken",refreshToken)            
             navigate("/tweet",{replace:true})
             window.location.reload()//Sayfa token bilgisi için tekrar yüklenme işlemi yapıldı.
         }
-    }
+    },[result.isSuccess])
 
     return(
     <div className="min-h-[70vh] flex items-center justify-center">

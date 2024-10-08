@@ -2,38 +2,87 @@ import axios from "axios";
 import { Heart, MessageCircle, Repeat2, Search } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { userContext } from "../context/userContext";
-
+import { useAddTweetMutation, useGetTweetListQuery, useGetUserProfileQuery } from "../store/userApi/userApiSlicer";
 
 export default function Tweet(){
-    const {token,refreshToken} = useContext(userContext)
+    // const {token,refreshToken} = useContext(userContext)
+    const {data,isLoading,isError,error,isSuccess,isFetching} = useGetTweetListQuery()
+    const getuserP = useGetUserProfileQuery()
+    const [userAddTweet,response] = useAddTweetMutation()
     const [tweetText , setTweetText] = useState("")
     const [tweetList,setTweetList] = useState([])
+    const [userProfile,setUserProfile] = useState({})
+
+     // Tarih bilgisini formatlama için kullanılan fonksiyon.
+    function formatDate(date) {
+        let d =new Date(date)
+        let datePart = [
+        d.getMonth() + 1,
+        d.getDate(),
+        d.getFullYear()
+        ].map((n, i) => n.toString().padStart(i === 2 ? 4 : 2, "0")).join("/");
+        let timePart = [
+        d.getHours(),
+        d.getMinutes(),
+        ].map((n, i) => n.toString().padStart(2, "0")).join(":");
+        return datePart + " " + timePart;
+    }
+
+    async function getUserProfile(){
+        console.log(getuserP.data);
+        setUserProfile(getuserP.data)
+    }
+
     async function addTweet(){
-        const response = await axios.post("http://localhost:3000/user/addTweet",{
-            text:tweetText
-        },{
-            headers:{
-                token:token,
-                refreshToken:refreshToken
-            }
-        })
-        console.log(response);   
+        await userAddTweet({text:tweetText})
+        setTweetText("")
     }
 
     async function getTweetList(){
-        const response = await axios.get("http://localhost:3000/user/tweetList")
-        setTweetList(response.data.tweetList)
+        setTweetList(data.tweetList)
     }
 
-    useEffect(() => {
-        getTweetList()
+    // useEffect(() => {
+    //     getTweetList()
+    //     const interval = setInterval(getTweetList, (60000*5)); // 5 dakikada bir istekte bulunur
+    //     return () => clearInterval(interval); // Component unmount olduğunda interval'ı temizler
+    // },[])
 
-    },[])
+    useEffect(() => {
+        // getUserProfile()
+        if(isSuccess){
+            console.log(data.tweetList);
+            getTweetList()
+        }
+    },[isLoading,isError,isSuccess,isFetching])
+
+    useEffect(() => {
+        console.log("asddsa");
+        
+        if(getuserP.isSuccess){
+            getUserProfile()
+        }
+    },[getuserP])
+
 
     return(
     <div className="flex w-full md:min-h-[90vh] justify-center ">
         
-        <div className="flex flex-col-reverse md:flex-row w-full md:w-3/4  md:gap-5">
+        <div className="bg-green-200 rounded-xl hidden md:flex md:w-1/6 mt-5">
+            <div className="w-full flex flex-col items-center" >
+                <img className="w-1/2 mt-5 rounded-full" src={`http://localhost:3000/user/profile/image/${userProfile.image}`} alt="" />
+
+                <p>{userProfile.name} {userProfile.surname}</p>
+
+                <div>
+                    <a href={`/user/${userProfile._id}`}>Profile</a>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div className="flex flex-col-reverse md:flex-row w-full md:w-3/4  md:gap-3">
             <div className="flex flex-col mt-5 md:mt-0 w-full  md:p-5">
                 {/* ADD TWEET */}
                 <div className="flex flex-col md:flex-row  w-full gap-5 mb-5 px-16 md:px-0 md:mx-16">
@@ -44,21 +93,22 @@ export default function Tweet(){
                 <div className="flex flex-col gap-5">
                 {
                     tweetList.map((tweet) => {
-                    return <div key={tweet.id} className="flex flex-col mx-16 gap-3 border-2 bg-blue-100 p-3 rounded-xl hover:shadow-xl duration-300">
+                    return <div key={tweet._id} className="flex flex-col mx-16 gap-3 border-2 bg-blue-100 p-3 rounded-xl hover:shadow-xl duration-300">
                         {/* USER */}
                         <div className="flex items-center gap-5">
-                            <img className="w-10 h-10 rounded-full" src={`http://localhost:3000/user/profile/image/${tweet.userImage}`} alt="" />
+                            <img className="w-10 h-10 rounded-full" src={`http://localhost:3000/user/profile/image/${tweet.userId.image}`} alt="" />
                             <div className="flex flex-col">
-                                <a href={`/user/${tweet.userId}`}>{tweet.userName}  {tweet.userSurname}</a>
-                                <p className="text-xs">{tweet.createAt}</p>
+                                <a href={`/user/${tweet.userId._id}`}>{tweet.userId.name}  {tweet.userId.surname}</a>
+                                <p className="text-xs">{formatDate(tweet.createdAt)}</p>
                             </div>
                         </div>
                         {/* TWEET */}
                         <div className="ms-10">
                             <p>{tweet.text}</p>
                         </div>
-                        <div className="flex justify-between md:px-32">
-                            <button className="flex gap-1 "><Heart  color="red" fill={`red`} /> {tweet.likes.length}</button>
+                        <div className="flex justify-between md:px-16">
+                            {/* <button className="flex gap-1 "><Heart  color="red" fill={`red`} /> {tweet.likes.length}</button> */}
+                            <button className="flex gap-1 "><Heart /> {tweet.likes.length}</button>
                             <button className="flex gap-1 "><Repeat2 /></button>
                             <button className="flex gap-1 "> <MessageCircle />{tweet.comments.length}</button>
                         </div>

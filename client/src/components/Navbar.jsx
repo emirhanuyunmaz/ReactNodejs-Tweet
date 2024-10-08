@@ -3,10 +3,9 @@ import { useContext, useEffect, useState } from "react"
 import { userContext } from "../context/userContext"
 
 export default function Navbar(){
-
     const [settingsControl,setSettingsControl] = useState(false)
 
-    let {token} = useContext(userContext) 
+    let {token,logout} = useContext(userContext) 
     console.log("Context Token :",token);
     
     // let token = Cookies.get("accessToken")
@@ -15,7 +14,7 @@ export default function Navbar(){
     //     console.log("TOKEN:",token);
         
     // },[])
-
+    
 
     return(
     <nav className="bg-blue-500 text-white px-16 md:px-32 py-4 flex items-center justify-between">
@@ -29,7 +28,7 @@ export default function Navbar(){
                     <ul className="flex flex-col gap-2">
                         <li className="hover:bg-blue-400 px-8 py-1 rounded-xl hover:shadow-xl duration-300"><a href="/profile">Profile</a></li>
                         <li className="hover:bg-blue-400 px-8 py-1 rounded-xl hover:shadow-xl duration-300" ><a href="/settings">Settings</a></li>
-                        <li className="hover:bg-blue-400 px-8 py-1 rounded-xl hover:shadow-xl duration-300" ><a href="/logout">Logout</a></li>
+                        <li className="hover:bg-blue-400 px-8 py-1 rounded-xl hover:shadow-xl duration-300" ><button onClick={logout}>Logout</button></li>
                     </ul>
                 </div>
             </div>}

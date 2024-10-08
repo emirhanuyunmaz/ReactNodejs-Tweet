@@ -13,6 +13,11 @@ import Tweet from './layout/Tweet.jsx';
 import ProtectedRoute from './utils/ProtectedRoute.jsx';
 import Profile from './layout/Profile.jsx';
 import { UserContextProvider } from './context/userContext.jsx';
+import UserProfile from './layout/UserProfile.jsx';
+import { Provider as ReduxProvider } from 'react-redux';
+import { store } from './store/reduxStore.js';
+
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -34,13 +39,19 @@ const router = createBrowserRouter([
     path: "/profile",
     element:<ProtectedRoute> <Profile/></ProtectedRoute>,
   },
+  {
+    path: "/user/:id",
+    element:<ProtectedRoute> <UserProfile/></ProtectedRoute>,
+  },
 ]);
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
+    <ReduxProvider store={store} >
     <UserContextProvider>
       <Navbar/>
       <RouterProvider router={router} />
     </UserContextProvider>
+    </ReduxProvider>
   </StrictMode>,
 )

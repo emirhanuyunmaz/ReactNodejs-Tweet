@@ -1,5 +1,10 @@
+import { useGetDemoQuery } from "./store/userApi/userApiSlicer"
 
 function App() {
+
+  const {data,isLoading,isError,error} = useGetDemoQuery()
+  console.log(data);
+  
 
   return (
     <>
