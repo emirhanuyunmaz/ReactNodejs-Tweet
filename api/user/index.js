@@ -3,16 +3,15 @@ const router = express.Router()
 const path = require("path")
 const signupModel = require("../singnup/model") //Kullanıcı kayıt olurken kullanılan model
 const authControl = require("../middleware/auth") //Kullanıcı token bilgisi ile giriş yapıp yapmadığını tespit etme.
-const {TweetModel,TweetLikeListModel} = require("./model")
+const {TweetModel,TweetLikeListModel,TweetCommentListModel,TweetCommentModel} = require("./model")
 
 
 // ************KULLANICI DETAY SAYFASI************** //
 // Kullanıcı hakkında detay bilgilerini veren api .
 const getUserProfile = async (req,res) => {
-    console.log("Kullanıcı detay sayfası için istek atıldı.:",req.headers.id);
-    // console.log(req.headers.id)
-    const id = req.headers.id
+
     try{
+        const id = req.headers.id
         // Populate işlemi çalışmıyor.
         const userProfile = await signupModel.findOne({_id:id}).populate("_id","name surname").exec()
 
@@ -30,10 +29,9 @@ const getUserProfile = async (req,res) => {
 
 // *****************Kullanıcı Profil Resmini Çekme İşlemi***************** //
 const getUserImage = async(req,res) => {
-    const name = req.params.name
-    console.log("RESİM ADI:",name);
     
     try{
+        const name = req.params.name
         if(name){            
             res.status(200).sendFile(path.join(__dirname+"/../uploads/"+name))
         }else{
@@ -47,19 +45,11 @@ const getUserImage = async(req,res) => {
 // *******************KULLANICI YENİ GÖNDERİ EKLEME İŞLEMİ************************ //
 //Kullanıcıya ait bilgiler ile gönderi eklenmesi işlemi .
 const addTweet = async (req,res) => {
-    // console.log(req.headers);
-    // Kullanıcı modeli içerisine user verisi geçilmesi işlemi yapılacak.
-    const id = req.headers.id
-    const text = req.body.text
-    // console.log("IDID::",req.headers.id);
-    // console.log("TEXT::",req.body.text);
-    
-    console.log("Yeni bir tweet için istek atıldı.");
+    // Kullanıcı modeli içerisine user verisi geçilmesi işlemi yapılacak.    
     try{
+        const id = req.headers.id
+        const text = req.body.text
 
-        // const getUser = await signupModel.findOne({_id:id})
-        // console.log("GET USER::",getUser);
-        
         const newTweet = new TweetModel({
             userId:id,
             text:text
@@ -92,11 +82,9 @@ const getTweetList = async (req,res) => {
 // *********************KULLANICI BİR TWEET BEĞENDİĞİ ZAMAN YAPILACAK İŞLEMLER******************** //
 
 const likeTweet = async (req,res) => {
-    // console.log("LİKELİKELİKE:::",req.headers.id);
-    const userId = req.headers.id
-    const tweetId = req.body.tweetId
-    console.log("TWEETTWEET IDIDID::",tweetId)
     try{
+        const userId = req.headers.id
+        const tweetId = req.body.tweetId
         // Kayıtlı kullanıcı var mı diye kontrol ediliyor .
         const userTweetLikeList = await TweetLikeListModel.find({userId:userId})
 
@@ -123,8 +111,8 @@ const likeTweet = async (req,res) => {
 //  **********************KULLANICI BEĞENİ LİSTESİNİ GÖNDERME İŞLEMİ******************* //
 
 const getUserLikeList =async (req,res) => {
-    const userId = req.headers.id
     try{
+        const userId = req.headers.id
         const tweetLikeListData = await TweetLikeListModel.findOne({userId:userId})
         res.status(201).json({data:tweetLikeListData})
     }catch(err){
@@ -138,14 +126,13 @@ const getUserLikeList =async (req,res) => {
 //Beğenilen gönderide beğeni işlemini geri alma işlemi.
 const userTweetDislike = async (req,res) => {
 
-    console.log("DİSLİKE:::",req.headers.id);
-    console.log("DİSLİKE USER TWEET ID::",req.body.tweetId);
-
-    const tweetId = req.body.tweetId
-
-    const userId = req.headers.id
+    // console.log("DİSLİKE:::",req.headers.id);
+    // console.log("DİSLİKE USER TWEET ID::",req.body.tweetId);
 
     try {
+        const tweetId = req.body.tweetId
+    
+        const userId = req.headers.id
         await TweetModel.findByIdAndUpdate(tweetId,{$pull:{likes:userId}})
         await TweetLikeListModel.findOneAndUpdate({userId:userId},{$pull:{tweetList:tweetId}})
         res.status(201).json({message:"succes"})
@@ -153,7 +140,88 @@ const userTweetDislike = async (req,res) => {
         console.log("Dislike işlemi yaparken bir hata ile karşılaşıldı.",err);
         res.status(404).json({message:err,succes:false})
     }
+}
+// **********************YORUM YAPMA İŞLEMİ******************** //
+//Yorum ekleme ve bunların veritabanına kaydedilmesi işlemi.
+const commentTweet = async(req,res) => {
+    console.log("Yorum ekleme için istek atıldı.");
     
+    try{
+        const userId = req.headers.id
+        const tweetId = req.body.tweetId
+        const text = req.body.text
+
+        const userCommentList = await TweetCommentListModel.findOne({userId:userId})        
+
+        if(!userCommentList){
+            console.log("Daha önce bir yorum yapmamış");
+
+            const newComment = new TweetCommentModel({
+                text:text,
+                userId:userId,
+                tweetId:tweetId
+            })
+
+            const newC = await newComment.save()
+            
+            const userNewTweetComment = new TweetCommentListModel({
+                userId:userId,
+                tweetList:[newC._id]
+            })
+            await userNewTweetComment.save()
+            await TweetModel.findByIdAndUpdate(tweetId,{$push : {comments:newC._id}})
+            
+        }else{
+            console.log("Daha önce bir yorum yapmış.");
+            const newComment = new TweetCommentModel({
+                text:text,
+                userId:userId,
+                tweetId:tweetId
+            })
+
+            const newC = await newComment.save()
+
+            await TweetCommentListModel.findOneAndUpdate({userId:userId},{$push :{tweetList:newC._id}})
+            await TweetModel.findByIdAndUpdate(tweetId,{$push : {comments:newC._id}})
+
+        }
+        
+    } catch(err) {
+        console.log("Tweete yorum eklerken bir hata ile karşılaşıldı.",err);
+        res.status(404).json({message:err,succes:false})
+    }
+    res.status(201).json({message:"succes",succes:true})
+}
+
+//******************************TWEET YORUMLARINI LİSTE OLARAK DÖNEN FONK.********************* */
+//
+const getTweetCommentList = async (req,res) => {
+
+    try{
+        const tweetId = req.params.id
+        const data = await TweetModel.findById(tweetId).populate({path:"comments",select:"text createAt",populate:{path:"userId",select:"name surname image"}}).populate("userId","name surname image").exec()
+        
+        res.status(201).json({message:"Succes",succes:true,data:data.comments})
+
+    }catch(err){
+        console.log("Yorum listesi çekilirken bir hata ile karşılaşıldı.",err);
+        res.status(404).json({message:err,succes:false})
+    }
+
+}
+//***************************BİR TWEETİ YORUM EKLEME VE YORUMLARI GÖRMEK İŞLEMİ********************************/
+
+const singleTweet = async (req,res) => {
+    try{
+        const tweetId = req.params.id
+        // console.log("PARAMS IDIDIDI:",req.params.id)
+        const tweetData = await TweetModel.findById(tweetId).populate("userId","name surname image")
+        res.status(201).json({succes:true,message:"Succes",data:tweetData})
+
+    } catch(err) {
+        console.log("Bir tweet çekilirken hata ile karşılaşıldı :",err);
+        res.status(404).json({message:err,succes:false})
+    }
 
 }
 
@@ -161,7 +229,10 @@ const userTweetDislike = async (req,res) => {
 // kullanıcıya ait tweetleri veren api oluşturulacak . 
 // /user/...
 router.route("/profile/image/:name").get(getUserImage)
+router.route("/singleTweet/:id").get(authControl,singleTweet)
+router.route("/getTweetComment/:id").get(authControl,getTweetCommentList)
 router.route("/addTweet").post(authControl,addTweet)
+router.route("/addTweetComment").post(authControl,commentTweet)
 router.route("/tweetList").get(getTweetList)
 router.route("/profile").get(authControl,getUserProfile)
 router.route("/likeTweet").post(authControl,likeTweet)

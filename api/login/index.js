@@ -36,6 +36,8 @@ const userLogin = async (req,res) => {
     }
 }
 
+// /login/...
+
 router.route("/").post(userLogin)
 
 module.exports = router

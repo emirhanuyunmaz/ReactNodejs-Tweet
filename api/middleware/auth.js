@@ -7,8 +7,8 @@ const authControl = async(req,res,next) => {
     
     const token = req.headers.token
     const refreshToken = req.headers.refreshtoken
-    console.log("Refres Token : ",refreshToken);
-    console.log("ACCESS Token : ",token);
+    // console.log("Refres Token : ",refreshToken);
+    // console.log("ACCESS Token : ",token);
     
     if(!token){
         res.status(401).json({
@@ -18,6 +18,7 @@ const authControl = async(req,res,next) => {
     }else{
         jwt.verify(token,process.env.TOKEN_SECRET,async(err,decodedToken) => {
             if(err){
+                //Refresh token kontrol edilecek.
                 console.log("Token Süresi geçmiş");
             }else{
                 console.log("DECODED TOKEN:",decodedToken);
@@ -25,7 +26,7 @@ const authControl = async(req,res,next) => {
             }
         })
     }
-    console.log("Kullaıcı token bilgisi:",token);
+    // console.log("Kullaıcı token bilgisi:",token);
     
     next()
 }

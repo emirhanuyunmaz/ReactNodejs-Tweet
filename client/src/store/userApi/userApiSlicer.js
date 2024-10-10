@@ -3,7 +3,6 @@ import Cookies from "js-cookie"
 
 const baseUrl = import.meta.env.VITE_BASE_URL
 
-
 export const userApiSlice = createApi({
     reducerPath:"userApi",
     tagTypes:["Tweet"],
@@ -84,9 +83,34 @@ export const userApiSlice = createApi({
                     body:body
                 }),
                 invalidatesTags:["Tweet"]
+            }),
+
+            getSingleTweet:builder.query({
+                query:(id) => {
+                    return `/user/singleTweet/${id}` 
+                },
+                providesTags:["Tweet"]
+            }),
+
+            userTweetAddComment:builder.mutation({
+                query:(body) => ({
+                    url:`/user/addTweetComment`,
+                    method:"POST",
+                    body:body
+                }),
+                invalidatesTags:["Tweet"]
+            }),
+
+            tweetCommentList:builder.query({
+                query:(id) => {
+                    return `user/getTweetComment/${id}`
+                },
+                providesTags:["Tweet"]
             })
+
+
         }
     }
 })
 
-export const {useGetDemoQuery,useUserLoginMutation,useGetTweetListQuery,useAddTweetMutation,useGetUserProfileQuery,useTweetLikeMutation,useGetUserTweetLikeListQuery,useUserTweetDislikeMutation} = userApiSlice
+export const {useGetDemoQuery,useUserLoginMutation,useGetTweetListQuery,useAddTweetMutation,useGetUserProfileQuery,useTweetLikeMutation,useGetUserTweetLikeListQuery,useUserTweetDislikeMutation,useGetSingleTweetQuery,useUserTweetAddCommentMutation, useTweetCommentListQuery } = userApiSlice

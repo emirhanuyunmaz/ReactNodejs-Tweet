@@ -43,7 +43,7 @@ app.get("/",async (req,res) => {
     // console.log(req.headers);
     console.log("asddsa");
     
-    const inputData = "Allah'ım çıldıracağım. Yemin ederim çıldıracağım sinirimden. Bir yerden de çıkaramıyorum cam çerçeve indireceğim şimdi ne varsa."  // Örnek girdi
+    const inputData = "ne zaman düzelecek bu takım hiç oynayamıyor çıldıracağım"  // Örnek girdi
     runPythonModel(inputData);
     
     res.status(201).json({message:"succes"})

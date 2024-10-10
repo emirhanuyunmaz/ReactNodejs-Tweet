@@ -1,6 +1,22 @@
 const mongoose = require("mongoose")
 const Schema = mongoose.Schema
 
+const tweetComment = new Schema({
+    userId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"SignUp"
+    },
+    tweetId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Tweet"
+    },
+    text:String,
+    createAt:{
+        type:Date,
+        default:Date.now
+    }
+}) 
+
 const userTweetSchema = new Schema({
     userId:{
         type:mongoose.Schema.Types.ObjectId , 
@@ -8,24 +24,29 @@ const userTweetSchema = new Schema({
     },
     text:String,
     likes:[],
-    comments:[]
+    comments:[{type:mongoose.Schema.Types.ObjectId,ref:"TweetComment"}]
 },{timestamps:true})
-
-// const userTweetLikeSchema = new Schema({
-//     tweetId:String,
-//     createAt:{
-//         type:Date,
-//         default:Date.now
-//     }
-// })
 
 const userTweetLikeListSchema = new Schema({
     userId:String,
     tweetList:[{type:mongoose.Types.ObjectId , ref:"Tweet"}]
 })
 
+const userTweetCommentList = new Schema({
+    userId:String,
+    tweetList:[{type:mongoose.Types.ObjectId , ref:"TweetComment"}],
+    createAt:{
+        type:Date,
+        default:Date.now
+    }
+})
+
 const TweetModel = mongoose.model("Tweet",userTweetSchema)
 
 const TweetLikeListModel = mongoose.model("TweetLikeList",userTweetLikeListSchema)
 
-module.exports = {TweetModel,TweetLikeListModel}
+const TweetCommentListModel = mongoose.model("TweetCommentList",userTweetCommentList)
+
+const TweetCommentModel = mongoose.model("TweetComment",tweetComment)
+
+module.exports = {TweetModel,TweetLikeListModel,TweetCommentListModel,TweetCommentModel}

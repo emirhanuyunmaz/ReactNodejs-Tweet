@@ -16,6 +16,7 @@ import { UserContextProvider } from './context/userContext.jsx';
 import UserProfile from './layout/UserProfile.jsx';
 import { Provider as ReduxProvider } from 'react-redux';
 import { store } from './store/reduxStore.js';
+import SingleTweet from './layout/SingleTweet.jsx';
 
 
 const router = createBrowserRouter([
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
   {
     path: "/tweet",
     element:<ProtectedRoute> <Tweet/></ProtectedRoute>,
+  },
+  {
+    path: "/tweet/:id",
+    element:<ProtectedRoute> <SingleTweet/></ProtectedRoute>,
   },
   {
     path: "/profile",

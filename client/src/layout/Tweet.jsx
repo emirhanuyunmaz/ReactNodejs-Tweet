@@ -1,9 +1,11 @@
-import { Heart, MessageCircle, Repeat2, Search } from "lucide-react";
+import { Heart, MessageCircle, Repeat2 } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { useAddTweetMutation, useGetTweetListQuery, useGetUserProfileQuery, useGetUserTweetLikeListQuery, useTweetLikeMutation, useUserTweetDislikeMutation } from "../store/userApi/userApiSlicer";
+import { useNavigate } from "react-router-dom";
 
 export default function Tweet(){
-    // const {token,refreshToken} = useContext(userContext)
+    const navigate = useNavigate()
+
     const {data,isLoading,isError,error,isSuccess,isFetching} = useGetTweetListQuery()
     const getuserP = useGetUserProfileQuery()
     const [userAddTweet,response] = useAddTweetMutation()
@@ -60,7 +62,11 @@ export default function Tweet(){
         console.log("sssaaa");
         
         tweetDislike({tweetId:tweetId})
-    } 
+    }
+
+    function CommentPage(tweetId){
+        navigate(`/tweet/${tweetId}`)
+    }
 
     useEffect(() => {
         // getUserProfile()
@@ -130,7 +136,7 @@ export default function Tweet(){
                             }
                             
                             <button className="flex gap-1 "><Repeat2 /></button>
-                            <button className="flex gap-1 "> <MessageCircle />{tweet.comments.length}</button>
+                            <button onClick={(e) => CommentPage(tweet._id)} className="flex gap-1 "> <MessageCircle />{tweet.comments.length}</button>
                         </div>
                     </div>
                     } )
