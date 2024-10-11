@@ -13,7 +13,7 @@ const getUserProfile = async (req,res) => {
     try{
         const id = req.headers.id
         // Populate işlemi çalışmıyor.
-        const userProfile = await signupModel.findOne({_id:id}).populate("_id","name surname").exec()
+        const userProfile = await signupModel.findOne({_id:id})
 
         if(userProfile){
             // console.log("Aranan Kullanıcı:",userProfile);
@@ -126,13 +126,11 @@ const getUserLikeList =async (req,res) => {
 //Beğenilen gönderide beğeni işlemini geri alma işlemi.
 const userTweetDislike = async (req,res) => {
 
-    // console.log("DİSLİKE:::",req.headers.id);
-    // console.log("DİSLİKE USER TWEET ID::",req.body.tweetId);
-
     try {
         const tweetId = req.body.tweetId
     
         const userId = req.headers.id
+
         await TweetModel.findByIdAndUpdate(tweetId,{$pull:{likes:userId}})
         await TweetLikeListModel.findOneAndUpdate({userId:userId},{$pull:{tweetList:tweetId}})
         res.status(201).json({message:"succes"})
@@ -222,7 +220,37 @@ const singleTweet = async (req,res) => {
         console.log("Bir tweet çekilirken hata ile karşılaşıldı :",err);
         res.status(404).json({message:err,succes:false})
     }
+}
 
+//************************USER TWEET PROFILE********************* */
+//Kullanıcıya ait tweet listesini gösterecek olan api.
+const userTweetProfile = async(req,res) => {
+
+    try{
+        const tweetUserId = req.params.id
+        const tweetData = await TweetModel.find({userId:tweetUserId}).populate("userId","name surname image")
+        
+        res.status(201).json({message:"Succes",succes:true,data:tweetData})
+
+    }catch(err) {
+
+        console.log("Kullanıcıya ait tweet çekilirken bir hata ile karşılaşıldı . ",err);
+        res.status(404).json({message:err,succes:false})
+    }
+}
+
+const userShortProfile = async (req,res) => {
+    try{
+
+        const loginUserId = req.headers.id
+        const userData = await signupModel.findById(loginUserId).select("name surname description image email createdAt")
+        
+        res.status(201).json({message:"Succes",succes:true,data:userData})
+    }catch(err) {
+
+        console.log("Kısa profil gösterilirken bir hata ile karşılaşıldı.");
+        res.status(404).json({message:err,succes:false})
+    }
 }
 
 
@@ -235,6 +263,8 @@ router.route("/addTweet").post(authControl,addTweet)
 router.route("/addTweetComment").post(authControl,commentTweet)
 router.route("/tweetList").get(getTweetList)
 router.route("/profile").get(authControl,getUserProfile)
+router.route("/tweetProfile/:id").get(authControl,userTweetProfile)
+router.route("/shortProfile/:id").get(authControl,userShortProfile)
 router.route("/likeTweet").post(authControl,likeTweet)
 router.route("/likeTweetList").get(authControl,getUserLikeList)
 router.route("/dislikeTweet").post(authControl,userTweetDislike)

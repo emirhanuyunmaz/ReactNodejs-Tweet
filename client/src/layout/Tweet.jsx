@@ -58,9 +58,7 @@ export default function Tweet(){
         }
     }
 
-    async function userTweetDislike(tweetId){
-        console.log("sssaaa");
-        
+    async function userTweetDislike(tweetId){        
         tweetDislike({tweetId:tweetId})
     }
 
@@ -69,7 +67,6 @@ export default function Tweet(){
     }
 
     useEffect(() => {
-        // getUserProfile()
         if(isSuccess){
             getTweetList()
         }
@@ -92,14 +89,14 @@ export default function Tweet(){
     return(
     <div className="flex w-full md:min-h-[90vh] justify-center ">
         
-        <div className="bg-green-200 rounded-xl hidden md:flex md:w-1/6 mt-5">
+        <div className="bg-blue-200 max-h-[75vh] rounded-xl hidden md:flex md:w-1/6 mt-5">
             <div className="w-full flex flex-col items-center" >
                 <img className="w-1/2 mt-5 rounded-full" src={`http://localhost:3000/user/profile/image/${userProfile.image}`} alt="" />
 
                 <p>{userProfile.name} {userProfile.surname}</p>
 
-                <div>
-                    <a href={`/user/${userProfile._id}`}>Profile</a>
+                <div className="mt-5">
+                    <a className="border-2 px-8 py-2 rounded-xl hover:bg-blue-400 hover:text-white duration-300 " href={`/user/${userProfile._id}`}>Profile</a>
                 </div>
             </div>
 

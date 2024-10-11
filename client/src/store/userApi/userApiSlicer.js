@@ -103,9 +103,22 @@ export const userApiSlice = createApi({
 
             tweetCommentList:builder.query({
                 query:(id) => {
-                    return `user/getTweetComment/${id}`
+                    return `/user/getTweetComment/${id}`
                 },
                 providesTags:["Tweet"]
+            }),
+
+            userTweetProfile:builder.query({
+                query:(id) => {
+                    return `/user/tweetProfile/${id}`
+                },
+                providesTags:["Tweet"]
+            }),
+
+            getUserShortProfile:builder.query({
+                query:(id) => {
+                    return `/user/shortProfile/${id}`
+                }
             })
 
 
@@ -113,4 +126,4 @@ export const userApiSlice = createApi({
     }
 })
 
-export const {useGetDemoQuery,useUserLoginMutation,useGetTweetListQuery,useAddTweetMutation,useGetUserProfileQuery,useTweetLikeMutation,useGetUserTweetLikeListQuery,useUserTweetDislikeMutation,useGetSingleTweetQuery,useUserTweetAddCommentMutation, useTweetCommentListQuery } = userApiSlice
+export const {useGetDemoQuery,useUserLoginMutation,useGetTweetListQuery,useAddTweetMutation,useGetUserProfileQuery,useTweetLikeMutation,useGetUserTweetLikeListQuery,useUserTweetDislikeMutation,useGetSingleTweetQuery,useUserTweetAddCommentMutation, useTweetCommentListQuery,useUserTweetProfileQuery,useGetUserShortProfileQuery} = userApiSlice
