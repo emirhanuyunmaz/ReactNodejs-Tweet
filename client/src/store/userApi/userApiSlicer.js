@@ -59,6 +59,14 @@ export const userApiSlice = createApi({
                 }
             }),
 
+            updateUserProfile:builder.mutation({
+                query:(body) => ({
+                    url:"/user/updateProfile",
+                    method:"POST",
+                    body:body
+                })
+            }),
+
             tweetLike:builder.mutation({
                 query:(body) =>({
                     url:"/user/likeTweet",
@@ -119,6 +127,15 @@ export const userApiSlice = createApi({
                 query:(id) => {
                     return `/user/shortProfile/${id}`
                 }
+            }),
+
+            addRetweet:builder.mutation({
+                query:(body) => ({
+                    url:`/user/addRetweet`,
+                    method:`POST`,
+                    body:body
+                }),
+                invalidatesTags:["Tweet"]
             })
 
 
@@ -126,4 +143,4 @@ export const userApiSlice = createApi({
     }
 })
 
-export const {useGetDemoQuery,useUserLoginMutation,useGetTweetListQuery,useAddTweetMutation,useGetUserProfileQuery,useTweetLikeMutation,useGetUserTweetLikeListQuery,useUserTweetDislikeMutation,useGetSingleTweetQuery,useUserTweetAddCommentMutation, useTweetCommentListQuery,useUserTweetProfileQuery,useGetUserShortProfileQuery} = userApiSlice
+export const {useGetDemoQuery,useUserLoginMutation,useGetTweetListQuery,useAddTweetMutation,useGetUserProfileQuery,useTweetLikeMutation,useGetUserTweetLikeListQuery,useUserTweetDislikeMutation,useGetSingleTweetQuery,useUserTweetAddCommentMutation, useTweetCommentListQuery,useUserTweetProfileQuery,useGetUserShortProfileQuery,useAddRetweetMutation,useUpdateUserProfileMutation} = userApiSlice

@@ -2,6 +2,7 @@ import { Heart, MessageCircle, Repeat2 } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { useAddTweetMutation, useGetTweetListQuery, useGetUserProfileQuery, useGetUserTweetLikeListQuery, useTweetLikeMutation, useUserTweetDislikeMutation } from "../store/userApi/userApiSlicer";
 import { useNavigate } from "react-router-dom";
+import RetweetDialog from "../components/RetweetDialog";
 
 export default function Tweet(){
     const navigate = useNavigate()
@@ -16,6 +17,9 @@ export default function Tweet(){
     const [tweetList,setTweetList] = useState([])
     const [userProfile,setUserProfile] = useState({})
     const [userTweetLike,setUserTweetLike] = useState([])
+    const [showRetweetDialog,setShowRetweetDialog] = useState(false)
+    const [retweetTweetId,setRetweetTweetId] = useState()
+
 
      // Tarih bilgisini formatlama için kullanılan fonksiyon.
     function formatDate(date) {
@@ -30,6 +34,11 @@ export default function Tweet(){
         d.getMinutes(),
         ].map((n, i) => n.toString().padStart(2, "0")).join(":");
         return datePart + " " + timePart;
+    }
+
+    function retweetOnClick(tweetId){
+        setShowRetweetDialog(true)
+        setRetweetTweetId(tweetId)
     }
 
     async function getUserProfile(){
@@ -88,7 +97,6 @@ export default function Tweet(){
 
     return(
     <div className="flex w-full md:min-h-[90vh] justify-center ">
-        
         <div className="bg-blue-200 max-h-[75vh] rounded-xl hidden md:flex md:w-1/6 mt-5">
             <div className="w-full flex flex-col items-center" >
                 <img className="w-1/2 mt-5 rounded-full" src={`http://localhost:3000/user/profile/image/${userProfile.image}`} alt="" />
@@ -132,7 +140,7 @@ export default function Tweet(){
                                 userTweetLike.includes(tweet._id) ? (<button onClick={() => userTweetDislike(tweet._id)} className="flex gap-1 "><Heart  color="red" fill={`red`} /> {tweet.likes.length}</button> ):( <button onClick={()=>setLikeTweet(tweet._id)} className="flex gap-1 "><Heart /> {tweet.likes.length}</button>)
                             }
                             
-                            <button className="flex gap-1 "><Repeat2 /></button>
+                            {/* <button onClick={() => retweetOnClick(tweet._id)} className="flex gap-1 "><Repeat2 /></button> */}
                             <button onClick={(e) => CommentPage(tweet._id)} className="flex gap-1 "> <MessageCircle />{tweet.comments.length}</button>
                         </div>
                     </div>
@@ -157,10 +165,7 @@ export default function Tweet(){
                     </div>
                 </div>
             </div>
-            
-            
-
-
         </div>
+        <RetweetDialog setShowModal={setShowRetweetDialog} showModal={showRetweetDialog} tweetId={retweetTweetId} />
     </div>)
 }

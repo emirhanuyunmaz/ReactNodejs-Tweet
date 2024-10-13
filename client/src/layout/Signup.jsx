@@ -1,7 +1,6 @@
 import axios from "axios"
 import { Camera, RefreshCw, Trash2 } from "lucide-react"
 import { useState } from "react"
-import ImageUploading from 'react-images-uploading';
 import { useNavigate } from "react-router-dom";
 
 
@@ -18,13 +17,7 @@ export default function Signup(){
     const [image,setImage] = useState()
 
     
-    async function signupUser(){
-        // formData.append('image', image);
-        // formData.append('name', name);
-        // formData.append('quantity', quantity);
-        // formData.append('price', price);
-        // formData.append('description', description);
-        
+    async function signupUser(){        
         const formData = new FormData()
         formData.append('image',image)
         formData.append('name',name)
@@ -32,7 +25,8 @@ export default function Signup(){
         formData.append('email',email)
         formData.append('password',password)
         formData.append('description',description)
-
+        console.log("FORMDATA:",formData);
+        
         const config = {headers: {'Content-Type': 'multipart/form-data'}}
 
         const res =await axios.post("http://localhost:3000/signup",formData,config)

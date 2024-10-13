@@ -4,7 +4,49 @@ const path = require("path")
 const signupModel = require("../singnup/model") //Kullanıcı kayıt olurken kullanılan model
 const authControl = require("../middleware/auth") //Kullanıcı token bilgisi ile giriş yapıp yapmadığını tespit etme.
 const {TweetModel,TweetLikeListModel,TweetCommentListModel,TweetCommentModel} = require("./model")
+const multer  = require('multer') //Resim işlemleri için gerekli.
+const uuid = require("uuid")
 
+// Resmi güncellem işlemi için gerekli olan fonk.
+const imgconfig = multer.diskStorage({
+    destination:(req, file,callback)=>{
+        callback(null,'uploads')
+    },
+    filename:(req, file, callback)=>{ 
+        console.log( "ASDDSAASD::",req.headers.imagename);
+        const imageName = req.headers.imagename
+        req.body.image =  imageName 
+        callback(null, `${imageName}`)
+    }
+})
+
+//image filter
+const upload = multer({
+    storage: imgconfig,
+    limits:{fileSize:'1000000'},
+    fileFilter:(req, file, callback)=>{
+        const fileType = /jpeg|jpg|png|gif/
+        const mimeType = fileType.test(file.mimetype)
+        const extname = fileType.test(path.extname(file.originalname))
+        if(mimeType && extname){
+            return callback(null, true)
+        }
+        callback('Give proper file format to upload')
+    }
+}).single('image')
+
+const upl = (req,res) => {
+    console.log(req.body.image);
+    res.status(201)
+    // upload(req, res, (err) => {
+    //     if (err) {
+    //         console.log("ERR:R:R:R",err);
+            
+    //         return res.status(400).send(err);  // Hata durumunda mesaj gönder
+    //     }
+    //     res.status(201).json({message:'Resim başarıyla yüklendi!'});  // Başarılı yükleme mesajı
+    // });
+}
 
 // ************KULLANICI DETAY SAYFASI************** //
 // Kullanıcı hakkında detay bilgilerini veren api .
@@ -26,6 +68,32 @@ const getUserProfile = async (req,res) => {
         res.status(404).json("ERR getUserProfile:",err)
     }
 }
+
+// ********************UPDATE PROFILE******************** //
+// Kullanıcı rofili güncelleme işlemi ...
+const updateUserProfile = async (req,res) => {
+
+    try{
+        const id = req.headers.id
+        const body = req.body
+        console.log("BODY::",req.body);
+        
+        console.log("Update User id:",id);
+
+        const user = await signupModel.findByIdAndUpdate(id,body)
+        console.log("ARANAN KULLANICI::",user);
+        
+
+        res.status(201).json({message:"succes",succes:true})
+
+    }catch(err){
+        console.log("Profil güncellenirken bir hata ile karşılaşıldı .",err);
+        
+        res.status(404).json({message:err,succes:false})
+    }
+
+}
+
 
 // *****************Kullanıcı Profil Resmini Çekme İşlemi***************** //
 const getUserImage = async(req,res) => {
@@ -239,15 +307,15 @@ const userTweetProfile = async(req,res) => {
     }
 }
 
+// ************************SHORT PROFİLE************************ //
+//Kullanıcıya ait bilgilerin gösterilmesi.(şifre bilgisi yok)
 const userShortProfile = async (req,res) => {
     try{
-
         const loginUserId = req.headers.id
         const userData = await signupModel.findById(loginUserId).select("name surname description image email createdAt")
         
         res.status(201).json({message:"Succes",succes:true,data:userData})
     }catch(err) {
-
         console.log("Kısa profil gösterilirken bir hata ile karşılaşıldı.");
         res.status(404).json({message:err,succes:false})
     }
@@ -263,6 +331,8 @@ router.route("/addTweet").post(authControl,addTweet)
 router.route("/addTweetComment").post(authControl,commentTweet)
 router.route("/tweetList").get(getTweetList)
 router.route("/profile").get(authControl,getUserProfile)
+router.route("/updateProfile").post(authControl,updateUserProfile)
+router.route("/updateImage").post(upload,upl)
 router.route("/tweetProfile/:id").get(authControl,userTweetProfile)
 router.route("/shortProfile/:id").get(authControl,userShortProfile)
 router.route("/likeTweet").post(authControl,likeTweet)

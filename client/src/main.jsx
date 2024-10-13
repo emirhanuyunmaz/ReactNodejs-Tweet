@@ -17,6 +17,8 @@ import UserProfile from './layout/UserProfile.jsx';
 import { Provider as ReduxProvider } from 'react-redux';
 import { store } from './store/reduxStore.js';
 import SingleTweet from './layout/SingleTweet.jsx';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const router = createBrowserRouter([
@@ -57,6 +59,7 @@ createRoot(document.getElementById('root')).render(
       <Navbar/>
       <RouterProvider router={router} />
     </UserContextProvider>
+    <ToastContainer />
     </ReduxProvider>
   </StrictMode>,
 )

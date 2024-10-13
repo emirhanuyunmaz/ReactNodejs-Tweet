@@ -4,7 +4,6 @@ const SignUpModel = require("./model")
 const multer  = require('multer')
 const path = require('path');
 const uuid = require("uuid")
-// const upload = multer({ dest: 'uploads/' })
 
 const imgconfig = multer.diskStorage({
     destination:(req, file,callback)=>{

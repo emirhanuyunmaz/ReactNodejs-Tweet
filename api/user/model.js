@@ -15,7 +15,7 @@ const tweetComment = new Schema({
         type:Date,
         default:Date.now
     }
-}) 
+})
 
 const userTweetSchema = new Schema({
     userId:{
@@ -24,7 +24,8 @@ const userTweetSchema = new Schema({
     },
     text:String,
     likes:[],
-    comments:[{type:mongoose.Schema.Types.ObjectId,ref:"TweetComment"}]
+    comments:[{type:mongoose.Schema.Types.ObjectId,ref:"TweetComment"}],
+    
 },{timestamps:true})
 
 const userTweetLikeListSchema = new Schema({
