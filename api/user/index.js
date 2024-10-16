@@ -6,6 +6,8 @@ const authControl = require("../middleware/auth") //Kullanıcı token bilgisi il
 const {TweetModel,TweetLikeListModel,TweetCommentListModel,TweetCommentModel} = require("./model")
 const multer  = require('multer') //Resim işlemleri için gerekli.
 const uuid = require("uuid")
+const { default: axios } = require("axios")
+
 
 // Resmi güncellem işlemi için gerekli olan fonk.
 const imgconfig = multer.diskStorage({
@@ -48,7 +50,7 @@ const upl = (req,res) => {
     // });
 }
 
-// ************KULLANICI DETAY SAYFASI************** //
+// ************GET USER PROFILE************** //
 // Kullanıcı hakkında detay bilgilerini veren api .
 const getUserProfile = async (req,res) => {
 
@@ -70,7 +72,7 @@ const getUserProfile = async (req,res) => {
 }
 
 // ********************UPDATE PROFILE******************** //
-// Kullanıcı rofili güncelleme işlemi ...
+// Kullanıcı profili güncelleme işlemi ...
 const updateUserProfile = async (req,res) => {
 
     try{
@@ -95,7 +97,8 @@ const updateUserProfile = async (req,res) => {
 }
 
 
-// *****************Kullanıcı Profil Resmini Çekme İşlemi***************** //
+// *****************GET USER IMAGE***************** //
+//Kullanıcı Profil Resmini Çekme İşlemi
 const getUserImage = async(req,res) => {
     
     try{
@@ -110,17 +113,27 @@ const getUserImage = async(req,res) => {
     }
 }
 
-// *******************KULLANICI YENİ GÖNDERİ EKLEME İŞLEMİ************************ //
+// *******************ADD TWEET************************ //
 //Kullanıcıya ait bilgiler ile gönderi eklenmesi işlemi .
 const addTweet = async (req,res) => {
-    // Kullanıcı modeli içerisine user verisi geçilmesi işlemi yapılacak.    
+    // Kullanıcı modeli içerisine user verisi geçilmesi işlemi yapılacak.
     try{
         const id = req.headers.id
         const text = req.body.text
+        const inputData = "ne zaman düzelecek bu takım hiç oynayamıyor çıldıracağım"  // Örnek girdi
+        
+        // Veriyi flask kullanarak oluşturlan bir api den çekme işlemi.
+        const predictionResponse = await axios.post("http://127.0.0.1:5000/predict",{
+            text:text
+        })
 
+        console.log("GELEN VERİİ:::",predictionResponse.data.prediction);
+        
+        
         const newTweet = new TweetModel({
             userId:id,
-            text:text
+            text:text,
+            tag:predictionResponse.data.prediction
         })
 
         await newTweet.save().then(() => console.log("Saved Tweet"))
@@ -131,12 +144,13 @@ const addTweet = async (req,res) => {
     }
 }
 
-// ******************************TÜM KULLANICILARIN TWEET LİSTESİNİ ÇEKME İŞLEMİ*************************** //
+// ******************************GET TWEET LIST*************************** //
+//Tüm tweet listesini çekme işlemi. 
 const getTweetList = async (req,res) => {
 
     try{    
         // Populate ile sadece yazılan verilerin getirilmesine olanak sağlandı .
-        const dataList = await TweetModel.find().populate("userId","name surname image").sort({createdAt:"asc"}).exec()
+        const dataList = await TweetModel.find().populate("userId","name surname image tag").sort({createdAt:"asc"}).exec()
         // console.log(dataList);
          
         res.status(200).json({tweetList:dataList})
@@ -147,8 +161,8 @@ const getTweetList = async (req,res) => {
     }
 }
 
-// *********************KULLANICI BİR TWEET BEĞENDİĞİ ZAMAN YAPILACAK İŞLEMLER******************** //
-
+// *********************TWEET LIKE******************** //
+//Bir tweet beğenme işlemi.
 const likeTweet = async (req,res) => {
     try{
         const userId = req.headers.id
@@ -176,8 +190,8 @@ const likeTweet = async (req,res) => {
     res.status(200).json({message:"Succes",succes:true})
 }
 
-//  **********************KULLANICI BEĞENİ LİSTESİNİ GÖNDERME İŞLEMİ******************* //
-
+//  **********************USER LIKE LIST******************* //
+//Giriş yapan kullanıcıya ait beğeni listesi.
 const getUserLikeList =async (req,res) => {
     try{
         const userId = req.headers.id
@@ -207,7 +221,7 @@ const userTweetDislike = async (req,res) => {
         res.status(404).json({message:err,succes:false})
     }
 }
-// **********************YORUM YAPMA İŞLEMİ******************** //
+// **********************COMMENT TWEET******************** //
 //Yorum ekleme ve bunların veritabanına kaydedilmesi işlemi.
 const commentTweet = async(req,res) => {
     console.log("Yorum ekleme için istek atıldı.");
@@ -259,8 +273,8 @@ const commentTweet = async(req,res) => {
     res.status(201).json({message:"succes",succes:true})
 }
 
-//******************************TWEET YORUMLARINI LİSTE OLARAK DÖNEN FONK.********************* */
-//
+//******************************TWEET COMMENT LIST********************* */
+//Tweete ait yorum listesi .
 const getTweetCommentList = async (req,res) => {
 
     try{
@@ -275,8 +289,8 @@ const getTweetCommentList = async (req,res) => {
     }
 
 }
-//***************************BİR TWEETİ YORUM EKLEME VE YORUMLARI GÖRMEK İŞLEMİ********************************/
-
+//***************************SINGLE TWEET********************************/
+//Bir tweete ait yorumları görme ve yorum ekleme işlemi.
 const singleTweet = async (req,res) => {
     try{
         const tweetId = req.params.id
@@ -311,7 +325,7 @@ const userTweetProfile = async(req,res) => {
 //Kullanıcıya ait bilgilerin gösterilmesi.(şifre bilgisi yok)
 const userShortProfile = async (req,res) => {
     try{
-        const loginUserId = req.headers.id
+        const loginUserId = req.params.id
         const userData = await signupModel.findById(loginUserId).select("name surname description image email createdAt")
         
         res.status(201).json({message:"Succes",succes:true,data:userData})
@@ -321,6 +335,33 @@ const userShortProfile = async (req,res) => {
     }
 }
 
+// **********************GET TAG LIST********************* //
+//Tweetlere ait etiketleri sayma ve geri döndürme işlemi
+const getTagList = async (req,res) => {
+    // Goup işlemi ile kaç tane olacagı belirlenecek .
+
+    try{
+        //Buradaki işlem sayesinde "tag" a göre gruplandırma ve içerisindeki verileri sayma işlemi yaptık.
+        const data = await TweetModel.aggregate([
+            {
+                $group :{
+                    _id:'$tag',
+                    count:{ $sum: 1 }
+                }
+            }
+        ])
+        // console.log(data);
+        
+        res.status(201).json({message:"succes",succes:true,data:data})
+    }catch(err){
+        console.log("Etiket listesini çekerken bir hata ile karşılaşıldı .",err);
+        res.status(404).json({message:err,succes:false})
+        
+    }
+
+
+}
+
 
 // kullanıcıya ait tweetleri veren api oluşturulacak . 
 // /user/...
@@ -328,6 +369,7 @@ router.route("/profile/image/:name").get(getUserImage)
 router.route("/singleTweet/:id").get(authControl,singleTweet)
 router.route("/getTweetComment/:id").get(authControl,getTweetCommentList)
 router.route("/addTweet").post(authControl,addTweet)
+router.route("/getTagList").get(authControl,getTagList)
 router.route("/addTweetComment").post(authControl,commentTweet)
 router.route("/tweetList").get(getTweetList)
 router.route("/profile").get(authControl,getUserProfile)

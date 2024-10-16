@@ -4,6 +4,6 @@ export default function TweetList(){
     
     
     return(<div>
-        Retweet List
+        Tweet List
     </div>)
 }

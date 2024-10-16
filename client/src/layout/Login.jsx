@@ -3,12 +3,25 @@ import { useEffect, useState } from "react"
 import {  useNavigate } from "react-router-dom"
 import Cookies from "js-cookie"
 import { useUserLoginMutation } from "../store/userApi/userApiSlicer"
+import { toast, Zoom } from "react-toastify"
 export default function Login(){
     const navigate = useNavigate()
-    console.log(import.meta.env.VITE_BASE_URL);
+    // console.log(import.meta.env.VITE_BASE_URL);
     const [loginOnClick,result] = useUserLoginMutation()    
     const [email,setEmail] = useState("")
     const [password,setPassword] = useState("")
+
+    const showToastError = () => toast.error('Aranan Kullanıcı Bulunamadı', {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Zoom,
+        });
 
     async function loginOnSubmit(){
         const r = await loginOnClick({email,password})
@@ -20,11 +33,17 @@ export default function Login(){
             const refreshToken = result.data.refreshToken
             // Tokenlerin kayıt işlemleri.
             Cookies.set("accessToken",accessToken)
-            Cookies.set("refreshToken",refreshToken)            
+            Cookies.set("refreshToken",refreshToken)
+            console.log(result.error);
+                        
             navigate("/tweet",{replace:true})
             window.location.reload()//Sayfa token bilgisi için tekrar yüklenme işlemi yapıldı.
         }
-    },[result.isSuccess])
+        else if(result.isError){
+            console.log(result);
+            showToastError()
+        }
+    },[result.isSuccess,result.isError])
 
     return(
     <div className="min-h-[70vh] flex items-center justify-center">

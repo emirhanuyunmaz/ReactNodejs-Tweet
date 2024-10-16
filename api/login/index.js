@@ -14,8 +14,6 @@ const createRefreshToken = (id) => {
 }
 
 const userLogin = async (req,res) => {
-    console.log("USER EMAIL:",req.body.email);
-    console.log("USER BODY:",req.body);
     
     try{
         const user = await userSignUpModel.findOne({email : req.body.email , password : req.body.password})

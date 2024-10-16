@@ -1,6 +1,15 @@
 const mongoose = require("mongoose")
 const Schema = mongoose.Schema
 
+
+// const tagListSchema = new Schema({
+//     tweet:{
+//         type:mongoose.Schema.Types.ObjectId,
+//         ref:"Tweet"
+//     },
+//     tag:String
+// })
+
 const tweetComment = new Schema({
     userId:{
         type:mongoose.Schema.Types.ObjectId,
@@ -23,6 +32,7 @@ const userTweetSchema = new Schema({
         ref:"SignUp"
     },
     text:String,
+    tag:String,
     likes:[],
     comments:[{type:mongoose.Schema.Types.ObjectId,ref:"TweetComment"}],
     

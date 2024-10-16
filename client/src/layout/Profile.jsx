@@ -17,6 +17,12 @@ export default function Profile(){
     const [imageName,setImageName] = useState("")
     const [changeImage,setChangeImage] = useState(false)
     
+    /**
+    * profil gizli mi açık mı ? eklenecek
+    * 
+    * 
+    */
+
     const showToastSucces = () => toast.success('Güncelleme Başarılı', {
         position: "bottom-center",
         autoClose: 3000,
@@ -68,7 +74,9 @@ export default function Profile(){
         setImageName(image)
         setChangeImage(true)
         const formData = new FormData()
-        formData.append('image',e.target.files[0])        
+        formData.append('image',e.target.files[0])      
+        
+          
         formData.append('imageName',imageName)
         
         const config = {headers: {'Content-Type': 'multipart/form-data',"imageName":imageName}}

@@ -2,6 +2,7 @@ import axios from "axios"
 import { Camera, RefreshCw, Trash2 } from "lucide-react"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
+import { toast, Zoom } from "react-toastify";
 
 
 export default function Signup(){
@@ -16,10 +17,23 @@ export default function Signup(){
     const [description , setDescription] = useState()
     const [image,setImage] = useState()
 
+    const showToastSucces = () => toast.success('Kayıt Başarılı', {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Zoom,
+        });
+
     
     async function signupUser(){        
         const formData = new FormData()
         formData.append('image',image)
+        console.log("İİİİ:::",image);
         formData.append('name',name)
         formData.append('surname',surname)
         formData.append('email',email)
@@ -32,6 +46,7 @@ export default function Signup(){
         const res =await axios.post("http://localhost:3000/signup",formData,config)
         console.log(res)
         if(res.status === 201){
+            showToastSucces()
             navigate("/login")
         }
         
@@ -51,6 +66,7 @@ export default function Signup(){
             <input className="hidden" onChange={(e) => {console.log("RR:",e.target.files[0]);setImage(e.target.files[0]);}} type="file" name="" id="user_image" />
                 <div className="flex items-end pt-10">
                     <button ></button>
+                    
                 </div>
             </div>
             <input value={name} onChange={(e) => setName(e.target.value)} className="outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="text" placeholder="Name"/>

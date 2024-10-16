@@ -1,8 +1,8 @@
 import { Heart, MessageCircle, Repeat2 } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
-import { useAddTweetMutation, useGetTweetListQuery, useGetUserProfileQuery, useGetUserTweetLikeListQuery, useTweetLikeMutation, useUserTweetDislikeMutation } from "../store/userApi/userApiSlicer";
+import { useAddTweetMutation, useGetTagListQuery, useGetTweetListQuery, useGetUserProfileQuery, useGetUserTweetLikeListQuery, useTweetLikeMutation, useUserTweetDislikeMutation } from "../store/userApi/userApiSlicer";
 import { useNavigate } from "react-router-dom";
-import RetweetDialog from "../components/RetweetDialog";
+// import RetweetDialog from "../components/RetweetDialog";
 
 export default function Tweet(){
     const navigate = useNavigate()
@@ -13,12 +13,14 @@ export default function Tweet(){
     const [userLikeTweet,responseLikeTweet] = useTweetLikeMutation()
     const [tweetDislike,responseTweetDislike] = useUserTweetDislikeMutation()
     const userTweetLikeList = useGetUserTweetLikeListQuery()
+    const getTagList = useGetTagListQuery()
     const [tweetText , setTweetText] = useState("") 
     const [tweetList,setTweetList] = useState([])
     const [userProfile,setUserProfile] = useState({})
     const [userTweetLike,setUserTweetLike] = useState([])
-    const [showRetweetDialog,setShowRetweetDialog] = useState(false)
-    const [retweetTweetId,setRetweetTweetId] = useState()
+    const [tagList,setTagList] = useState([])
+    // const [showRetweetDialog,setShowRetweetDialog] = useState(false)
+    // const [retweetTweetId,setRetweetTweetId] = useState()
 
 
      // Tarih bilgisini formatlama için kullanılan fonksiyon.
@@ -36,10 +38,10 @@ export default function Tweet(){
         return datePart + " " + timePart;
     }
 
-    function retweetOnClick(tweetId){
-        setShowRetweetDialog(true)
-        setRetweetTweetId(tweetId)
-    }
+    // function retweetOnClick(tweetId){
+    //     setShowRetweetDialog(true)
+    //     setRetweetTweetId(tweetId)
+    // }
 
     async function getUserProfile(){
         setUserProfile(getuserP.data)
@@ -75,6 +77,10 @@ export default function Tweet(){
         navigate(`/tweet/${tweetId}`)
     }
 
+    function getTags(){        
+        setTagList(getTagList.data.data)
+    }
+
     useEffect(() => {
         if(isSuccess){
             getTweetList()
@@ -94,6 +100,12 @@ export default function Tweet(){
 
     },[userTweetLikeList.isFetching,userTweetLikeList.isSuccess])
 
+
+    useEffect(() => {
+        if(getTagList.isSuccess){
+            getTags()
+        }
+    },[getTagList.isSuccess,getTagList.isFetching])
 
     return(
     <div className="flex w-full md:min-h-[90vh] justify-center ">
@@ -130,6 +142,9 @@ export default function Tweet(){
                                 <a href={`/user/${tweet.userId._id}`}>{tweet.userId.name}  {tweet.userId.surname}</a>
                                 <p className="text-xs">{formatDate(tweet.createdAt)}</p>
                             </div>
+                            <div className="ms-auto">
+                                <p className="font-bold">{tweet.tag.toUpperCase()}</p>
+                            </div>
                         </div>
                         {/* TWEET */}
                         <div className="ms-10">
@@ -155,17 +170,48 @@ export default function Tweet(){
                     <h6 className="text-sm font-bold">Etiketler</h6>
                     <div className=" mx-3">
                         <ul className="flex flex-wrap md:flex-col gap-3">
-                            <li className="w-full" ><a href="" className="flex  w-full px-4 py-1 "><p className="border-b-2 border-blue-100 hover:border-white">Lorem.</p></a></li>
-                            <li className="w-full" ><a href=""className="flex  w-full px-4 py-1 "><p className="border-b-2 border-blue-100 hover:border-white">Deserunt.</p></a></li>
-                            <li className="w-full" ><a href="" className="flex  w-full px-4 py-1 "><p className="border-b-2 border-blue-100 hover:border-white">Lorem.</p></a></li>
-                            <li className="w-full" ><a href=""className="flex  w-full px-4 py-1 "><p className="border-b-2 border-blue-100 hover:border-white">Deserunt.</p></a></li>
-                            <li className="w-full" ><a href="" className="flex  w-full px-4 py-1 "><p className="border-b-2 border-blue-100 hover:border-white">Lorem.</p></a></li>
-                            <li className="w-full" ><a href=""className="flex  w-full px-4 py-1 "><p className="border-b-2 border-blue-100 hover:border-white">Deserunt.</p></a></li>
+                            <li className="w-full" ><a href="/tweetTagGroup/kızgın"className="flex justify-between w-full px-4 py-1 ">
+                                <p className="border-b-2 border-blue-100 hover:border-white">
+                                        Kızgın : 
+                                    </p>
+                                    <p>{tagList?.filter((item) => item._id === "kızgın")[0]!= undefined && tagList?.filter((item) => item._id === "kızgın")[0].count}</p>
+                                </a>
+                            </li>
+                            <li className="w-full" ><a href="/tweetTagGroup/korku" className="flex justify-between w-full px-4 py-1 "><p className="border-b-2 border-blue-100 hover:border-white">
+                                        Korku : 
+                                    </p>
+                                    <p>{tagList?.filter((item) => item._id === "korku")[0]!= undefined && tagList?.filter((item) => item._id === "korku")[0].count}</p>
+                                </a>
+                            </li>
+                            <li className="w-full" ><a href="/tweetTagGroup/mutlu"className="flex justify-between w-full px-4 py-1 "><p className="border-b-2 border-blue-100 hover:border-white">
+                                        Mutlu : 
+                                    </p>
+                                    <p>
+                                    {tagList?.filter((item) => item._id === "mutlu")[0]!= undefined && tagList?.filter((item) => item._id === "mutlu")[0] ? tagList?.filter((item) => item._id === "mutlu")[0]?.count : 0}
+                                    </p>
+                                </a>
+                            </li>
+                            <li className="w-full" ><a href="/tweetTagGroup/surpriz" className="flex justify-between w-full px-4 py-1 "><p className="border-b-2 border-blue-100 hover:border-white">
+                                        Sürpriz : 
+                                    </p>
+                                    <p>
+                                    {tagList?.filter((item) => item._id === "surpriz")[0]!= undefined && tagList?.filter((item) => item._id === "surpriz")[0] ? tagList?.filter((item) => item._id === "surpriz")[0]?.count : 0}
+                                    </p>
+                                </a>
+                            </li>
+                            <li className="w-full" ><a href="/tweetTagGroup/üzgün"className="flex justify-between w-full px-4 py-1 "><p className="border-b-2 border-blue-100 hover:border-white">
+                                        Üzgün : 
+                                    </p>
+                                    <p>
+                                    {tagList?.filter((item) => item._id === "üzgün")[0]!= undefined && tagList?.filter((item) => item._id === "üzgün")[0] ? tagList?.filter((item) => item._id === "üzgün")[0]?.count : 0}
+                                    </p>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
-        <RetweetDialog setShowModal={setShowRetweetDialog} showModal={showRetweetDialog} tweetId={retweetTweetId} />
+        {/* <RetweetDialog setShowModal={setShowRetweetDialog} showModal={showRetweetDialog} tweetId={retweetTweetId} /> */}
     </div>)
 }

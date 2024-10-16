@@ -136,11 +136,19 @@ export const userApiSlice = createApi({
                     body:body
                 }),
                 invalidatesTags:["Tweet"]
+            }),
+
+            getTagList:builder.query({
+                query:() => {
+                    return `/user/getTagList`
+                },
+                providesTags:["Tweet"]
             })
-
-
         }
-    }
+    },
+
+    
+
 })
 
-export const {useGetDemoQuery,useUserLoginMutation,useGetTweetListQuery,useAddTweetMutation,useGetUserProfileQuery,useTweetLikeMutation,useGetUserTweetLikeListQuery,useUserTweetDislikeMutation,useGetSingleTweetQuery,useUserTweetAddCommentMutation, useTweetCommentListQuery,useUserTweetProfileQuery,useGetUserShortProfileQuery,useAddRetweetMutation,useUpdateUserProfileMutation} = userApiSlice
+export const {useGetDemoQuery,useUserLoginMutation,useGetTweetListQuery,useAddTweetMutation,useGetUserProfileQuery,useTweetLikeMutation,useGetUserTweetLikeListQuery,useUserTweetDislikeMutation,useGetSingleTweetQuery,useUserTweetAddCommentMutation, useTweetCommentListQuery,useUserTweetProfileQuery,useGetUserShortProfileQuery,useAddRetweetMutation,useUpdateUserProfileMutation,useGetTagListQuery} = userApiSlice
