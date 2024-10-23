@@ -1,53 +1,44 @@
 const express = require("express")
 const router = express.Router()
 const path = require("path")
+const fs = require("fs")
 const signupModel = require("../singnup/model") //Kullanıcı kayıt olurken kullanılan model
 const authControl = require("../middleware/auth") //Kullanıcı token bilgisi ile giriş yapıp yapmadığını tespit etme.
 const {TweetModel,TweetLikeListModel,TweetCommentListModel,TweetCommentModel} = require("./model")
 const multer  = require('multer') //Resim işlemleri için gerekli.
 const uuid = require("uuid")
 const { default: axios } = require("axios")
+const SignUpModel = require("../singnup/model")
 
 
-// Resmi güncellem işlemi için gerekli olan fonk.
-const imgconfig = multer.diskStorage({
-    destination:(req, file,callback)=>{
-        callback(null,'uploads')
-    },
-    filename:(req, file, callback)=>{ 
-        console.log( "ASDDSAASD::",req.headers.imagename);
-        const imageName = req.headers.imagename
-        req.body.image =  imageName 
-        callback(null, `${imageName}`)
+// Kullanıcı Profil resmini güncelleme işlemi .
+const upl = async (req,res) => {
+    console.log("Kullanıcı resim değiştirmek için istek attı.");
+    
+    
+    try{
+        // console.log("İMAGE:",req.body.image);
+        // console.log("Kullanıcı id bilgisi::",req.headers.id);
+        
+        
+        const id = req.headers.id
+        const user = await SignUpModel.findById(id)
+        const imageName = user.image
+        // console.log("Kullanıcı bilgisi :",user.image);
+        
+        const filePath = __dirname + "/.." + `/uploads/${imageName}`
+        console.log("File Path:",filePath);
+        let base64Image = req.body.image.split(';base64,').pop();
+        
+        fs.writeFile(filePath ,base64Image , {encoding: 'base64'}, function(err) {
+            console.log(`File created ${imageName} `);
+        });
+        res.status(201).json({message:"succes",isSucces:true})
+    }catch(err){
+        console.log("Kullanıcı profil resmi güncellenirken bir hata ile karşılaşıldı.",err);
+        res.status(404).json({message:err,isSucces:false})
     }
-})
 
-//image filter
-const upload = multer({
-    storage: imgconfig,
-    limits:{fileSize:'1000000'},
-    fileFilter:(req, file, callback)=>{
-        const fileType = /jpeg|jpg|png|gif/
-        const mimeType = fileType.test(file.mimetype)
-        const extname = fileType.test(path.extname(file.originalname))
-        if(mimeType && extname){
-            return callback(null, true)
-        }
-        callback('Give proper file format to upload')
-    }
-}).single('image')
-
-const upl = (req,res) => {
-    console.log(req.body.image);
-    res.status(201)
-    // upload(req, res, (err) => {
-    //     if (err) {
-    //         console.log("ERR:R:R:R",err);
-            
-    //         return res.status(400).send(err);  // Hata durumunda mesaj gönder
-    //     }
-    //     res.status(201).json({message:'Resim başarıyla yüklendi!'});  // Başarılı yükleme mesajı
-    // });
 }
 
 // ************GET USER PROFILE************** //
@@ -120,7 +111,7 @@ const addTweet = async (req,res) => {
     try{
         const id = req.headers.id
         const text = req.body.text
-        const inputData = "ne zaman düzelecek bu takım hiç oynayamıyor çıldıracağım"  // Örnek girdi
+        // const inputData = "ne zaman düzelecek bu takım hiç oynayamıyor çıldıracağım"  // Örnek girdi
         
         // Veriyi flask kullanarak oluşturlan bir api den çekme işlemi.
         const predictionResponse = await axios.post("http://127.0.0.1:5000/predict",{
@@ -150,7 +141,7 @@ const getTweetList = async (req,res) => {
 
     try{    
         // Populate ile sadece yazılan verilerin getirilmesine olanak sağlandı .
-        const dataList = await TweetModel.find().populate("userId","name surname image tag").sort({createdAt:"asc"}).exec()
+        const dataList = await TweetModel.find().populate("userId","name surname image tag").sort({createdAt:"desc"}).exec()
         // console.log(dataList);
          
         res.status(200).json({tweetList:dataList})
@@ -374,7 +365,7 @@ router.route("/addTweetComment").post(authControl,commentTweet)
 router.route("/tweetList").get(getTweetList)
 router.route("/profile").get(authControl,getUserProfile)
 router.route("/updateProfile").post(authControl,updateUserProfile)
-router.route("/updateImage").post(upload,upl)
+router.route("/updateImage").post(authControl,upl)
 router.route("/tweetProfile/:id").get(authControl,userTweetProfile)
 router.route("/shortProfile/:id").get(authControl,userShortProfile)
 router.route("/likeTweet").post(authControl,likeTweet)

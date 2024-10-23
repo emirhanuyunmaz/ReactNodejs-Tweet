@@ -4,38 +4,46 @@ const SignUpModel = require("./model")
 const multer  = require('multer')
 const path = require('path');
 const uuid = require("uuid")
+const fs = require("fs")
+// const imgconfig = multer.diskStorage({
+//     destination:(req, file,callback)=>{
+//         callback(null,'uploads')
+//     },
+//     filename:(req, file, callback)=>{
+//         const imageName = uuid.v4()
+//         req.body.image =  imageName + ".png"
+//         callback(null, `${imageName}.png`)
+//     }
+// })
 
-const imgconfig = multer.diskStorage({
-    destination:(req, file,callback)=>{
-        callback(null,'uploads')
-    },
-    filename:(req, file, callback)=>{
-        const imageName = uuid.v4()
-        req.body.image =  imageName + ".png"
-        callback(null, `${imageName}.png`)
-    }
-})
-
-//image filter
-const upload = multer({
-    storage: imgconfig,
-    limits:{fileSize:'1000000'},
-    fileFilter:(req, file, callback)=>{
-        const fileType = /jpeg|jpg|png|gif/
-        const mimeType = fileType.test(file.mimetype)
-        const extname = fileType.test(path.extname(file.originalname))
-        if(mimeType && extname){
-            return callback(null, true)
-        }
-        callback('Give proper file format to upload')
-    }
-}).single('image')
+// //image filter
+// const upload = multer({
+//     storage: imgconfig,
+//     limits:{fileSize:'1000000'},
+//     fileFilter:(req, file, callback)=>{
+//         const fileType = /jpeg|jpg|png|gif/
+//         const mimeType = fileType.test(file.mimetype)
+//         const extname = fileType.test(path.extname(file.originalname))
+//         if(mimeType && extname){
+//             return callback(null, true)
+//         }
+//         callback('Give proper file format to upload')
+//     }
+// }).single('image')
 
 //************************SIGN UP****************************/
 //Yeni kullanıcı ekleme işlemi.
 const signup = async (req,res) => {
     console.log("Kullanıcı kayıt için istek atıldı");
     console.log(req.body);
+    const imageName = uuid.v4()
+    const filePath = __dirname + "/.." + `/uploads/${imageName}.png`
+    console.log("File Path:",filePath);
+    let base64Image = req.body.image.split(';base64,').pop();
+
+    fs.writeFile(filePath ,base64Image , {encoding: 'base64'}, function(err) {
+        console.log(`File created ${imageName} `);
+    });
     
     try {
         const newUser = new SignUpModel({
@@ -44,7 +52,7 @@ const signup = async (req,res) => {
             email:req.body.email,
             password:req.body.password,
             description:req.body.description,
-            image:req.body.image
+            image:imageName+".png"
         })
         await newUser.save().then(() => console.log("Save user"))
         res.status(201).json({"message":"Succes"})
@@ -57,7 +65,7 @@ const signup = async (req,res) => {
 
 //******************************ROUTER******************************/
 
-router.route("/").post(upload,signup)
+router.route("/").post(signup)
 
 
 module.exports = router
