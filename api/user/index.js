@@ -378,14 +378,25 @@ const getUserTagList = async (req,res) => {
     }
 }
 
+// *******************SINGLE TAG TWEET LIST****************** //
+//Sadece bir etikete ait tweet listesi.
 const getSingleUserTag = async (req,res) => {
-    console.log("Etikete ait gönderileri çekme işlemi.");
-
+    // console.log("Etikete ait gönderileri çekme işlemi.");
     try{
-        console.log("RRRR:",req.params.tag);
         const userTag = req.params.tag
         const tweetData = await TweetModel.find({userTag:userTag}).populate("userId","name surname image")
-        res.status(201).json({message:"succes",succes:true,data:tweetData})
+        
+        //Buradaki işlem sayesinde "tag" a göre gruplandırma ve içerisindeki verileri sayma işlemi yaptık.
+        const emotionTagData = await TweetModel.aggregate([
+            { "$match": { "userTag": userTag } },
+            {
+                $group :{
+                    _id:'$tag',
+                    count:{ $sum: 1 }
+                }
+            }
+        ])
+        res.status(201).json({message:"succes",succes:true,data:tweetData,tagData:emotionTagData})
     }catch(err){
         console.log("Etikete ait gönderiler çekilirken bir hata ile karşılaşıldı.",err);
         
