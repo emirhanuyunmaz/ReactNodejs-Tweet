@@ -352,11 +352,45 @@ const getTagList = async (req,res) => {
         res.status(201).json({message:"succes",succes:true,data:data})
     }catch(err){
         console.log("Etiket listesini çekerken bir hata ile karşılaşıldı .",err);
-        res.status(404).json({message:err,succes:false})
-        
+        res.status(404).json({message:err,succes:false})   
     }
+}
 
+// ********************GET USER TAG********************** //
+//userTag listesinin çekilmesi ve tweet sayısının gönderilmesi işlemi.
+const getUserTagList = async (req,res) => {
+    console.log("Kullanıcı etiket listesi çekmek için istek atıldı.");
+    
+    try{
+        //Buradaki işlem sayesinde "tag" a göre gruplandırma ve içerisindeki verileri sayma işlemi yaptık.
+        const data = await TweetModel.aggregate([
+            {
+                $group :{
+                    _id:'$userTag',
+                    count:{ $sum: 1 }
+                }
+            }
+        ])
+        res.status(201).json({message:"succes",succes:true,data:data})
+    }catch(err) {
+        console.log("Kullanıcı etiket listesi çekilirken bir hata ile karşılaşıldı:",err)
+        res.status(401).json({message:err,succes:false})
+    }
+}
 
+const getSingleUserTag = async (req,res) => {
+    console.log("Etikete ait gönderileri çekme işlemi.");
+
+    try{
+        console.log("RRRR:",req.params.tag);
+        const userTag = req.params.tag
+        const tweetData = await TweetModel.find({userTag:userTag}).populate("userId","name surname image")
+        res.status(201).json({message:"succes",succes:true,data:tweetData})
+    }catch(err){
+        console.log("Etikete ait gönderiler çekilirken bir hata ile karşılaşıldı.",err);
+        
+        res.status(404).json({message:err,succes:false})
+    }
 }
 
 
@@ -367,6 +401,8 @@ router.route("/singleTweet/:id").get(authControl,singleTweet)
 router.route("/getTweetComment/:id").get(authControl,getTweetCommentList)
 router.route("/addTweet").post(authControl,addTweet)
 router.route("/getTagList").get(authControl,getTagList)
+router.route("/getUserTagList").get(authControl,getUserTagList)
+router.route("/getSingleUserTag/:tag").get(authControl,getSingleUserTag)
 router.route("/addTweetComment").post(authControl,commentTweet)
 router.route("/tweetList").get(getTweetList)
 router.route("/profile").get(authControl,getUserProfile)

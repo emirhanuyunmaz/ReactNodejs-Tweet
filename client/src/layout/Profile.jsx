@@ -129,7 +129,7 @@ export default function Profile(){
     return(
     <div className="flex flex-col md:flex-row gap-5 mx-32 mt-16 ">
         <div className="flex flex-col items-center justify-start gap-3 md:w-1/4">
-            <img className="rounded-full" src={changeImage ? newImage :`http://localhost:3000/user/profile/image/${image}`} alt="" />
+            <img className="rounded-full w-48 h-48" src={changeImage ? newImage :`http://localhost:3000/user/profile/image/${image}`} alt="" />
             
             <label className="hover:cursor-pointer bg-blue-200 hover:bg-blue-400 hover:text-white px-2 py-1 rounded-xl duration-300 " htmlFor="user_image">
                 Change Images
@@ -149,7 +149,7 @@ export default function Profile(){
         </div>
         <div className="flex flex-col gap-1">
             <label className="font-bold ms-3">Email</label>
-            <input value={email} onChange={(e) => setEmail(e.target.value)} className="outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="email" placeholder="Email"/>
+            <input disabled value={email} onChange={(e) => setEmail(e.target.value)} className="bg-gray-200 outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="email" placeholder="Email"/>
         </div>
         <div className="flex flex-col gap-1">
             <label className="font-bold ms-3">Password</label>

@@ -143,7 +143,21 @@ export const userApiSlice = createApi({
                     return `/user/getTagList`
                 },
                 providesTags:["Tweet"]
-            })
+            }),
+
+            getUserTagList:builder.query({
+                query:() => {
+                    return `/user/getUserTagList`
+                },
+                providesTags:["Tweet"]
+            }),
+
+            getSingleUserTag:builder.query({
+                query:(tag) => {
+                    return `/user/getSingleUserTag/${tag}`
+                },
+                providesTags:["Tweet"]
+            }),
         }
     },
 
@@ -151,4 +165,4 @@ export const userApiSlice = createApi({
 
 })
 
-export const {useGetDemoQuery,useUserLoginMutation,useGetTweetListQuery,useAddTweetMutation,useGetUserProfileQuery,useTweetLikeMutation,useGetUserTweetLikeListQuery,useUserTweetDislikeMutation,useGetSingleTweetQuery,useUserTweetAddCommentMutation, useTweetCommentListQuery,useUserTweetProfileQuery,useGetUserShortProfileQuery,useAddRetweetMutation,useUpdateUserProfileMutation,useGetTagListQuery} = userApiSlice
+export const {useGetDemoQuery,useUserLoginMutation,useGetTweetListQuery,useAddTweetMutation,useGetUserProfileQuery,useTweetLikeMutation,useGetUserTweetLikeListQuery,useUserTweetDislikeMutation,useGetSingleTweetQuery,useUserTweetAddCommentMutation, useTweetCommentListQuery,useUserTweetProfileQuery,useGetUserShortProfileQuery,useAddRetweetMutation,useUpdateUserProfileMutation,useGetTagListQuery,useGetUserTagListQuery,useGetSingleUserTagQuery} = userApiSlice

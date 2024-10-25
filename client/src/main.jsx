@@ -20,6 +20,7 @@ import SingleTweet from './layout/SingleTweet.jsx';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import TweetTagGroup from './layout/TweetTagGroup.jsx';
+import UserTags from './layout/UserTags.jsx';
 
 
 const router = createBrowserRouter([
@@ -46,6 +47,10 @@ const router = createBrowserRouter([
   {
     path: "/tweet/:id",
     element:<ProtectedRoute> <SingleTweet/></ProtectedRoute>,
+  },
+  {
+    path: "/userTag/:tag",
+    element:<ProtectedRoute> <UserTags/></ProtectedRoute>,
   },
   {
     path: "/profile",
