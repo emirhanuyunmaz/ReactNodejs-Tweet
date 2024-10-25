@@ -2,6 +2,7 @@ import { Heart, MessageCircle, Repeat2 } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { useAddTweetMutation, useGetTagListQuery, useGetTweetListQuery, useGetUserProfileQuery, useGetUserTweetLikeListQuery, useTweetLikeMutation, useUserTweetDislikeMutation } from "../store/userApi/userApiSlicer";
 import { useNavigate } from "react-router-dom";
+import TweetDialog from "../components/TweetDialog";
 // import RetweetDialog from "../components/RetweetDialog";
 
 export default function Tweet(){
@@ -19,7 +20,7 @@ export default function Tweet(){
     const [userProfile,setUserProfile] = useState({})
     const [userTweetLike,setUserTweetLike] = useState([])
     const [tagList,setTagList] = useState([])
-    // const [showRetweetDialog,setShowRetweetDialog] = useState(false)
+    const [showTweetDialog,setShowTweetDialog] = useState(false)
     // const [retweetTweetId,setRetweetTweetId] = useState()
 
 
@@ -109,14 +110,17 @@ export default function Tweet(){
 
     return(
     <div className="flex w-full md:min-h-[90vh] justify-center ">
+        {/* USER PROFILE */}
         <div className="bg-blue-200 max-h-[75vh] rounded-xl hidden md:flex md:w-1/6 mt-5">
             <div className="w-full flex flex-col items-center" >
                 <img className="w-1/2 mt-5 rounded-full" src={`http://localhost:3000/user/profile/image/${userProfile.image}`} alt="" />
 
                 <p>{userProfile.name} {userProfile.surname}</p>
 
-                <div className="mt-5">
+                <div className="mt-5 flex flex-col gap-3">
                     <a className="border-2 px-8 py-2 rounded-xl hover:bg-blue-400 hover:text-white duration-300 " href={`/user/${userProfile._id}`}>Profile</a>
+                    
+                    <button onClick={() => setShowTweetDialog(true)} className="border-2 px-8 py-2 rounded-xl hover:bg-blue-400 hover:text-white duration-300 " >Tweet At</button>
                 </div>
             </div>
 
@@ -126,10 +130,10 @@ export default function Tweet(){
         <div className="flex flex-col-reverse md:flex-row w-full md:w-3/4  md:gap-3">
             <div className="flex flex-col mt-5 md:mt-0 w-full  md:p-5">
                 {/* ADD TWEET */}
-                <div className="flex flex-col md:flex-row  w-full gap-5 mb-5 px-16 md:px-0 md:mx-16">
+                {/* <div className="flex flex-col md:flex-row  w-full gap-5 mb-5 px-16 md:px-0 md:mx-16">
                     <textarea value={tweetText} onChange={(e) => setTweetText(e.target.value)} placeholder="Tweet" className="outline-none border-2 p-3 w-full md:w-3/4 min-h-32 max-h-32 rounded-xl"/>
                     <button onClick={addTweet} className="bg-blue-200 hover:bg-blue-400 hover:text-white duration-300 px-4 py-1 rounded-xl">Add</button>
-                </div>
+                </div> */}
                 {/* TWEET LIST */}
                 <div className="flex flex-col gap-5">
                 {
@@ -141,6 +145,8 @@ export default function Tweet(){
                             <div className="flex flex-col">
                                 <a href={`/user/${tweet.userId._id}`}>{tweet.userId.name}  {tweet.userId.surname}</a>
                                 <p className="text-xs">{formatDate(tweet.createdAt)}</p>
+                                <a href={`/userTag/${tweet.userTag}`} className="font-bold hover:underline">#{tweet.userTag}</a>
+
                             </div>
                             <div className="ms-auto">
                                 <p className="font-bold">{tweet.tag.toUpperCase()}</p>
@@ -174,13 +180,13 @@ export default function Tweet(){
                                 <p className="border-b-2 border-blue-100 hover:border-white">
                                         Kızgın : 
                                     </p>
-                                    <p>{tagList?.filter((item) => item._id === "kızgın")[0]!= undefined && tagList?.filter((item) => item._id === "kızgın")[0].count}</p>
+                                    <p>{tagList?.filter((item) => item._id === "kızgın")[0]!= undefined && tagList?.filter((item) => item._id === "kızgın")[0] ? tagList?.filter((item) => item._id === "kızgın")[0]?.count : 0}</p>
                                 </a>
                             </li>
                             <li className="w-full" ><a href="/tweetTagGroup/korku" className="flex justify-between w-full px-4 py-1 "><p className="border-b-2 border-blue-100 hover:border-white">
                                         Korku : 
                                     </p>
-                                    <p>{tagList?.filter((item) => item._id === "korku")[0]!= undefined && tagList?.filter((item) => item._id === "korku")[0].count}</p>
+                                    <p>{tagList?.filter((item) => item._id === "korku")[0]!= undefined && tagList?.filter((item) => item._id === "korku")[0] ? tagList?.filter((item) => item._id === "korku")[0]?.count : 0}</p>
                                 </a>
                             </li>
                             <li className="w-full" ><a href="/tweetTagGroup/mutlu"className="flex justify-between w-full px-4 py-1 "><p className="border-b-2 border-blue-100 hover:border-white">
@@ -212,6 +218,6 @@ export default function Tweet(){
                 </div>
             </div>
         </div>
-        {/* <RetweetDialog setShowModal={setShowRetweetDialog} showModal={showRetweetDialog} tweetId={retweetTweetId} /> */}
+        <TweetDialog setShowModal={setShowTweetDialog} showModal={showTweetDialog}/>
     </div>)
 }

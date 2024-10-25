@@ -5,7 +5,6 @@ const fs = require("fs")
 const signupModel = require("../singnup/model") //Kullanıcı kayıt olurken kullanılan model
 const authControl = require("../middleware/auth") //Kullanıcı token bilgisi ile giriş yapıp yapmadığını tespit etme.
 const {TweetModel,TweetLikeListModel,TweetCommentListModel,TweetCommentModel} = require("./model")
-const multer  = require('multer') //Resim işlemleri için gerekli.
 const uuid = require("uuid")
 const { default: axios } = require("axios")
 const SignUpModel = require("../singnup/model")
@@ -111,24 +110,31 @@ const addTweet = async (req,res) => {
     try{
         const id = req.headers.id
         const text = req.body.text
-        // const inputData = "ne zaman düzelecek bu takım hiç oynayamıyor çıldıracağım"  // Örnek girdi
-        
-        // Veriyi flask kullanarak oluşturlan bir api den çekme işlemi.
-        const predictionResponse = await axios.post("http://127.0.0.1:5000/predict",{
-            text:text
-        })
-
-        console.log("GELEN VERİİ:::",predictionResponse.data.prediction);
-        
-        
-        const newTweet = new TweetModel({
-            userId:id,
-            text:text,
-            tag:predictionResponse.data.prediction
-        })
-
-        await newTweet.save().then(() => console.log("Saved Tweet"))
-        res.status(200).json({message:"Succes"})
+        const userTag = req.body.userTag
+        if(text){
+            console.log("USER TAG:",userTag)
+            console.log("TEXT:",text);
+            
+            // const inputData = "ne zaman düzelecek bu takım hiç oynayamıyor çıldıracağım"  // Örnek girdi
+            
+            // Veriyi flask kullanarak oluşturlan bir api den çekme işlemi.
+            const predictionResponse = await axios.post("http://127.0.0.1:5000/predict",{
+                text:text
+            })
+    
+            console.log("GELEN VERİİ:::",predictionResponse.data.prediction);
+            
+            
+            const newTweet = new TweetModel({
+                userId:id,
+                text:text,
+                tag:predictionResponse.data.prediction,
+                userTag:userTag
+            })
+    
+            await newTweet.save().then(() => console.log("Saved Tweet"))
+            res.status(200).json({message:"Succes"})
+        }
     }catch(err){
         console.log("Yeni tweet atarken bir hata ile karşılaşıldı..:",err);
         res.status(404).json({message:"Error"})

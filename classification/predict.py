@@ -25,7 +25,7 @@ ps = PorterStemmer()
 def predict():
     data = request.json  # JSON'dan veriyi al
     input_text = data['text']  # Metni al
-    
+    print("DATA:;",input_text)
     # Metin işleme
     yorum = re.sub('[^a-zA-ZğüşöçıİĞÜŞÖÇ]',' ', input_text)
     yorum = yorum.lower()

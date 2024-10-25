@@ -33,6 +33,7 @@ const userTweetSchema = new Schema({
     },
     text:String,
     tag:String,
+    userTag:String,
     likes:[],
     comments:[{type:mongoose.Schema.Types.ObjectId,ref:"TweetComment"}],
     
