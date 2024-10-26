@@ -1,22 +1,22 @@
 import { useParams } from "react-router-dom"
-import { useGetSingleTweetQuery, useGetUserTweetLikeListQuery, useTweetCommentListQuery, useTweetLikeMutation, useUserTweetAddCommentMutation, useUserTweetDislikeMutation } from "../store/userApi/userApiSlicer";
+import { useGetSingleTweetQuery, useGetUserTweetLikeListQuery, useTweetCommentListQuery, useUserTweetAddCommentMutation } from "../store/userApi/userApiSlicer";
 import { useEffect, useState } from "react";
-import { Heart, MessageCircle, Repeat2 } from "lucide-react";
+import TweetCard from "../components/TweetCard";
+import TweetCommentCard from "../components/TweetCommentCard";
+import TagsCard from "../components/TagsCard";
 
 
 export default function SingleTweet(){
     const {id} = useParams()
     const {data,isLoading,error,isSuccess,isFetching} = useGetSingleTweetQuery(id)
     const userTweetLikeList = useGetUserTweetLikeListQuery()
-    const [userLikeTweet , responseTweetLike] = useTweetLikeMutation()
-    const [tweetDislike , responseTweetDislike] = useUserTweetDislikeMutation()
     const [addTweetComment,responseTweetAddComment] = useUserTweetAddCommentMutation()
     const tweetCommentList = useTweetCommentListQuery(id)
-    const[userTweetLike,setUserTweetLike] = useState()
+    const[userTweetLike,setUserTweetLike] = useState([])
     const [tweet,setTweet] = useState({})
     const [text,setText] = useState("")
     const [commnets,setComments] = useState([])
-
+    const [tagList,setTagList] = useState([])
 
     function formatDate(date) {
         let d =new Date(date)
@@ -33,17 +33,11 @@ export default function SingleTweet(){
     }
 
     function getCommentList (){        
+        console.log(tweetCommentList.data.commentTagList);
+        setTagList(tweetCommentList.data.commentTagList)
         setComments(tweetCommentList.data.data)
     }
 
-    async function setLikeTweet(tweetId){
-        const tweetLikeBody = {tweetId:tweetId} 
-        await userLikeTweet(tweetLikeBody)
-    }
-
-    async function userTweetDislike(tweetId){        
-        await tweetDislike({tweetId:tweetId})
-    }
 
     async function addComment(){
         const body = {tweetId:id,text:text}
@@ -81,60 +75,35 @@ export default function SingleTweet(){
 
     },[userTweetLikeList.isFetching,userTweetLikeList.isSuccess])
             
-    return(<div className="w-3/4 mt-10 flex flex-col ">
+    return(<div className="flex  mt-10">
                  
-            {  tweet.userId  &&
-            <div  className="flex flex-col mx-16 gap-3 border-2 bg-blue-100 p-3 rounded-xl hover:shadow-xl duration-300">
-                {/* USER */}
-                <div className="flex items-center gap-5">
-                    <img className="w-10 h-10 rounded-full" src={`http://localhost:3000/user/profile/image/${tweet.userId.image}`} alt="" />
-                    <div className="flex flex-col">
-                        <a href={`/user/${tweet.userId._id}`}>{tweet.userId.name}  {tweet.userId.surname}</a>
-                        <p className="text-xs">{formatDate(tweet.createdAt)}</p>
+            <div className="w-3/4 flex flex-col">
+                {  tweet.userId && userTweetLike  && <TweetCard tweet={tweet} userTweetLike={userTweetLike} /> } 
+
+                {/* Yeni Yorum Ekleme İşlemi */}
+                <div className=" mt-5 flex ms-20 justify-start items-center gap-5">
+                    <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Yorum Yap" className="outline-none border-2 rounded-xl px-3 py-2 min-h-32 w-[50%] " />
+                    <div>
+                        <button onClick={addComment} className=" min-h-full px-8 py-2 bg-blue-300 rounded-xl hover:bg-blue-400 hover:text-white duration-300 " >Yorum Ekle</button>
                     </div>
                 </div>
-                {/* TWEET */}
-                <div className="ms-10">
-                    <p>{tweet.text}</p>
-                </div>
-                <div className="flex justify-between md:px-16">
-                    {   userTweetLike &&
-                        userTweetLike.includes(tweet._id) ? (<button onClick={() => userTweetDislike(tweet._id)} className="flex gap-1 "><Heart  color="red" fill={`red`} /> {tweet.likes.length}</button> ):( <button onClick={()=>setLikeTweet(tweet._id)} className="flex gap-1 "><Heart /> {tweet.likes.length}</button>)
-                    }
-                    
-                    <button className="flex gap-1 "><Repeat2 /></button>
-                    <button onClick={(e) => CommentPage(tweet._id)} className="flex gap-1 "> <MessageCircle />{tweet.comments.length}</button>
+
+                {/* Yorum Listesi */}
+                <div className="flex justify-start items-center ms-20 mt-10 gap-3">
+
+                    {commnets.length !== 0 &&  <div className="w-[75%]  flex flex-col gap-3 p-3">
+                            {
+                                commnets.map((items) => {
+                                    return <TweetCommentCard key={items._id} items={items} />
+                                })
+                            }
+                        
+                    </div>}
                 </div>
             </div>
-            } 
 
-            {/* Yeni Yorum Ekleme İşlemi */}
-            <div className=" mt-5 flex  justify-center items-center gap-5">
-                <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Yorum Yap" className="outline-none border-2 rounded-xl px-3 py-2 min-h-32 w-[50%] " />
-                <button onClick={addComment} className="min-h-full px-8 py-2 bg-blue-300 rounded-xl hover:opacity-75 duration-300 " >Yorum Ekle</button>
-            </div>
-
-            {/* Yorum Listesi */}
-            <div className="flex justify-center items-center mt-10 gap-3">
-
-                {commnets.length !== 0 &&  <div className="w-[75%]  flex flex-col gap-3 p-3">
-                        {
-                            commnets.map((items) => {
-                                return <div key={items._id} className="border-2 rounded-xl py-5" ><div  className="ms-3 flex gap-3">
-                                <img src={`http://localhost:3000/user/profile/image/${items.userId.image}`} alt="" className="w-10 h-10 rounded-full" />
-                                <div className="flex flex-col">
-                                    <a href={`/user/${items.userId._id}`}>{items.userId.name} {items.userId.surname}</a>
-                                    <p className="text-xs">{formatDate(items.createAt)}</p>
-                                </div>
-                            </div>
-        
-                            <div className="ms-10">
-                                <p>{items.text}</p>
-                            </div></div>
-                            })
-                        }
-                    
-                </div>}
+            <div className="w-1/4 mx-10">
+                {<TagsCard tagList={tagList} />}
             </div>
     </div>)
 }

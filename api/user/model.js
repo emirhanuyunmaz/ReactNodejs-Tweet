@@ -2,14 +2,6 @@ const mongoose = require("mongoose")
 const Schema = mongoose.Schema
 
 
-// const tagListSchema = new Schema({
-//     tweet:{
-//         type:mongoose.Schema.Types.ObjectId,
-//         ref:"Tweet"
-//     },
-//     tag:String
-// })
-
 const tweetComment = new Schema({
     userId:{
         type:mongoose.Schema.Types.ObjectId,
@@ -20,6 +12,7 @@ const tweetComment = new Schema({
         ref:"Tweet"
     },
     text:String,
+    tag:String,
     createAt:{
         type:Date,
         default:Date.now

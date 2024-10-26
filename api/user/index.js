@@ -2,6 +2,7 @@ const express = require("express")
 const router = express.Router()
 const path = require("path")
 const fs = require("fs")
+const ObjectId = require('mongoose').Types.ObjectId //Buradaki işlem agregate de kullanmak için gerekli
 const signupModel = require("../singnup/model") //Kullanıcı kayıt olurken kullanılan model
 const authControl = require("../middleware/auth") //Kullanıcı token bilgisi ile giriş yapıp yapmadığını tespit etme.
 const {TweetModel,TweetLikeListModel,TweetCommentListModel,TweetCommentModel} = require("./model")
@@ -227,16 +228,19 @@ const commentTweet = async(req,res) => {
         const userId = req.headers.id
         const tweetId = req.body.tweetId
         const text = req.body.text
-
+        const predictionResponse = await axios.post("http://127.0.0.1:5000/predict",{
+            text:text
+        }) 
         const userCommentList = await TweetCommentListModel.findOne({userId:userId})        
-
+                
         if(!userCommentList){
             console.log("Daha önce bir yorum yapmamış");
 
             const newComment = new TweetCommentModel({
                 text:text,
                 userId:userId,
-                tweetId:tweetId
+                tweetId:tweetId,
+                tag:predictionResponse.data.prediction
             })
 
             const newC = await newComment.save()
@@ -253,7 +257,8 @@ const commentTweet = async(req,res) => {
             const newComment = new TweetCommentModel({
                 text:text,
                 userId:userId,
-                tweetId:tweetId
+                tweetId:tweetId,
+                tag:predictionResponse.data.prediction
             })
 
             const newC = await newComment.save()
@@ -262,6 +267,7 @@ const commentTweet = async(req,res) => {
             await TweetModel.findByIdAndUpdate(tweetId,{$push : {comments:newC._id}})
 
         }
+        
         
     } catch(err) {
         console.log("Tweete yorum eklerken bir hata ile karşılaşıldı.",err);
@@ -276,9 +282,22 @@ const getTweetCommentList = async (req,res) => {
 
     try{
         const tweetId = req.params.id
-        const data = await TweetModel.findById(tweetId).populate({path:"comments",select:"text createAt",populate:{path:"userId",select:"name surname image"}}).populate("userId","name surname image").exec()
+        const data = await TweetModel.findById(tweetId).populate({path:"comments",select:"text createAt tag",populate:{path:"userId",select:"name surname image"}}).exec()
+        const commentTagList = await TweetCommentModel.aggregate([
+            
+            { "$match": { "tweetId": new ObjectId(tweetId) } },
+            {
+                $group :{
+                    _id:'$tag',
+                    count:{ $sum: 1 }
+                }
+            }
+        ])
+        // const commentsLLL = await TweetCommentModel.find({tweetId:tweetId})
+        console.log("TWEET TAG::",commentTagList);
         
-        res.status(201).json({message:"Succes",succes:true,data:data.comments})
+        
+        res.status(201).json({message:"Succes",succes:true,data:data.comments,commentTagList:commentTagList})
 
     }catch(err){
         console.log("Yorum listesi çekilirken bir hata ile karşılaşıldı.",err);
@@ -403,7 +422,6 @@ const getSingleUserTag = async (req,res) => {
         res.status(404).json({message:err,succes:false})
     }
 }
-
 
 // kullanıcıya ait tweetleri veren api oluşturulacak . 
 // /user/...

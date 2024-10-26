@@ -12,8 +12,6 @@ export default function UserTags(){
     const [tweetList,setTweetList] = useState([])
     const [tagList,setTagList] = useState([]) 
 
-
-
     useEffect(() => {
         if(userTag.isSuccess){
             console.log(userTag.data);
