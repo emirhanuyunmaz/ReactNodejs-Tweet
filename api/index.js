@@ -1,4 +1,3 @@
-const express = require("express")
 const app = require("./routes")
 
 const mongoose = require('mongoose')

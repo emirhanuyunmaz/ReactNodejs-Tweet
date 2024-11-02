@@ -21,11 +21,11 @@ export default function UserTags(){
     },[userTag.isSuccess,userTag.isFetching])
     
 
-    return(<div className="flex mt-10 mx-10">
-        <div className="flex flex-col gap-3  w-3/4">
+    return(<div className="flex flex-col-reverse md:flex-row mt-10 mx-10 gap-5">
+        <div className="flex flex-col gap-3  md:w-3/4">
             <TweetList tweetList={tweetList} />
         </div>
-        <div className="w-1/4">
+        <div className="md:w-1/4">
             <TagsCard tagList={tagList} />
         </div>
     </div>)

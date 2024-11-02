@@ -16,7 +16,7 @@ export default function TweetCommentCard({items}){
         return datePart + " " + timePart;
     }
 
-    return(<div key={items._id} className="border-2 border-gray-400 rounded-xl py-5" ><div  className="ms-3 flex gap-3 justify-between me-3">
+    return(<div key={items._id} className="border-2 border-gray-400 rounded-xl py-5" ><div className="ms-3 flex gap-3 justify-between me-3">
         <div className="flex gap-3">
             <img src={`http://localhost:3000/user/profile/image/${items.userId.image}`} alt="" className="w-10 h-10 rounded-full" />
             <div className="flex flex-col gap-1">

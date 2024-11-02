@@ -127,9 +127,9 @@ export default function Profile(){
     },[responseUpdateProfile.isSuccess])
 
     return(
-    <div className="flex flex-col md:flex-row gap-5 mx-32 mt-16 ">
-        <div className="flex flex-col items-center justify-start gap-3 md:w-1/4">
-            <img className="rounded-full w-48 h-48" src={changeImage ? newImage :`http://localhost:3000/user/profile/image/${image}`} alt="" />
+    <div className="flex flex-col md:flex-row gap-5 md:mx-32 mt-16 ">
+        <div className="flex flex-col items-center justify-start gap-3 w-full md:w-1/4">
+            <img className="rounded-full w-52 md:w-48 md:h-48" src={changeImage ? newImage :`http://localhost:3000/user/profile/image/${image}`} alt="" />
             
             <label className="hover:cursor-pointer bg-blue-200 hover:bg-blue-400 hover:text-white px-2 py-1 rounded-xl duration-300 " htmlFor="user_image">
                 Change Images
@@ -137,28 +137,28 @@ export default function Profile(){
             {/* window.location.reload(); */}
             <input className="hidden"  onChange={(e) => imageUpdate(e)} type="file" name="" id="user_image" />
         </div>
-        <div className="flex flex-col md:w-2/4">
+        <div className="flex flex-col w-full px-5 md:px-0 mb-5 md:w-2/4">
 
-        <div className="flex flex-col gap-1"> 
-            <label className="font-bold ms-3">Name</label>
-            <input value={name} onChange={(e) => setName(e.target.value)} className="outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="text" placeholder="Name"/>
-        </div>
-        <div className="flex flex-col gap-1">
-            <label className="font-bold ms-3">Surname</label>
-            <input value={surname} onChange={(e) => setSurname(e.target.value)} className="outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="text" placeholder="Surname"/>
-        </div>
-        <div className="flex flex-col gap-1">
-            <label className="font-bold ms-3">Email</label>
-            <input disabled value={email} onChange={(e) => setEmail(e.target.value)} className="bg-gray-200 outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="email" placeholder="Email"/>
-        </div>
-        <div className="flex flex-col gap-1">
-            <label className="font-bold ms-3">Password</label>
-            <input value={password} onChange={(e) => setPassword(e.target.value)} className="outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="text" placeholder="Password" />
-        </div>
-        <div className="flex flex-col gap-1">
-            <label className="font-bold ms-3">Description</label>
-            <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="password" placeholder="Description" />
-        </div>
+            <div className="flex w-full flex-col gap-1"> 
+                <label className="font-bold ms-3">Name</label>
+                <input value={name} onChange={(e) => setName(e.target.value)} className="outline-none w-full px-4 py-2 border-2 mb-5 rounded-xl" type="text" placeholder="Name"/>
+            </div>
+            <div className="flex flex-col gap-1">
+                <label className="font-bold ms-3">Surname</label>
+                <input value={surname} onChange={(e) => setSurname(e.target.value)} className="outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="text" placeholder="Surname"/>
+            </div>
+            <div className="flex flex-col gap-1">
+                <label className="font-bold ms-3">Email</label>
+                <input disabled value={email} onChange={(e) => setEmail(e.target.value)} className="bg-gray-200 outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="email" placeholder="Email"/>
+            </div>
+            <div className="flex flex-col gap-1">
+                <label className="font-bold ms-3">Password</label>
+                <input value={password} onChange={(e) => setPassword(e.target.value)} className="outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="text" placeholder="Password" />
+            </div>
+            <div className="flex flex-col gap-1">
+                <label className="font-bold ms-3">Description</label>
+                <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="password" placeholder="Description" />
+            </div>
             <button onClick={updateUserProfile} className="bg-blue-200 hover:bg-blue-400 hover:text-white px-2 py-2 rounded-xl duration-300" >Update</button>
         </div>
     </div>)

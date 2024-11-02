@@ -75,23 +75,23 @@ export default function SingleTweet(){
 
     },[userTweetLikeList.isFetching,userTweetLikeList.isSuccess])
             
-    return(<div className="flex  mt-10">
+    return(<div className="flex flex-col mx-5 md:flex-row mt-10">
                  
-            <div className="w-3/4 flex flex-col">
+            <div className="md:w-3/4 flex flex-col">
                 {  tweet.userId && userTweetLike  && <TweetCard tweet={tweet} userTweetLike={userTweetLike} /> } 
 
                 {/* Yeni Yorum Ekleme İşlemi */}
-                <div className=" mt-5 flex ms-20 justify-start items-center gap-5">
-                    <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Yorum Yap" className="outline-none border-2 rounded-xl px-3 py-2 min-h-32 w-[50%] " />
+                <div className=" mt-5 flex md:ms-20 justify-start items-center gap-5">
+                    <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Yorum Yap" className="outline-none border-2 rounded-xl px-3 py-2 min-w-52 min-h-32 md:w-[80%] " />
                     <div>
                         <button onClick={addComment} className=" min-h-full px-8 py-2 bg-blue-300 rounded-xl hover:bg-blue-400 hover:text-white duration-300 " >Yorum Ekle</button>
                     </div>
                 </div>
 
                 {/* Yorum Listesi */}
-                <div className="flex justify-start items-center ms-20 mt-10 gap-3">
+                <div className="flex justify-start items-center md:ms-20 mt-10 gap-3">
 
-                    {commnets.length !== 0 &&  <div className="w-[75%]  flex flex-col gap-3 p-3">
+                    {commnets.length !== 0 &&  <div className="w-full md:w-[75%]  flex flex-col gap-3 p-3">
                             {
                                 commnets.map((items) => {
                                     return <TweetCommentCard key={items._id} items={items} />
@@ -102,7 +102,7 @@ export default function SingleTweet(){
                 </div>
             </div>
 
-            <div className="w-1/4 mx-10">
+            <div className="mx-5 md:w-1/4 md:mx-10">
                 {<TagsCard tagList={tagList} />}
             </div>
     </div>)

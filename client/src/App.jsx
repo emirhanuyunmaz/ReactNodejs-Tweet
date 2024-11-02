@@ -1,10 +1,12 @@
+import { useNavigate } from "react-router-dom";
 import { useGetDemoQuery } from "./store/userApi/userApiSlicer"
 
 function App() {
-
+  const navigate = useNavigate()
   const {data,isLoading,isError,error} = useGetDemoQuery()
   console.log(data);
-  
+  navigate("/login")
+
 
   return (
     <>

@@ -37,7 +37,7 @@ export default function TweetCard({tweet,userTweetLike}){
     }
 
 
-    return(<div key={tweet._id} className="flex flex-col mx-16 gap-3 border-2 bg-blue-100 p-3 rounded-xl hover:shadow-xl duration-300">
+    return(<div key={tweet._id} className="flex flex-col gap-3 border-2 bg-blue-100 p-3 rounded-xl hover:shadow-xl duration-300">
         {/* USER */}
         <div className="flex items-center gap-5">
             <img className="w-10 h-10 rounded-full" src={`http://localhost:3000/user/profile/image/${tweet.userId.image}`} alt="" />

@@ -76,16 +76,16 @@ export default function Tweet(){
         </div>
 
 
-        <div className="flex flex-col-reverse md:flex-row w-full md:w-3/4  md:gap-3">
+        <div className="flex flex-col-reverse md:flex-row w-full md:w-3/4 mt-5 md:mt-0 md:gap-3">
             <div className="flex flex-col mt-5 md:mt-0 w-full  md:p-5">
                 
                 {/* TWEET LIST */}
-                <div className="flex flex-col gap-5">
+                <div className="flex flex-col gap-5 mx-5 md:mx-10">
                     <TweetList tweetList={tweetList} />
                 </div>
             </div>
             
-            <div className="flex flex-col w-full md:w-1/4 px-16 md:px-0 md:p-5">
+            <div className="flex flex-col w-full  md:w-1/4 px-16 md:px-0 md:p-5">
                 
                 {/* Duygular */}
                 <TagsCard tagList={tagList} />

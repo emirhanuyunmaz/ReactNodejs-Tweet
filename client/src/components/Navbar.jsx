@@ -22,7 +22,7 @@ export default function Navbar(){
         
         <div>
             {!token && <a href="/login">Login</a>}
-            {token && <div className="relative flex ">
+            {token && <div className="relative flex md:hidden ">
                 <button onClick={() => setSettingsControl(!settingsControl)}>More</button>
                 <div className={`${!settingsControl && "hidden"} absolute bg-blue-200 text-black px-2 mt-8 ms-[-20px] py-2 rounded-xl z-10`}>
                     <ul className="flex flex-col gap-2">

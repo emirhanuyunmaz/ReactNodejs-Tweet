@@ -45,10 +45,10 @@ export default function UserProfile(){
         }
     },[userTweetProfile.isFetching , userTweetProfile.isSuccess])
 
-    return (<div className="w-3/4 mx-auto mt-10">
+    return (<div className="md:w-3/4 md:mx-auto mt-10">
 
         {/* Kullanıcı profili için temel yapı */}
-        <div className="bg-blue-100 px-10 py-5 rounded-xl">
+        <div className="bg-blue-100  md:px-10 py-5 rounded-xl">
             <div className="flex gap-5" >
                 <img className="w-32 h-32 rounded-full" src={`http://localhost:3000/user/profile/image/${userProfile.image}`} alt="" />
                 <div className="mt-5 flex flex-col gap-3">
@@ -59,7 +59,7 @@ export default function UserProfile(){
             </div>
         </div>
             {/* Tweet List */}
-            <div className="flex flex-col gap-5 mt-10">
+            <div className="flex px-5 md:px-10 flex-col w-full gap-5 mt-10">
                 <TweetList tweetList={tweetList} />
             </div>
     </div>)
