@@ -17,6 +17,8 @@ const authControl = async(req,res,next) => {
                 succeded:false,
                 message:"Error",            
             })
+            console.log("::TOKEN YOK::");
+            
         }else{
             jwt.verify(token,process.env.TOKEN_SECRET,async(err,decodedToken) => {
                 if(err){
@@ -27,13 +29,13 @@ const authControl = async(req,res,next) => {
                     req.headers.id = decodedToken.id
                 }
             })
+            next()
         }
         // console.log("Kullaıcı token bilgisi:",token);
     }catch(err){
         res.status(401).json({message:err,succes:false})
     }
     
-    next()
 }
 
 module.exports = authControl

@@ -1,8 +1,9 @@
-import {  useEffect, useState } from "react";
+import {  useContext, useEffect, useState } from "react";
 import { useGetTagListQuery, useGetTweetListQuery, useGetUserProfileQuery, useGetUserTagListQuery} from "../store/userApi/userApiSlicer";
 import TweetDialog from "../components/TweetDialog";
 import TweetList from "../components/TweetList";
 import TagsCard from "../components/TagsCard";
+import { userContext } from "../context/userContext";
 // import RetweetDialog from "../components/RetweetDialog";
 
 export default function Tweet(){
@@ -16,6 +17,7 @@ export default function Tweet(){
     const [tagList,setTagList] = useState([])
     const [showTweetDialog,setShowTweetDialog] = useState(false)
     const [userTags,setUserTags] = useState([])
+    let {token,logout} = useContext(userContext) 
 
     async function getUserProfile(){
         setUserProfile(getuserP.data)
@@ -70,6 +72,9 @@ export default function Tweet(){
                     <button onClick={() => setShowTweetDialog(true)} className="border-2 px-8 py-2 rounded-xl hover:bg-blue-400 hover:text-white duration-300 " >Tweet At</button>
 
                     <a className="border-2 px-8 py-2 rounded-xl hover:bg-blue-400 hover:text-white duration-300 " href={`/profile`}>Ayarlar</a>
+                    
+                    <button onClick={logout} className="border-2 px-8 py-2 rounded-xl hover:bg-blue-400 hover:text-white duration-300 " >Çıkış Yap</button>
+
                 </div>
             </div>
 
