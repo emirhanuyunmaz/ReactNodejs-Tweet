@@ -21,6 +21,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import TweetTagGroup from './layout/TweetTagGroup.jsx';
 import UserTags from './layout/UserTags.jsx';
+import Message from './layout/Message.jsx';
 
 
 const router = createBrowserRouter([
@@ -39,6 +40,10 @@ const router = createBrowserRouter([
   {
     path: "/tweet",
     element:<ProtectedRoute> <Tweet/></ProtectedRoute>,
+  },
+  {
+    path: "/message",
+    element:<ProtectedRoute> <Message/></ProtectedRoute>,
   },
   {
     path: "/tweetTagGroup/:id",
