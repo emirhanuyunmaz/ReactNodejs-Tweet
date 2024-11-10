@@ -4,19 +4,25 @@ import { userContext } from "../context/userContext"
 import "aos/dist/aos.css";
 import Aos from "aos"
 import { Bell } from "lucide-react";
+import NotificationCard from "./NotificationCard";
 
 export default function Navbar(){
     const [settingsControl,setSettingsControl] = useState(false)
     const [searchControl,setSearchControl] = useState(false)
+    const [notificationControl,setNotificationControl] = useState(false)
     let {token,logout} = useContext(userContext) 
-    console.log("Context Token :",token);
+    // console.log("Context Token :",token);
+    function notificationOnClick(){
+        if(notificationControl){
+            setNotificationControl(false)
+            document.body.style.overflow = "auto"
+        }else{
+            setNotificationControl(true)
+            document.body.style.overflow = "hidden"
+        }
+    }
     
-    // let token = Cookies.get("accessToken")
-    // useEffect(()=> {
-    //     token = Cookies.get("accessToken")
-    //     console.log("TOKEN:",token);
-        
-    // },[])
+
     useEffect(() =>{
         Aos.init({
             disable: "phone",
@@ -49,11 +55,20 @@ export default function Navbar(){
         </div>} */}
         {settingsControl && <div onClick={() => {setSettingsControl(false)}}  className="bg-opacity-0 z-0 fixed inset-0  w-screen h-screen"></div>}
         
-        {token && <div>
-            <button className="hover:text-gray-300">
+        {token && <div className={`${searchControl && "ms-auto"}`}>
+            <button onClick={notificationOnClick} className="hover:text-gray-300">
                 <Bell />
             </button>
+
+            {/* Kullanıcı bildirim componenti */}
+            {notificationControl && <>
+                <NotificationCard/>
+                <div onClick={notificationOnClick} className=" opacity-0 fixed inset-0 z-40"></div>
+            </>
+            }
         </div>}
+
+        
             
         {searchControl && <div>
             <div data-aos="fade-down" className="mt-16 h-16 flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none bg-blue-500">

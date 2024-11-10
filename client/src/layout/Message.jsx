@@ -3,9 +3,9 @@
 export default function Message(){
 
     // Backend ile tarihe göre gruplandırma ve çekme işlemi yapılcak
-    
 
-    return(<div className="h-[91vh] flex justify-center items-center rounded-xl">
+
+    return(<div className="h-[90vh] flex justify-center items-center rounded-xl">
         
         <div className="h-[95%] w-[90%] bg-blue-200 flex rounded-xl  " >
             
@@ -17,7 +17,7 @@ export default function Message(){
                 </div>
 
                 {/* Mesajlaşılan kullanıcı kart tasarımı  */}
-                <div className="bg-blue-300 mx-5 rounded-xl cursor-pointer flex items-center hover:bg-blue-400 duration-300">
+                <div className="bg-blue-300 mx-5 rounded-xl cursor-pointer flex items-center hover:bg-blue-400 hover:text-white duration-300">
                     <img src="https://randomuser.me/api/portraits/men/78.jpg" className="w-16 h-16 my-1 mx-3 rounded-full" alt="" />
                     <p>USER NAME</p>
                 </div>
