@@ -56,10 +56,20 @@ export default function UserProfile(){
                     <p>{userProfile.description}</p>
                     <p>{formatDateProfile(userProfile.createdAt)}</p>
                 </div>
+                <div className="ms-auto flex flex-col justify-center">
+                    <button className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Takip Et</button>
+                    <button className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Mesaj At</button>
+                </div>
             </div>
         </div>
+            {/* Tweet arama işlemi */}
+            <div className="flex  justify-center items-center gap-3 mt-3">
+                <input className="w-1/2 outline-none px-4 py-2 border-2  rounded-xl" type="text" placeholder="Tweet Ara"/>
+                <button className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Mesaj At</button>
+            </div>
+
             {/* Tweet List */}
-            <div className="flex px-5 md:px-10 flex-col w-full gap-5 mt-10">
+            <div className="flex px-5 md:px-10 flex-col w-full gap-5 mt-3">
                 <TweetList tweetList={tweetList} />
             </div>
     </div>)

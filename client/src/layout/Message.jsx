@@ -1,11 +1,15 @@
 
 
 export default function Message(){
+
+    // Backend ile tarihe göre gruplandırma ve çekme işlemi yapılcak
+    
+
     return(<div className="h-[91vh] flex justify-center items-center rounded-xl">
         
-        <div className="bg-blue-200 flex h-[95%] w-[90%] " >
+        <div className="h-[95%] w-[90%] bg-blue-200 flex rounded-xl  " >
             
-            <div className="w-1/4 border-r-2 border-gray-200  h-full bg-blue-200">
+            <div className="w-1/4 border-r-2 border-gray-200  h-full ">
                 {/* Kullanıcı arama işlemi için input */}
                 <div className="flex flex-col md:flex-row  justify-center items-center gap-1 mx-5 pt-5 mb-5">
                     <input className="outline-none px-4 py-2 border-2 rounded-xl " type="text" placeholder="Kullanıcı Adı"/>
@@ -21,10 +25,10 @@ export default function Message(){
             </div>
 
             {/* Mesajlaşma kısmı */}
-            <div className="w-3/4 h-[full] bg-blue-200">
+            <div className="w-3/4 h-[full] ">
                 
                 {/* Mesajların listesi */}
-                <div className="h-[90%] w-full flex flex-col bg-blue-200 px-3 pt-3 overflow-y-auto overflow-x-hidden">
+                <div className="h-[90%] w-full flex flex-col  px-3 pt-3 overflow-y-auto overflow-x-hidden">
                     <div className="flex justify-center items-center">
                         <p className="underline">12/12/2024</p>
                     </div>    
@@ -44,7 +48,7 @@ export default function Message(){
                 </div>
 
                 {/* Mesaj atma işlemi */}
-                <div className="flex bg-blue-200 w-full h-[10%] items-center justify-center gap-2 px-2">
+                <div className="flex  w-full h-[10%] items-center justify-center gap-2 px-2">
                         <input className="w-[90%] outline-none px-4 py-2 border-2 rounded-xl" type="text" placeholder="Mesaj"/>
                         <button className="w-[10%] border-2 px-2 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300">Gönder</button>
                 </div>
