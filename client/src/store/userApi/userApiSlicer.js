@@ -117,8 +117,11 @@ export const userApiSlice = createApi({
             }),
 
             userTweetProfile:builder.query({
-                query:(id) => {
-                    return `/user/tweetProfile/${id}`
+                query:(data) => {
+                    return {
+                        url:`/user/tweetProfile/${data.id}`,
+                        headers:{text:data.text}
+                    }
                 },
                 providesTags:["Tweet"]
             }),
@@ -158,6 +161,7 @@ export const userApiSlice = createApi({
                 },
                 providesTags:["Tweet"]
             }),
+
         }
     },
 

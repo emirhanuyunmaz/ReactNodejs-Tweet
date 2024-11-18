@@ -1,18 +1,22 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom"
-import { useGetUserShortProfileQuery, useGetUserTweetLikeListQuery, useTweetLikeMutation, useUserTweetDislikeMutation, useUserTweetProfileQuery } from "../store/userApi/userApiSlicer";
-import { Heart, MessageCircle, Repeat2 } from "lucide-react";
+import {  useParams } from "react-router-dom"
+import { useGetUserShortProfileQuery,useUserTweetProfileQuery } from "../store/userApi/userApiSlicer";
 import TweetList from "../components/TweetList";
 
 
 export default function UserProfile(){
     const params = useParams()
-    // Kullanıcı id bilgisine göre safada gönderilerin görüntülenmesi işlemi yapılacak.
+    // Kullanıcı id bilgisine göre safada gönderilerin görüntülenmesi işlemi.
     // console.log(params.id);
     const [tweetList,setTweetList] = useState([])
-    const userTweetProfile = useUserTweetProfileQuery(params.id)
+    const [isProfile,setIsProfile] = useState(false)
+    const [searchText,setSearchText] = useState("")
+    let data = {
+        id:params.id,
+        text:searchText
+    }
+    const userTweetProfile = useUserTweetProfileQuery(data)
     const userShortProfile = useGetUserShortProfileQuery(params.id)
-
     const [userProfile,setUserProfile] = useState({})
 
     function formatDateProfile(date) {
@@ -28,8 +32,10 @@ export default function UserProfile(){
     function getShortProfile(){
         console.log(userProfile);
         setUserProfile(userShortProfile.data.data)
-        console.log("USer Profile:",userShortProfile.data.data);
+        // console.log("User Profile:",userShortProfile.data.data);
     }
+
+
 
 
     useEffect(() => {
@@ -41,9 +47,17 @@ export default function UserProfile(){
 
     useEffect(() => {
         if(userTweetProfile.isSuccess){
+            data = {
+                id:params.id,
+                text:searchText
+            }
             setTweetList(userTweetProfile.data.data)
+            // console.log("SS:::SS",userTweetProfile.data.userProfile);
+            setIsProfile(userTweetProfile.data.userProfile)
         }
-    },[userTweetProfile.isFetching , userTweetProfile.isSuccess])
+    },[userTweetProfile.isFetching,userTweetProfile.isSuccess,searchText])
+
+    
 
     return (<div className="md:w-3/4 md:mx-auto mt-10">
 
@@ -56,16 +70,19 @@ export default function UserProfile(){
                     <p>{userProfile.description}</p>
                     <p>{formatDateProfile(userProfile.createdAt)}</p>
                 </div>
-                <div className="ms-auto flex flex-col justify-center">
+                {!isProfile && <div className="ms-auto flex flex-col justify-center">
                     <button className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Takip Et</button>
                     <button className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Mesaj At</button>
-                </div>
+                </div>}
+                {
+                    isProfile &&<div className="ms-auto flex flex-col justify-center"> <a href="/profile" className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Profili Düzenle</a></div>
+                }
             </div>
         </div>
             {/* Tweet arama işlemi */}
-            <div className="flex  justify-center items-center gap-3 mt-3">
-                <input className="w-1/2 outline-none px-4 py-2 border-2  rounded-xl" type="text" placeholder="Tweet Ara"/>
-                <button className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Mesaj At</button>
+            <div className="flex  justify-start items-center gap-3 ms-10 mt-3">
+                <input onChange={(e) => setSearchText(e.target.value)} value={searchText} className="w-1/2 outline-none px-4 py-2 border-2  rounded-xl" type="text" placeholder="Tweet Ara"/>
+                {/* <button onClick={(e) => searchTweetUser(e)} className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Ara</button> */}
             </div>
 
             {/* Tweet List */}

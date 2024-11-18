@@ -323,12 +323,17 @@ const singleTweet = async (req,res) => {
 //************************USER TWEET PROFILE********************* */
 //Kullanıcıya ait tweet listesini gösterecek olan api.
 const userTweetProfile = async(req,res) => {
-
+    console.log("Single user tweet",);
+    
     try{
+        const searchText = req.headers.text
         const tweetUserId = req.params.id
-        const tweetData = await TweetModel.find({userId:tweetUserId}).populate("userId","name surname image")
+        const tweetData = await TweetModel.find({userId:tweetUserId,text:{ $regex: `${searchText}`, $options: 'i' } }).populate("userId","name surname image")
+        const userId = req.headers.id
+        const userProfile = userId == tweetUserId
+        console.log("Kullanıcı profili mi ? = ",userProfile);
         
-        res.status(201).json({message:"Succes",succes:true,data:tweetData})
+        res.status(201).json({message:"Succes",succes:true,data:tweetData,userProfile:userProfile})
 
     }catch(err) {
 
@@ -423,6 +428,7 @@ const getSingleUserTag = async (req,res) => {
     }
 }
 
+
 // kullanıcıya ait tweetleri veren api oluşturulacak . 
 // /user/...
 router.route("/profile/image/:name").get(getUserImage)
@@ -442,6 +448,5 @@ router.route("/shortProfile/:id").get(authControl,userShortProfile)
 router.route("/likeTweet").post(authControl,likeTweet)
 router.route("/likeTweetList").get(authControl,getUserLikeList)
 router.route("/dislikeTweet").post(authControl,userTweetDislike)
-
 
 module.exports = router
