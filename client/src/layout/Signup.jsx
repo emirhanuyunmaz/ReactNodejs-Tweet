@@ -66,7 +66,7 @@ export default function Signup(){
             {/* Resim ekleme yapan label */}
             <label className="hover:cursor-pointer " htmlFor="user_image">
             <div className="mt-10">
-                {/* Resim yükleme için gereken kütüphane */}
+            {/* Resim yükleme için gereken kütüphane */}
             <ReactImageUploading
                 multiple
                 value={image}

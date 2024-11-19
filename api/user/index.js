@@ -112,12 +112,13 @@ const addTweet = async (req,res) => {
         const id = req.headers.id
         const text = req.body.text
         const userTag = req.body.userTag
-        if(text){
+        const isImage = req.body.isImage
+        console.log("İmage: ",req.body);
+        
+        if(text && !isImage){
             console.log("USER TAG:",userTag)
             console.log("TEXT:",text);
-            
-            // const inputData = "ne zaman düzelecek bu takım hiç oynayamıyor çıldıracağım"  // Örnek girdi
-            
+                        
             // Veriyi flask kullanarak oluşturlan bir api den çekme işlemi.
             const predictionResponse = await axios.post("http://127.0.0.1:5000/predict",{
                 text:text
@@ -135,6 +136,27 @@ const addTweet = async (req,res) => {
     
             await newTweet.save().then(() => console.log("Saved Tweet"))
             res.status(200).json({message:"Succes"})
+        }
+        else if(isImage){
+            console.log("Resim gelimiş");
+            const imageName = uuid.v4()
+            const filePath = __dirname + "/.." + `/uploads/${imageName}.png`
+            console.log("File Path:",filePath);
+            let base64Image = req.body.text.split(';base64,').pop();
+
+            fs.writeFile(filePath ,base64Image , {encoding: 'base64'}, function(err) {
+                console.log(`File created ${imageName} `);
+            });
+
+            const newTweet = new TweetModel({
+                userId:id,
+                isImage:true,
+                text : imageName+".png",
+                tag:"üzgün",
+                userTag:userTag
+            })
+    
+            await newTweet.save().then(() => console.log("Saved Tweet"))
         }
     }catch(err){
         console.log("Yeni tweet atarken bir hata ile karşılaşıldı..:",err);
