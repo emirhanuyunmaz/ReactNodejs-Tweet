@@ -53,10 +53,11 @@ export default function TweetCard({tweet,userTweetLike}){
         </div>
         {/* TWEET */}
         <div className="ms-10">
-            <p>{tweet.text}</p>
+            { !tweet.isImage && <p>{ tweet.text}</p>}
+            { tweet.isImage && <img src={`http://localhost:3000/user/profile/image/${tweet.text}`} className="w-1/2 mx-auto border-2 rounded-xl" />}
         </div>
         <div className="flex justify-between md:px-16">
-            {
+            {   
                 userTweetLike.includes(tweet._id) ? (<button onClick={() => userTweetDislike(tweet._id)} className="flex gap-1 "><Heart  color="red" fill={`red`} /> {tweet.likes.length}</button> ):( <button onClick={()=>setLikeTweet(tweet._id)} className="flex gap-1 "><Heart /> {tweet.likes.length}</button>)
             }
             

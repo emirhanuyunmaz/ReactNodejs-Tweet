@@ -157,6 +157,8 @@ const addTweet = async (req,res) => {
             })
     
             await newTweet.save().then(() => console.log("Saved Tweet"))
+            res.status(200).json({message:"Succes"})
+
         }
     }catch(err){
         console.log("Yeni tweet atarken bir hata ile karşılaşıldı..:",err);
