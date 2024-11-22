@@ -139,11 +139,19 @@ const addTweet = async (req,res) => {
         }
         else if(isImage){
             console.log("Resim gelimiş");
+
             const imageName = uuid.v4()
             const filePath = __dirname + "/.." + `/uploads/${imageName}.png`
             console.log("File Path:",filePath);
             let base64Image = req.body.text.split(';base64,').pop();
-
+            // Veriyi flask kullanarak oluşturlan bir api den çekme işlemi.
+            const predictionResponse = await axios.post("http://127.0.0.1:5000/predictImage",{
+                text:base64Image
+            })
+            
+            console.log("Resim sınıflandırma sonucu :",predictionResponse.data.prediction);
+            
+            
             fs.writeFile(filePath ,base64Image , {encoding: 'base64'}, function(err) {
                 console.log(`File created ${imageName} `);
             });
@@ -152,7 +160,7 @@ const addTweet = async (req,res) => {
                 userId:id,
                 isImage:true,
                 text : imageName+".png",
-                tag:"üzgün",
+                tag:predictionResponse.data.prediction,
                 userTag:userTag
             })
     
