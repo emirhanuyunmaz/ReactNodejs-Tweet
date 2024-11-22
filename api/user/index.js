@@ -137,7 +137,7 @@ const addTweet = async (req,res) => {
             await newTweet.save().then(() => console.log("Saved Tweet"))
             res.status(200).json({message:"Succes"})
         }
-        else if(isImage){
+        else if(text && isImage){
             console.log("Resim gelimiş");
 
             const imageName = uuid.v4()

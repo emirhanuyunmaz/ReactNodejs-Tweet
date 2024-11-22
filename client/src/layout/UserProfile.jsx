@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {  useParams } from "react-router-dom"
 import { useGetUserShortProfileQuery,useUserTweetProfileQuery } from "../store/userApi/userApiSlicer";
 import TweetList from "../components/TweetList";
+import { useFollowUserMutation, useIsFollowUserQuery, useUnfollowUserMutation } from "../store/contactApi/contactApiSlicer";
 
 
 export default function UserProfile(){
@@ -11,13 +12,16 @@ export default function UserProfile(){
     const [tweetList,setTweetList] = useState([])
     const [isProfile,setIsProfile] = useState(false)
     const [searchText,setSearchText] = useState("")
+    const [userProfile,setUserProfile] = useState({})
     let data = {
         id:params.id,
         text:searchText
     }
     const userTweetProfile = useUserTweetProfileQuery(data)
     const userShortProfile = useGetUserShortProfileQuery(params.id)
-    const [userProfile,setUserProfile] = useState({})
+    const [contactUserFollow,responseContactFollow] = useFollowUserMutation()
+    const [contactUserUnfollow,responseContactUnfollow] = useUnfollowUserMutation()
+    const getUserIsFollow = useIsFollowUserQuery(params.id)
 
     function formatDateProfile(date) {
         let d =new Date(date)
@@ -35,8 +39,21 @@ export default function UserProfile(){
         // console.log("User Profile:",userShortProfile.data.data);
     }
 
+    // Takip etme işlemi için fonk.
+    function userFollowOnClick(){
+        const body={
+            userId:params.id
+        }
+        contactUserFollow(body)
+    }
 
-
+    // Takipten çıkma işlemi
+    function userUnfollowOnClick(){
+        const body={
+            userId:params.id
+        }
+        contactUserUnfollow(body)
+    }
 
     useEffect(() => {
         if(userShortProfile.isSuccess){
@@ -57,6 +74,12 @@ export default function UserProfile(){
         }
     },[userTweetProfile.isFetching,userTweetProfile.isSuccess,searchText])
 
+    useEffect(() => {
+        if(getUserIsFollow.isSuccess){
+            console.log(getUserIsFollow.data.data);
+            
+        }
+    },[getUserIsFollow.isFetching,getUserIsFollow.isSuccess,getUserIsFollow.isError])
     
 
     return (<div className="md:w-3/4 md:mx-auto mt-10">
@@ -71,7 +94,9 @@ export default function UserProfile(){
                     <p>{formatDateProfile(userProfile.createdAt)}</p>
                 </div>
                 {!isProfile && <div className="ms-auto flex flex-col justify-center">
-                    <button className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Takip Et</button>
+                    {!getUserIsFollow?.data?.data && <button onClick={userFollowOnClick} className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Takip Et</button>}
+                    {getUserIsFollow?.data?.data && <button onClick={userUnfollowOnClick} className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Takipten Çık</button>}
+
                     <button className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Mesaj At</button>
                 </div>}
                 {
@@ -81,7 +106,7 @@ export default function UserProfile(){
         </div>
             {/* Tweet arama işlemi */}
             <div className="flex  justify-start items-center gap-3 ms-10 mt-3">
-                <input onChange={(e) => setSearchText(e.target.value)} value={searchText} className="w-1/2 outline-none px-4 py-2 border-2  rounded-xl" type="text" placeholder="Tweet Ara"/>
+                <input onChange={(e) => setSearchText(e.target.value)} value={searchText} className="w-1/2 outline-none px-4 py-2 border-2 border-black  rounded-xl" type="text" placeholder="Tweet Ara"/>
                 {/* <button onClick={(e) => searchTweetUser(e)} className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Ara</button> */}
             </div>
 

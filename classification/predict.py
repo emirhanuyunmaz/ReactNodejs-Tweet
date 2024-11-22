@@ -70,6 +70,7 @@ def predict():
     # Tahmin sonucunu geri döndürme işlemi.
     return jsonify({'prediction': prediction[0]})
 
+# resim sınıflandırma işlemi
 @app.route('/predictImage', methods=['POST'])
 def predict_image():
     print("RESİM Sınıflandırma işlemi")

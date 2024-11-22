@@ -5,6 +5,7 @@ export default function TagsCard({tagList}){
     return (<>
         {/* Duygular */}
         <div className=" bg-blue-100 p-5 rounded-xl">
+            
             <h6 className="text-sm font-bold">Duygular</h6>
             <div className=" mx-3">
                 <ul className="flex flex-wrap md:flex-col gap-3">

@@ -4,19 +4,26 @@ import TweetDialog from "../components/TweetDialog";
 import TweetList from "../components/TweetList";
 import TagsCard from "../components/TagsCard";
 import { userContext } from "../context/userContext";
+import UserSearchList from "../components/UserSearchList";
+import { useSearchUserMutation } from "../store/contactApi/contactApiSlicer";
+import { Search } from "lucide-react";
 // import RetweetDialog from "../components/RetweetDialog";
 
 export default function Tweet(){
 
+    const [userTags,setUserTags] = useState([])
+    const [tweetList,setTweetList] = useState([])
+    const [userProfile,setUserProfile] = useState({})
+    const [showTweetDialog,setShowTweetDialog] = useState(false)
+    const [searchText,setSearchText] = useState("")
+    const [tagList,setTagList] = useState([])
+    const [userList,setUserList] = useState([])
+    const [userListControl,setUserListControl] = useState(false)
     const {data,isLoading,isError,isSuccess,isFetching} = useGetTweetListQuery()
     const getuserP = useGetUserProfileQuery()
     const getUserTagList = useGetUserTagListQuery()
     const getTagList = useGetTagListQuery()
-    const [tweetList,setTweetList] = useState([])
-    const [userProfile,setUserProfile] = useState({})
-    const [tagList,setTagList] = useState([])
-    const [showTweetDialog,setShowTweetDialog] = useState(false)
-    const [userTags,setUserTags] = useState([])
+    const [searchUserApi,responseSearchUser] = useSearchUserMutation()
     let {token,logout} = useContext(userContext) 
 
     async function getUserProfile(){
@@ -30,6 +37,11 @@ export default function Tweet(){
 
     function getTags(){        
         setTagList(getTagList.data.data)
+    }
+
+    function searchUserOnClick(){
+        searchUserApi({searchText:searchText})
+        setUserListControl(true)
     }
 
     useEffect(() => {
@@ -56,6 +68,14 @@ export default function Tweet(){
             setUserTags(getUserTagList.data.data)
         }
     },[getUserTagList.isSuccess,getUserTagList.isFetching])
+
+    useEffect(() => {
+        // searchUserApi({searchText:searchText})
+        if(responseSearchUser.isSuccess){
+            console.log(responseSearchUser.data.data);
+            setUserList(responseSearchUser.data.data)
+        }
+    },[responseSearchUser.isSuccess,responseSearchUser.isError,responseSearchUser.isLoading])
 
     return(
     <div className="flex w-full md:min-h-[90vh] justify-center ">
@@ -93,7 +113,15 @@ export default function Tweet(){
             </div>
             
             <div className="flex flex-col w-full  md:w-1/4 px-16 md:px-0 md:p-5">
-                
+                <div>
+                    <div className="border-2 rounded-xl flex items-center justify-center w-full mb-5 p-1 ">
+                        <input value={searchText} onChange={(e) => setSearchText(e.target.value)} type="text" placeholder="Kullanıcı ara" className="outline-none px-4 py-2 w-3/4" />
+                        <button onClick={searchUserOnClick} ><Search/></button>
+                    </div>
+                    {responseSearchUser.isSuccess && searchText!=="" && <div className="w-full h-full">
+                        <UserSearchList userList={userList} />
+                    </div>}
+                </div>
                 {/* Duygular */}
                 <TagsCard tagList={tagList} />
 

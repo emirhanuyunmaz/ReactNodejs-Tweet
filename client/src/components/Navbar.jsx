@@ -5,6 +5,7 @@ import "aos/dist/aos.css";
 import Aos from "aos"
 import { Bell } from "lucide-react";
 import NotificationCard from "./NotificationCard";
+import UserSearchList from "./UserSearchList";
 
 export default function Navbar(){
     const [settingsControl,setSettingsControl] = useState(false)
@@ -35,9 +36,9 @@ export default function Navbar(){
     <nav className="bg-blue-500 text-white px-16 md:px-32 py-4 flex items-center justify-between">
         <a className="font-bold text-2xl" href="/tweet">Tweet</a>
         
-        {token && !searchControl &&<div>
+        {/* {token && !searchControl &&<div>
             <button onClick={ () => {setSearchControl(true); document.body.style.overflow = "hidden" } } className="border-2  hover:bg-blue-400 px-8 py-1 rounded-xl hover:shadow-xl duration-300" >Kullanıcı Ara</button>
-        </div>}
+        </div>} */}
         {!token && <a href="/login">Login</a>}
         
         {/* LEFT BAR EKLENCEK */}
@@ -55,7 +56,7 @@ export default function Navbar(){
         </div>} */}
         {settingsControl && <div onClick={() => {setSettingsControl(false)}}  className="bg-opacity-0 z-0 fixed inset-0  w-screen h-screen"></div>}
         
-        {token && <div className={`${searchControl && "ms-auto"}`}>
+        {token && <div className={`ms-auto"`}>
             <button onClick={notificationOnClick} className="hover:text-gray-300">
                 <Bell />
             </button>
@@ -70,12 +71,16 @@ export default function Navbar(){
 
         
             
-        {searchControl && <div>
+        {/* {searchControl && <div>
             <div data-aos="fade-down" className="mt-16 h-16 flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none bg-blue-500">
                 <input  className="w-1/4 outline-none px-4 py-2 border-2 text-black rounded-xl" type="text" placeholder="Kullanıcı Adı"/>
             </div>
-            <div onClick={() => {setSearchControl(false);document.body.style.overflow = "auto"}} className="mt-16 opacity-25 fixed inset-0 z-40 bg-black"></div>
-        </div>}
+            <div onClick={() => {setSearchControl(false);document.body.style.overflow = "auto"}} className="mt-16 opacity-25 fixed inset-0 z-10 bg-black"></div>
+            
+            <div className="z-50 h-1/2 absolute mt-24 left-0 w-[100%] ">
+                <UserSearchList/>
+            </div>
+        </div>} */}
         
 
     </nav>)
