@@ -7,6 +7,7 @@ import { userContext } from "../context/userContext";
 import UserSearchList from "../components/UserSearchList";
 import { useSearchUserMutation } from "../store/contactApi/contactApiSlicer";
 import { Search } from "lucide-react";
+import TaskDialog from "../components/TaskDialog";
 // import RetweetDialog from "../components/RetweetDialog";
 
 export default function Tweet(){
@@ -15,6 +16,7 @@ export default function Tweet(){
     const [tweetList,setTweetList] = useState([])
     const [userProfile,setUserProfile] = useState({})
     const [showTweetDialog,setShowTweetDialog] = useState(false)
+    const [showTaskDialog,setShowTaskDialog] = useState(false)
     const [searchText,setSearchText] = useState("")
     const [tagList,setTagList] = useState([])
     const [userList,setUserList] = useState([])
@@ -91,6 +93,8 @@ export default function Tweet(){
                     
                     <button onClick={() => setShowTweetDialog(true)} className="border-2 px-8 py-2 rounded-xl hover:bg-blue-400 hover:text-white duration-300 " >Tweet At</button>
 
+                    <button onClick={() => setShowTaskDialog(true)} className="border-2 px-8 py-2 rounded-xl hover:bg-blue-400 hover:text-white duration-300 " >Taslaklar</button>
+
                     <a className="border-2 px-8 py-2 rounded-xl hover:bg-blue-400 hover:text-white duration-300 " href={`/message`}>Mesaj</a>
 
                     <a className="border-2 px-8 py-2 rounded-xl hover:bg-blue-400 hover:text-white duration-300 " href={`/profile`}>Ayarlar</a>
@@ -143,5 +147,6 @@ export default function Tweet(){
             </div>
         </div>
         <TweetDialog setShowModal={setShowTweetDialog} showModal={showTweetDialog}/>
+        <TaskDialog setShowModal={setShowTaskDialog} showModal={showTaskDialog} />
     </div>)
 }

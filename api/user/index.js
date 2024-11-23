@@ -5,7 +5,7 @@ const fs = require("fs")
 const ObjectId = require('mongoose').Types.ObjectId //Buradaki işlem agregate de kullanmak için gerekli
 const signupModel = require("../singnup/model") //Kullanıcı kayıt olurken kullanılan model
 const authControl = require("../middleware/auth") //Kullanıcı token bilgisi ile giriş yapıp yapmadığını tespit etme.
-const {TweetModel,TweetLikeListModel,TweetCommentListModel,TweetCommentModel} = require("./model")
+const {TweetModel,TweetLikeListModel,TweetCommentListModel,TweetCommentModel,TaskModel} = require("./model")
 const uuid = require("uuid")
 const { default: axios } = require("axios")
 const SignUpModel = require("../singnup/model")
@@ -459,7 +459,66 @@ const getSingleUserTag = async (req,res) => {
         res.status(404).json({message:err,succes:false})
     }
 }
+//*************ADD TASK*********************//
+//Kullanıcıya ait task kaydetme işlemi.
+const addTask = async (req,res) => {
 
+    // resim gelmesi işlemine göre düzenleme yapılacak .
+
+    try{
+        const userId = req.headers.id
+        const isImage = req.body.isImage
+        const text = req.body.text
+        const userTag = req.body.userTag
+        if(isImage && text){
+
+            const imageName = uuid.v4()
+            const filePath = __dirname + "/.." + `/uploads/${imageName}.png`
+            console.log("File Path:",filePath);
+            let base64Image = req.body.text.split(';base64,').pop();
+            fs.writeFile(filePath ,base64Image , {encoding: 'base64'}, function(err) {
+                console.log(`File created ${imageName} `);
+            });
+
+            const newTask = new TaskModel({
+                userId:userId,
+                isImage:isImage,
+                text:imageName+".png",
+                userTag:userTag
+            })
+            await newTask.save()
+
+        }else{
+            const newTask = new TaskModel({
+                userId:userId,
+                isImage:isImage,
+                text:text,
+                userTag:userTag
+            })
+            await newTask.save()
+
+        }        
+        res.status(201).json({message:"succes",succes:true})
+    }catch(err){
+        console.log("Task oluşturulurken bir hata ile karşılaşıldı.",err);
+        res.status(404).json({message:err,succes:false})
+        
+    }
+}
+
+
+//********** GET TASK LIST ****************//
+// Kullanıcıya ait taskları listeleme işlemi
+const getTaskList = async (req,res) => {
+    try{
+        const userId = req.headers.id
+        const data = await TaskModel.find({userId:userId})
+        res.status(201).json({message:"succes", succes:true,data:data})
+    }catch(err){
+        console.log("Task listesi çekilirken bir hata ile karşılaşıldı.",err);
+        res.status(404).json({message:err,succes:false})
+    }
+}
 
 // kullanıcıya ait tweetleri veren api oluşturulacak . 
 // /user/...
@@ -480,5 +539,7 @@ router.route("/shortProfile/:id").get(authControl,userShortProfile)
 router.route("/likeTweet").post(authControl,likeTweet)
 router.route("/likeTweetList").get(authControl,getUserLikeList)
 router.route("/dislikeTweet").post(authControl,userTweetDislike)
+router.route("/addTask").post(authControl,addTask)
+router.route("/taskList").get(authControl,getTaskList)
 
 module.exports = router

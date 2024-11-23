@@ -47,6 +47,18 @@ const userTweetCommentList = new Schema({
     }
 })
 
+// User tasks
+
+const userTasks = new Schema({
+    userId:{
+        type:mongoose.Schema.Types.ObjectId , 
+        ref:"SignUp"
+    },
+    text:String,
+    userTag:String,
+    isImage:String,
+})
+
 const TweetModel = mongoose.model("Tweet",userTweetSchema)
 
 const TweetLikeListModel = mongoose.model("TweetLikeList",userTweetLikeListSchema)
@@ -55,4 +67,6 @@ const TweetCommentListModel = mongoose.model("TweetCommentList",userTweetComment
 
 const TweetCommentModel = mongoose.model("TweetComment",tweetComment)
 
-module.exports = {TweetModel,TweetLikeListModel,TweetCommentListModel,TweetCommentModel}
+const TaskModel = mongoose.model("Tasks",userTasks)
+
+module.exports = {TweetModel,TweetLikeListModel,TweetCommentListModel,TweetCommentModel,TaskModel}

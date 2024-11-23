@@ -162,8 +162,24 @@ export const userApiSlice = createApi({
                 providesTags:["Tweet"]
             }),
 
+            addTask:builder.mutation({
+                query:(body) => ({
+                    url:`/user/addTask`,
+                    method:`POST`,
+                    body:body
+                }),
+                // invalidatesTags:["Tweet"]
+            }),
+
+            getTaskList:builder.query({
+                query:() => {
+                    return `/user/taskList`
+                },
+                // invalidatesTags:["Tweet"]
+            }),
+
         }
     },
 })
 
-export const {useGetDemoQuery,useUserLoginMutation,useGetTweetListQuery,useAddTweetMutation,useGetUserProfileQuery,useTweetLikeMutation,useGetUserTweetLikeListQuery,useUserTweetDislikeMutation,useGetSingleTweetQuery,useUserTweetAddCommentMutation, useTweetCommentListQuery,useUserTweetProfileQuery,useGetUserShortProfileQuery,useAddRetweetMutation,useUpdateUserProfileMutation,useGetTagListQuery,useGetUserTagListQuery,useGetSingleUserTagQuery} = userApiSlice
+export const {useGetDemoQuery,useUserLoginMutation,useGetTweetListQuery,useAddTweetMutation,useGetUserProfileQuery,useTweetLikeMutation,useGetUserTweetLikeListQuery,useUserTweetDislikeMutation,useGetSingleTweetQuery,useUserTweetAddCommentMutation, useTweetCommentListQuery,useUserTweetProfileQuery,useGetUserShortProfileQuery,useAddRetweetMutation,useUpdateUserProfileMutation,useGetTagListQuery,useGetUserTagListQuery,useGetSingleUserTagQuery,useAddTaskMutation,useGetTaskListQuery} = userApiSlice

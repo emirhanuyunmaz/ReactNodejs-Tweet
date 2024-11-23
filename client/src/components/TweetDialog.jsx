@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAddTweetMutation } from "../store/userApi/userApiSlicer";
+import { useAddTaskMutation, useAddTweetMutation } from "../store/userApi/userApiSlicer";
 import { useForm } from "react-hook-form"
 import ReactImageUploading from "react-images-uploading";
 import { Camera } from "lucide-react";
@@ -8,6 +8,7 @@ import { Camera } from "lucide-react";
 export default function TweetDialog({showModal, setShowModal}){
 
     const [addTweet,responseAddTweet] = useAddTweetMutation()
+    const [addTasks,responseAddTasks] = useAddTaskMutation() 
     const [isImage,setIsImage] = useState(false)
     const [image,setImage] = useState([])
     const maxNumber = 1;
@@ -22,7 +23,8 @@ export default function TweetDialog({showModal, setShowModal}){
       formState: { errors },
       handleSubmit,
       reset,
-      setValue
+      setValue,
+      getValues
     } = useForm()
 
     const onSubmit = async (data) => {
@@ -47,6 +49,30 @@ export default function TweetDialog({showModal, setShowModal}){
         setShowModal(false)
       }
     }
+
+    function addTaskOnClick(){
+
+      if(image.length>0){        
+        setValue("text",image[0].data_url)
+        const newData = {
+          ...getValues(),
+          isImage:image.length > 0 ? true : false,
+        }
+        console.log("New task data:",newData);
+        addTasks(newData)
+      }else{
+        const newData = {
+          ...getValues(),
+          isImage:image.length > 0 ? true : false,
+        }
+        console.log("New task data:",newData);
+        addTasks(newData)
+      }
+
+      setShowModal(false)
+      reset()
+      setImage([])
+    }
     
 
     return(
@@ -66,7 +92,7 @@ export default function TweetDialog({showModal, setShowModal}){
                       </h3>
                       <button
                         className="p-1 ml-auto bg-transparent border-0 text-black opacity-50 hover:opacity-100 float-right text-3xl leading-none font-semibold outline-none focus:outline-none duration-300"
-                        onClick={() => {setShowModal(false);setTagText("");setTweetText("")}}
+                        onClick={() => setShowModal(false)}
                       >
                         <span className=" text-black h-6 w-6 text-2xl ">
                           X
@@ -138,9 +164,6 @@ export default function TweetDialog({showModal, setShowModal}){
                           >
                             Tweet Ekle
                           </button>
-
-                        
-
                         </div>
                         </form>
                     </div>
@@ -149,14 +172,14 @@ export default function TweetDialog({showModal, setShowModal}){
                       <button
                         className="text-green-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 hover:opacity-80 ease-linear transition-all duration-150"
                         type="button"
-                        // onClick={() => {setShowModal(false);setTagText("");setTweetText("")}}
+                        onClick={() => addTaskOnClick()}
                       >
                         Taslak Kaydet
                       </button>
                       <button
                         className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear hover:opacity-80 transition-all duration-150"
                         type="button"
-                        onClick={() => {setShowModal(false);setTagText("");setTweetText("")}}
+                        onClick={() => {setShowModal(false);reset()}}
                       >
                         Kapat
                       </button>
