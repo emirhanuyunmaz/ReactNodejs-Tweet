@@ -1,7 +1,6 @@
 const mongoose = require("mongoose")
 const Schema = mongoose.Schema
 
-
 const tweetComment = new Schema({
     userId:{
         type:mongoose.Schema.Types.ObjectId,
@@ -27,7 +26,7 @@ const userTweetSchema = new Schema({
     text:String,
     tag:String,
     userTag:String,
-    isImage:String,
+    isImage:Boolean,
     likes:[],
     comments:[{type:mongoose.Schema.Types.ObjectId,ref:"TweetComment"}],
     
@@ -47,8 +46,6 @@ const userTweetCommentList = new Schema({
     }
 })
 
-// User tasks
-
 const userTasks = new Schema({
     userId:{
         type:mongoose.Schema.Types.ObjectId , 
@@ -56,7 +53,7 @@ const userTasks = new Schema({
     },
     text:String,
     userTag:String,
-    isImage:String,
+    isImage:Boolean,
 })
 
 const TweetModel = mongoose.model("Tweet",userTweetSchema)

@@ -51,9 +51,31 @@ export const contactApiSlice = createApi({
                     method:"POST",
                     body:body
                 })
-            })
+            }),
+
+            contactList:builder.query({
+                query:(id) => {
+                    return `/contact/contactList/${id}`
+                },
+                providesTags:["contact"]
+            }),
+
+            userFollowerList:builder.query({
+                query:(id) => {
+                    return `/contact/userFollowerList/${id}`
+                },
+                providesTags:["contact"]
+            }),
+
+            userFollowedList:builder.query({
+                query:(id) => {
+                    return `/contact/userFollowedList/${id}`
+                },
+                providesTags:["contact"]
+            }),
+
         }
     }
 })
 
-export const {useFollowUserMutation,useUnfollowUserMutation,useIsFollowUserQuery,useSearchUserMutation} = contactApiSlice
+export const {useFollowUserMutation,useUnfollowUserMutation,useIsFollowUserQuery,useSearchUserMutation,useContactListQuery,useUserFollowerListQuery,useUserFollowedListQuery} = contactApiSlice

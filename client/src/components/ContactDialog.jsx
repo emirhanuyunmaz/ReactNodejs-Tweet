@@ -1,24 +1,7 @@
-import { useEffect, useState } from "react";
-import {  useGetTaskListQuery } from "../store/userApi/userApiSlicer";
-import SingleTask from "./SingleTask";
+import UserSearchCard from "./UserSearchCard";
 
 
-export default function TaskDialog({showModal, setShowModal}){
-
-    const getTaskList = useGetTaskListQuery()
-    const [taskList,setTaskList] = useState([])
-
-  
-
-
-    useEffect(() => {
-        if(getTaskList.isSuccess){
-            console.log(getTaskList.data);
-            
-            setTaskList(getTaskList.data.data)
-        }
-    },[getTaskList.isFetching,getTaskList.isError,getTaskList.isSuccess])
-
+export default function ContactDialog({showModal, setShowModal,userList}){
     return(<>{showModal ? (
         <>
           <div
@@ -30,7 +13,7 @@ export default function TaskDialog({showModal, setShowModal}){
                 {/*header*/}
                 <div className="flex items-start justify-between p-3 border-b border-solid border-blueGray-200 rounded-t">
                   <h3 className="text-3xl font-semibold">
-                    Tasks 
+                    Kullanıcılar 
                   </h3>
                   <button
                     className="p-1 ml-auto bg-transparent border-0 text-black opacity-50 hover:opacity-100 float-right text-3xl leading-none font-semibold outline-none focus:outline-none duration-300"
@@ -42,17 +25,14 @@ export default function TaskDialog({showModal, setShowModal}){
                   </button>
                 </div>
                 {/*body*/}
-                <div className="flex p-6 gap-3 overflow-y-auto  ">
-                    {/* Task list  */}
+                <div className="flex p-6 gap-3 overflow-y-auto flex-col ">
+                    {/* User list  */}
+                    
                     {
-                        taskList.map((task) =><SingleTask key={task._id} task={task} /> )
-                    }
-                    {
-                      !(taskList.length > 0)  && <p className="mx-auto">Task Listeniz Boş</p>
+                        userList.map((user) => <UserSearchCard key={user._id} user={user} />)
                     }
                     
-                    
-                    {/* Task list - end */}
+                    {/* User list - end */}
                 </div>
                 {/*footer*/}
                 <div className="flex items-center justify-end p-3 border-t border-solid border-blueGray-200 rounded-b">
@@ -73,4 +53,4 @@ export default function TaskDialog({showModal, setShowModal}){
         </>
       ) : null}
     </>)
-}
+} 

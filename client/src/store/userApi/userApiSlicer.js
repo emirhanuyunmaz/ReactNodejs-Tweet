@@ -5,7 +5,7 @@ const baseUrl = import.meta.env.VITE_BASE_URL
 
 export const userApiSlice = createApi({
     reducerPath:"userApi",
-    tagTypes:["Tweet"],
+    tagTypes:["Tweet","Task"],
     baseQuery: fetchBaseQuery({
         baseUrl:baseUrl,
         prepareHeaders(header){
@@ -168,18 +168,37 @@ export const userApiSlice = createApi({
                     method:`POST`,
                     body:body
                 }),
-                // invalidatesTags:["Tweet"]
+                invalidatesTags:["Task"]
             }),
 
             getTaskList:builder.query({
                 query:() => {
                     return `/user/taskList`
                 },
-                // invalidatesTags:["Tweet"]
+                providesTags:["Task"]
             }),
+
+            deleteTask:builder.mutation({
+                query:(body) => ({
+                    url:`/user/deleteTask`,
+                    method:"POST",
+                    body:body
+                }),
+                invalidatesTags:["Task"]
+            }),
+
+            taskToTweet:builder.mutation({
+                query:(body) => ({
+                    url:`/user/taskToTweet`,
+                    method:"POST",
+                    body:body
+                }),
+                invalidatesTags:["Tweet","Task"]
+            }),
+
 
         }
     },
 })
 
-export const {useGetDemoQuery,useUserLoginMutation,useGetTweetListQuery,useAddTweetMutation,useGetUserProfileQuery,useTweetLikeMutation,useGetUserTweetLikeListQuery,useUserTweetDislikeMutation,useGetSingleTweetQuery,useUserTweetAddCommentMutation, useTweetCommentListQuery,useUserTweetProfileQuery,useGetUserShortProfileQuery,useAddRetweetMutation,useUpdateUserProfileMutation,useGetTagListQuery,useGetUserTagListQuery,useGetSingleUserTagQuery,useAddTaskMutation,useGetTaskListQuery} = userApiSlice
+export const {useGetDemoQuery,useUserLoginMutation,useGetTweetListQuery,useAddTweetMutation,useGetUserProfileQuery,useTweetLikeMutation,useGetUserTweetLikeListQuery,useUserTweetDislikeMutation,useGetSingleTweetQuery,useUserTweetAddCommentMutation, useTweetCommentListQuery,useUserTweetProfileQuery,useGetUserShortProfileQuery,useAddRetweetMutation,useUpdateUserProfileMutation,useGetTagListQuery,useGetUserTagListQuery,useGetSingleUserTagQuery,useAddTaskMutation,useGetTaskListQuery,useDeleteTaskMutation,useTaskToTweetMutation} = userApiSlice

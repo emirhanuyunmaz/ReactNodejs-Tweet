@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import {  useParams } from "react-router-dom"
 import { useGetUserShortProfileQuery,useUserTweetProfileQuery } from "../store/userApi/userApiSlicer";
 import TweetList from "../components/TweetList";
-import { useFollowUserMutation, useIsFollowUserQuery, useUnfollowUserMutation } from "../store/contactApi/contactApiSlicer";
+import { useContactListQuery, useFollowUserMutation, useIsFollowUserQuery, useUnfollowUserMutation, useUserFollowedListQuery, useUserFollowerListQuery } from "../store/contactApi/contactApiSlicer";
+import ContactDialog from "../components/ContactDialog";
 
 
 export default function UserProfile(){
@@ -13,6 +14,8 @@ export default function UserProfile(){
     const [isProfile,setIsProfile] = useState(false)
     const [searchText,setSearchText] = useState("")
     const [userProfile,setUserProfile] = useState({})
+    const [contactDialogControl,setContactDialogControl] = useState(false)
+    const [contactUserList,setContactUserList] = useState([])  
     let data = {
         id:params.id,
         text:searchText
@@ -22,6 +25,9 @@ export default function UserProfile(){
     const [contactUserFollow,responseContactFollow] = useFollowUserMutation()
     const [contactUserUnfollow,responseContactUnfollow] = useUnfollowUserMutation()
     const getUserIsFollow = useIsFollowUserQuery(params.id)
+    const contactList = useContactListQuery(params.id) 
+    const getUserFollowerList = useUserFollowerListQuery(params.id) //takipçi listesi
+    const getUserFollowedList = useUserFollowedListQuery(params.id) // Takip edilen listesi
 
     function formatDateProfile(date) {
         let d =new Date(date)
@@ -55,6 +61,20 @@ export default function UserProfile(){
         contactUserUnfollow(body)
     }
 
+    // Takipçi listesi çekilmesi işlemi.
+    function getFollowerList(){
+        console.log(getUserFollowerList.data)
+        setContactUserList(getUserFollowerList.data.data)
+        setContactDialogControl(true)
+    } 
+
+    // Takip edilen listesi çekilmesi işlemi.
+    function getFollowedList(){
+        console.log(getUserFollowedList.data)
+        setContactUserList(getUserFollowedList.data.data)
+        setContactDialogControl(true)
+    } 
+
     useEffect(() => {
         if(userShortProfile.isSuccess){
             getShortProfile()
@@ -76,7 +96,7 @@ export default function UserProfile(){
 
     useEffect(() => {
         if(getUserIsFollow.isSuccess){
-            console.log(getUserIsFollow.data.data);
+            // console.log(getUserIsFollow.data.data);
             
         }
     },[getUserIsFollow.isFetching,getUserIsFollow.isSuccess,getUserIsFollow.isError])
@@ -92,6 +112,10 @@ export default function UserProfile(){
                     <p className="font-bold" > {userProfile.name} {userProfile.surname}</p>
                     <p>{userProfile.description}</p>
                     <p>{formatDateProfile(userProfile.createdAt)}</p>
+                </div>
+                <div className="flex flex-col justify-center mx-auto ">
+                    <button onClick={getFollowerList} className="font-bold hover:underline">{contactList?.data?.follower ? contactList?.data?.follower : 0} takipçi</button>
+                    <button onClick={getFollowedList} className="font-bold hover:underline">{contactList?.data?.followed ? contactList?.data?.followed :0 } takip</button>
                 </div>
                 {!isProfile && <div className="ms-auto flex flex-col justify-center">
                     {!getUserIsFollow?.data?.data && <button onClick={userFollowOnClick} className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Takip Et</button>}
@@ -114,5 +138,6 @@ export default function UserProfile(){
             <div className="flex px-5 md:px-10 flex-col w-full gap-5 mt-3">
                 <TweetList tweetList={tweetList} />
             </div>
+            <ContactDialog setShowModal={setContactDialogControl} showModal={contactDialogControl} userList={contactUserList} />
     </div>)
 }

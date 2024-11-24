@@ -519,6 +519,65 @@ const getTaskList = async (req,res) => {
         res.status(404).json({message:err,succes:false})
     }
 }
+//******************DELETE TASK********************//
+// Task silme işlemi
+const deleteTask = async (req,res) => {
+    console.log("..Task silme işlemi.");
+    
+    try{
+        const taskId = req.body.taskId
+        const task = await TaskModel.findByIdAndDelete(taskId)
+        console.log("TASK SİL:",task);
+        
+        if(isImage = "true"){
+            fs.rmSync(__dirname+"/.."+`/uploads/${task.text}`)
+        }
+        res.status(201).json({message:"succes",succes:true})
+    }catch(err){
+        console.log("Task silinirken bir hata ile karşılaşıldı .",err)
+        res.status(404).json({message:err,succes:false})
+    }
+}
+
+//*********************TASK TO TWEET*******************// 
+// Kaydedilen bir task tweet olarak atma işlemi.
+const taskToTweet = async (req,res) => {
+    
+    console.log("Task tweet atma işlemi...");
+    
+    try{
+        const getTaskId = req.body._id
+        const task = await TaskModel.findByIdAndDelete(getTaskId)
+        console.log(task);
+        
+        
+        if(task.isImage == "true"){
+            console.log("Resim var");
+            
+
+
+        }else{
+            console.log("resim yok");
+
+            // Veriyi flask kullanarak oluşturlan bir api den çekme işlemi.
+            const predictionResponse = await axios.post("http://127.0.0.1:5000/predict",{
+                text:task.text
+            })
+            const newTweet = new TweetModel({
+                userId:task.userId,
+                text:task.text,
+                isImage:false,
+                tag:predictionResponse.data.prediction,
+                userTag:task.userTag,
+            })
+            await newTweet.save()
+        }
+        res.status(201).json({message:"succes",succes:true})
+    }catch(err){
+        console.log("Task tweet oalrak atılırken bir hata ile karşılaşıldı.",err);
+        res.status(404).json({message:err,succes:false})
+    }
+}
 
 // kullanıcıya ait tweetleri veren api oluşturulacak . 
 // /user/...
@@ -541,5 +600,7 @@ router.route("/likeTweetList").get(authControl,getUserLikeList)
 router.route("/dislikeTweet").post(authControl,userTweetDislike)
 router.route("/addTask").post(authControl,addTask)
 router.route("/taskList").get(authControl,getTaskList)
+router.route("/deleteTask").post(authControl,deleteTask)
+router.route("/taskToTweet").post(authControl,taskToTweet)
 
 module.exports = router
