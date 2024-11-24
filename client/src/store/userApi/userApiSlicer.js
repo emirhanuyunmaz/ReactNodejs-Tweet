@@ -36,8 +36,11 @@ export const userApiSlice = createApi({
             }),
 
             getTweetList:builder.query({
-                query(){
-                    return "/user/tweetList"
+                query(headers){
+                    return {
+                        url:"/user/tweetList",
+                        headers:headers
+                    }
                 },
                 // Güncelleme işlemi yapılması için eklendi
                 providesTags:["Tweet"]

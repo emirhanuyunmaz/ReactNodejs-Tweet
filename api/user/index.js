@@ -6,6 +6,7 @@ const ObjectId = require('mongoose').Types.ObjectId //Buradaki işlem agregate d
 const signupModel = require("../singnup/model") //Kullanıcı kayıt olurken kullanılan model
 const authControl = require("../middleware/auth") //Kullanıcı token bilgisi ile giriş yapıp yapmadığını tespit etme.
 const {TweetModel,TweetLikeListModel,TweetCommentListModel,TweetCommentModel,TaskModel} = require("./model")
+const {UserContactModel} = require("../contact/model")
 const uuid = require("uuid")
 const { default: axios } = require("axios")
 const SignUpModel = require("../singnup/model")
@@ -177,13 +178,29 @@ const addTweet = async (req,res) => {
 // ******************************GET TWEET LIST*************************** //
 //Tüm tweet listesini çekme işlemi. 
 const getTweetList = async (req,res) => {
-
+    console.log("TWEETDATA:::",typeof(req.headers.is_followed_data));
+    
     try{    
-        // Populate ile sadece yazılan verilerin getirilmesine olanak sağlandı .
-        const dataList = await TweetModel.find().populate("userId","name surname image tag").sort({createdAt:"desc"}).exec()
-        // console.log(dataList);
+        const followedData = req.headers.is_followed_data
+        if(followedData == "true"){
+            const userId = req.headers.id            
+            const contactData = await UserContactModel.findOne({userId:userId})
+            // Populate ile sadece yazılan verilerin getirilmesine olanak sağlandı .            
+            const dataList = await TweetModel.find({userId:{$in:contactData.followed}}).populate("userId","name surname image tag").sort({createdAt:"desc"}).exec()
+            // console.log(dataList);
+            res.status(200).json({tweetList:dataList})
+
+        }else{
+            console.log("*-*-*-*-*-*--*-*-*-*-*-*-**--*-*-**-*");
+            console.log("ETİKET YOK");
+            console.log("*-*-*-*-*-*--*-*-*-*-*-*-**--*-*-**-*");
+            
+            // Populate ile sadece yazılan verilerin getirilmesine olanak sağlandı .
+            const dataList = await TweetModel.find().populate("userId","name surname image tag").sort({createdAt:"desc"}).exec()
+            // console.log(dataList);
+            res.status(200).json({tweetList:dataList})
+        }
          
-        res.status(200).json({tweetList:dataList})
         
     }catch(err) {
         console.log("Tweet Listesi çekilirken bir hata ile karşılaşıldı..:",err)
@@ -589,7 +606,7 @@ router.route("/getTagList").get(authControl,getTagList)
 router.route("/getUserTagList").get(authControl,getUserTagList)
 router.route("/getSingleUserTag/:tag").get(authControl,getSingleUserTag)
 router.route("/addTweetComment").post(authControl,commentTweet)
-router.route("/tweetList").get(getTweetList)
+router.route("/tweetList").get(authControl,getTweetList)
 router.route("/profile").get(authControl,getUserProfile)
 router.route("/updateProfile").post(authControl,updateUserProfile)
 router.route("/updateImage").post(authControl,upl)

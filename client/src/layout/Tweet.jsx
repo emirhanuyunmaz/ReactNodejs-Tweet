@@ -8,9 +8,9 @@ import UserSearchList from "../components/UserSearchList";
 import { useSearchUserMutation } from "../store/contactApi/contactApiSlicer";
 import { Search } from "lucide-react";
 import TaskDialog from "../components/TaskDialog";
-// import RetweetDialog from "../components/RetweetDialog";
 
 export default function Tweet(){
+    const [tweetFollowedData,setTweetFollowedData] = useState(localStorage.getItem("followedTweet") ? localStorage.getItem("followedTweet") : false )
 
     const [userTags,setUserTags] = useState([])
     const [tweetList,setTweetList] = useState([])
@@ -20,8 +20,7 @@ export default function Tweet(){
     const [searchText,setSearchText] = useState("")
     const [tagList,setTagList] = useState([])
     const [userList,setUserList] = useState([])
-    const [userListControl,setUserListControl] = useState(false)
-    const {data,isLoading,isError,isSuccess,isFetching} = useGetTweetListQuery()
+    const {data,isLoading,isError,isSuccess,isFetching,refetch} = useGetTweetListQuery({is_followed_data:tweetFollowedData ? tweetFollowedData : false})
     const getuserP = useGetUserProfileQuery()
     const getUserTagList = useGetUserTagListQuery()
     const getTagList = useGetTagListQuery()
@@ -43,8 +42,25 @@ export default function Tweet(){
 
     function searchUserOnClick(){
         searchUserApi({searchText:searchText})
-        setUserListControl(true)
     }
+
+    // Sadece takip edilen kullanıcılara ait gönderileri gösterme işlemi.
+    async function followedTweetData(){
+        localStorage.setItem("followedTweet",true);
+        setTweetFollowedData(true)
+        await refetch()
+    }
+
+    async function globalTweetData(){
+        localStorage.removeItem("followedTweet");
+        setTweetFollowedData(false)
+        await refetch()
+    }
+
+    useEffect(() => {
+        console.log("::YENİDEN ÇEKİLDİ::");
+        refetch()
+    },[tweetFollowedData])
 
     useEffect(() => {
         if(isSuccess){
@@ -108,8 +124,13 @@ export default function Tweet(){
 
 
         <div className="flex flex-col-reverse md:flex-row w-full md:w-3/4 mt-5 md:mt-0 md:gap-3">
+            
+
             <div className="flex flex-col mt-5 md:mt-0 w-full  md:p-5">
-                
+                <div className=" flex mx-5 md:mx-10 my-3 gap-3">
+                    <button onClick={globalTweetData} className={`border-2 ${!tweetFollowedData ? "border-black" : "border-gray-400"}  rounded-xl px-2 py-1 hover:border-black duration-300`} >Global</button>
+                    <button onClick={followedTweetData} className={`border-2 ${tweetFollowedData ? "border-black" : "border-gray-400"} rounded-xl px-2 py-1 hover:border-black duration-300`} >Takip Edilenler</button>
+                </div>    
                 {/* TWEET LIST */}
                 <div className="flex flex-col gap-5 mx-5 md:mx-10">
                     <TweetList tweetList={tweetList} />
