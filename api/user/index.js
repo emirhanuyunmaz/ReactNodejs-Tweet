@@ -191,10 +191,7 @@ const getTweetList = async (req,res) => {
             res.status(200).json({tweetList:dataList})
 
         }else{
-            console.log("*-*-*-*-*-*--*-*-*-*-*-*-**--*-*-**-*");
-            console.log("ETİKET YOK");
-            console.log("*-*-*-*-*-*--*-*-*-*-*-*-**--*-*-**-*");
-            
+
             // Populate ile sadece yazılan verilerin getirilmesine olanak sağlandı .
             const dataList = await TweetModel.find().populate("userId","name surname image tag").sort({createdAt:"desc"}).exec()
             // console.log(dataList);
@@ -565,13 +562,26 @@ const taskToTweet = async (req,res) => {
     try{
         const getTaskId = req.body._id
         const task = await TaskModel.findByIdAndDelete(getTaskId)
-        console.log(task);
+        // console.log(task);
         
         
-        if(task.isImage == "true"){
+        if(task.isImage){
             console.log("Resim var");
-            
+            const imageData = fs.readFileSync(__dirname+"/.."+`/uploads/${task.text}`,{encoding:'base64'})
+            // console.log("RESİM:",imageData[2]);
+            // Veriyi flask kullanarak oluşturlan bir api den çekme işlemi.
+            const predictionResponse = await axios.post("http://127.0.0.1:5000/predictImage",{
+                text:imageData
+            })
 
+            const newTweet = new TweetModel({
+                userId:task.userId,
+                text:task.text,
+                isImage:true,
+                tag:predictionResponse.data.prediction,
+                userTag:task.userTag,
+            })
+            await newTweet.save()
 
         }else{
             console.log("resim yok");

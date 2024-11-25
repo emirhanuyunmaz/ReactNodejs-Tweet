@@ -17,7 +17,7 @@ export default function SingleTask({task}){
     }
 
     function shareOnClick(){
-        console.log(task);
+        // console.log(task);
         
         taskToTweet(task)
     }
