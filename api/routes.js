@@ -10,6 +10,7 @@ const signupRouter = require("./singnup")
 const loginRouter = require("./login")
 const userRouter = require("./user")
 const contactRouter = require("./contact")
+const messageRouter = require("./message")
 
 app.use(cors({credentials: true , origin: true}))
 app.use(express.json({limit:"500mb"}))//Verilerin json olarak fe alınabilmesini sağalar.
@@ -23,6 +24,7 @@ app.use("/signup",signupRouter)
 app.use("/login",loginRouter)
 app.use("/user",userRouter)
 app.use("/contact",contactRouter)
+app.use("/message",messageRouter)
 //Deneme ve kontrol için oluşturulmuştur.
 // Python dosyasını çalıştırma fonksiyonu
 

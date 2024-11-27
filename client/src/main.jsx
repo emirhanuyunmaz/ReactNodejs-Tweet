@@ -46,6 +46,10 @@ const router = createBrowserRouter([
     element:<ProtectedRoute> <Message/></ProtectedRoute>,
   },
   {
+    path: "/message/:id",
+    element:<ProtectedRoute> <Message/></ProtectedRoute>,
+  },
+  {
     path: "/tweetTagGroup/:id",
     element:<ProtectedRoute> <TweetTagGroup/></ProtectedRoute>,
   },
@@ -68,7 +72,7 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  // <StrictMode>
     <ReduxProvider store={store} >
     <UserContextProvider>
       <Navbar/>
@@ -76,5 +80,5 @@ createRoot(document.getElementById('root')).render(
     </UserContextProvider>
     <ToastContainer />
     </ReduxProvider>
-  </StrictMode>,
+  // </StrictMode>,
 )
