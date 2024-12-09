@@ -136,7 +136,7 @@ export default function UserProfile(){
 
             {/* Tweet List */}
             <div className="flex px-5 md:px-10 flex-col w-full gap-5 mt-3">
-                <TweetList tweetList={tweetList} />
+                <TweetList tweetList={tweetList} isUserProfile={true}  />
             </div>
             <ContactDialog setShowModal={setContactDialogControl} showModal={contactDialogControl} userList={contactUserList} />
     </div>)

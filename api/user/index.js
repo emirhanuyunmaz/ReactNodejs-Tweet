@@ -175,6 +175,28 @@ const addTweet = async (req,res) => {
     }
 }
 
+// ************************DELETE TWEET******************** //
+//Tweeti silme işlemi .
+const deleteTweet = async (req,res) => {
+
+    try{
+        const id = req.body.id
+        
+        const tweetData = await TweetModel.findByIdAndDelete(id)
+
+        if(tweetData.isImage == true){
+            fs.rmSync(__dirname+"/.."+`/uploads/${tweetData.text}`)
+        }
+        
+        res.status(201).json({message:"succees",succes:true})
+    }catch(err){
+        console.log("Tweet silinirken bir hata ile karşılaşıldı.",err);
+        res.status(404).json({message:err,succes:false})
+    }
+
+}
+
+
 // ******************************GET TWEET LIST*************************** //
 //Tüm tweet listesini çekme işlemi. 
 const getTweetList = async (req,res) => {
@@ -379,7 +401,7 @@ const userTweetProfile = async(req,res) => {
         const userProfile = userId == tweetUserId
         console.log("Kullanıcı profili mi ? = ",userProfile);
         
-        res.status(201).json({message:"Succes",succes:true,data:tweetData,userProfile:userProfile})
+        res.status(201).json({message:"Succes",succes:true,data:tweetData,userProfile:userProfile,isUser:true})
 
     }catch(err) {
 
@@ -627,6 +649,7 @@ router.route("/profile/image/:name").get(getUserImage)
 router.route("/singleTweet/:id").get(authControl,singleTweet)
 router.route("/getTweetComment/:id").get(authControl,getTweetCommentList)
 router.route("/addTweet").post(authControl,addTweet)
+router.route("/deleteTweet").delete(authControl,deleteTweet)
 router.route("/getTagList").get(authControl,getTagList)
 router.route("/getUserTagList").get(authControl,getUserTagList)
 router.route("/getSingleUserTag/:tag").get(authControl,getSingleUserTag)

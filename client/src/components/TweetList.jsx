@@ -4,7 +4,7 @@ import { useGetUserTweetLikeListQuery } from "../store/userApi/userApiSlicer";
 import TweetCard from "./TweetCard";
 
 
-export default function TweetList({tweetList}){
+export default function TweetList({tweetList,isUserProfile}){
 
     const userTweetLikeList = useGetUserTweetLikeListQuery()
     const [userTweetLike,setUserTweetLike] = useState([])
@@ -30,7 +30,7 @@ export default function TweetList({tweetList}){
     return(<>
         {
             tweetList?.length >=0 && tweetList.map((tweet) => {
-            return <TweetCard key={tweet._id} tweet={tweet} userTweetLike={userTweetLike} /> } )
+            return <TweetCard key={tweet._id} tweet={tweet} userTweetLike={userTweetLike} isUserProfile={isUserProfile}/> } )
         }
 
         {
