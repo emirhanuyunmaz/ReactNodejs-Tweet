@@ -11,7 +11,8 @@ const io = new Server(server,{
 const mongoose = require('mongoose')
 const jwt = require("jsonwebtoken")
 const { MessageModel } = require("./message/model")
-
+const uuid = require("uuid")
+const fs = require("fs")
 async function main(){
     try{
 
@@ -53,8 +54,7 @@ async function main(){
                     console.log("SOCKET:",socket.recipientId);
                     console.log("RESİMMİ::",messageData.isImage);
                     const decoded = jwt.decode(messageData.token,process.env.TOKEN_SECRET)            
-                    // console.log("LLLLLL message GELDİ LLLLL");
-                    
+
                     if(!messageData.isImage){
                         // Kullanıcı mesaj gönderdiği zaman sunucunun mesajı kaydetme ve kullnıcılara göndermesi işlemi.
                         
@@ -71,7 +71,7 @@ async function main(){
                         fs.writeFile(filePath , messageData.text.split(";base64,").pop(), {encoding: 'base64'}, function(err) {
                             console.log('File created');
                         });
-                        const newMessage = new MessageModel({message:`${imageName}.png`,sender:decoded.id,recipient:messageData.getUserId,isImage:messageData.isImage})
+                        const newMessage = new MessageModel({message:imageName+".png",senderUserId:decoded.id,recipientUserId:messageData.getUserId,isImage:messageData.isImage})
                         await newMessage.save()
                         io.to(socket.recipientId).emit("receiveMessage",newMessage)
                     }

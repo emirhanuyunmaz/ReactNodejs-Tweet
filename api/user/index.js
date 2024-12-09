@@ -616,7 +616,6 @@ const updateTask = async (req,res) => {
         res.status(201).json({message:"succes",succes:true})
     }catch(err){
         console.log("Task güncellerken bir hata ile karşılaşıldı.",err);
-        
         res.status(404).json({message:err,succes:false})
     }
 }
