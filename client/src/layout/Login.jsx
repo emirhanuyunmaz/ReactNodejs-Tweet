@@ -6,11 +6,15 @@ import { useUserLoginMutation } from "../store/userApi/userApiSlicer"
 import { toast, Zoom } from "react-toastify"
 export default function Login(){
     const navigate = useNavigate()
+    const token = Cookies.get("accessToken")
     // console.log(import.meta.env.VITE_BASE_URL);
     const [loginOnClick,result] = useUserLoginMutation()    
     const [email,setEmail] = useState("")
     const [password,setPassword] = useState("")
 
+    console.log(token);
+    
+    
     const showToastError = () => toast.error('Aranan Kullanıcı Bulunamadı', {
         position: "bottom-center",
         autoClose: 3000,
@@ -21,12 +25,12 @@ export default function Login(){
         progress: undefined,
         theme: "light",
         transition: Zoom,
-        });
-
+    });
+    
     async function loginOnSubmit(){
         const r = await loginOnClick({email,password})
     }
-
+    
     useEffect(() => {
         if(result.isSuccess){
             const accessToken = result.data.accessToken
@@ -35,7 +39,7 @@ export default function Login(){
             Cookies.set("accessToken",accessToken)
             Cookies.set("refreshToken",refreshToken)
             console.log(result.error);
-                        
+            
             navigate("/tweet",{replace:true})
             window.location.reload()//Sayfa token bilgisi için tekrar yüklenme işlemi yapıldı.
         }
@@ -44,9 +48,15 @@ export default function Login(){
             showToastError()
         }
     },[result.isSuccess,result.isError])
-
+    
+    useEffect(() => {
+        if(token !== undefined){
+            navigate("/tweet")
+        }
+    },[token])
+    
     return(
-    <div className="min-h-[70vh] flex items-center justify-center">
+        <div className="min-h-[70vh] flex items-center justify-center">
         <div className="flex flex-col mx-5 md:mx-0 w-full md:w-1/3 ">
             <h1 className="text-center text-2xl mb-5">Login</h1>
             <input value={email} onChange={(e) => setEmail(e.target.value)} className="outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="email" placeholder="Email"/>

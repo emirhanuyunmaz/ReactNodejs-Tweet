@@ -6,8 +6,8 @@ import SingleTask from "./SingleTask";
 export default function TaskDialog({showModal, setShowModal}){
 
     const getTaskList = useGetTaskListQuery()
+  
     const [taskList,setTaskList] = useState([])
-
   
 
 

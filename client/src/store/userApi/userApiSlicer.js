@@ -199,9 +199,18 @@ export const userApiSlice = createApi({
                 invalidatesTags:["Tweet","Task"]
             }),
 
+            taskUpdate:builder.mutation({
+                query:(body) => ({
+                    url:`/user/taskUpdate`,
+                    method:"POST",
+                    body:body
+                }),
+                invalidatesTags:["Task"]
+            }),
+
 
         }
     },
 })
 
-export const {useGetDemoQuery,useUserLoginMutation,useGetTweetListQuery,useAddTweetMutation,useGetUserProfileQuery,useTweetLikeMutation,useGetUserTweetLikeListQuery,useUserTweetDislikeMutation,useGetSingleTweetQuery,useUserTweetAddCommentMutation, useTweetCommentListQuery,useUserTweetProfileQuery,useGetUserShortProfileQuery,useAddRetweetMutation,useUpdateUserProfileMutation,useGetTagListQuery,useGetUserTagListQuery,useGetSingleUserTagQuery,useAddTaskMutation,useGetTaskListQuery,useDeleteTaskMutation,useTaskToTweetMutation} = userApiSlice
+export const {useGetDemoQuery,useUserLoginMutation,useGetTweetListQuery,useAddTweetMutation,useGetUserProfileQuery,useTweetLikeMutation,useGetUserTweetLikeListQuery,useUserTweetDislikeMutation,useGetSingleTweetQuery,useUserTweetAddCommentMutation, useTweetCommentListQuery,useUserTweetProfileQuery,useGetUserShortProfileQuery,useAddRetweetMutation,useUpdateUserProfileMutation,useGetTagListQuery,useGetUserTagListQuery,useGetSingleUserTagQuery,useAddTaskMutation,useGetTaskListQuery,useDeleteTaskMutation,useTaskToTweetMutation,useTaskUpdateMutation} = userApiSlice

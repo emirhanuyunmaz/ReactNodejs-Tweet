@@ -601,10 +601,26 @@ const taskToTweet = async (req,res) => {
         }
         res.status(201).json({message:"succes",succes:true})
     }catch(err){
-        console.log("Task tweet oalrak atılırken bir hata ile karşılaşıldı.",err);
+        console.log("Task tweet olarak atılırken bir hata ile karşılaşıldı.",err);
         res.status(404).json({message:err,succes:false})
     }
 }
+
+// *********************** UPDATE TASK ********************* //
+//Task güncelleme veya düzenleme işlemi.
+const updateTask = async (req,res) => {
+    try{
+        const id = req.body._id
+        const body = req.body
+        await TaskModel.findByIdAndUpdate(id,body)
+        res.status(201).json({message:"succes",succes:true})
+    }catch(err){
+        console.log("Task güncellerken bir hata ile karşılaşıldı.",err);
+        
+        res.status(404).json({message:err,succes:false})
+    }
+}
+
 
 // kullanıcıya ait tweetleri veren api oluşturulacak . 
 // /user/...
@@ -629,5 +645,6 @@ router.route("/addTask").post(authControl,addTask)
 router.route("/taskList").get(authControl,getTaskList)
 router.route("/deleteTask").post(authControl,deleteTask)
 router.route("/taskToTweet").post(authControl,taskToTweet)
+router.route("/taskUpdate").post(authControl,updateTask)
 
 module.exports = router

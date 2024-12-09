@@ -29,8 +29,12 @@ export default function TweetList({tweetList}){
     
     return(<>
         {
-            tweetList.map((tweet) => {
+            tweetList?.length >=0 && tweetList.map((tweet) => {
             return <TweetCard key={tweet._id} tweet={tweet} userTweetLike={userTweetLike} /> } )
+        }
+
+        {
+            tweetList.length <= 0 && <p className="mx-auto text-2xl mt-10">Listelenecek Gönderi Yok </p>
         }
     </>)
 }
