@@ -20,17 +20,17 @@ app.use(express.static('uploads'));
 
 //*******************ROUTERS*****************//
 
+
 app.use("/signup",signupRouter)
 app.use("/login",loginRouter)
 app.use("/user",userRouter)
 app.use("/contact",contactRouter)
 app.use("/message",messageRouter)
-//Deneme ve kontrol için oluşturulmuştur.
-// Python dosyasını çalıştırma fonksiyonu
+
 
 app.get("/",async (req,res) => {
     // console.log(req.headers);
-    console.log("asddsa");
+    console.log("HELLO WORLD");
     
     res.status(201).json({message:"succes"})
 })

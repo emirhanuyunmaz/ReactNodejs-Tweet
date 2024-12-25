@@ -52,7 +52,7 @@ const signup = async (req,res) => {
             email:req.body.email,
             password:req.body.password,
             description:req.body.description,
-            image:imageName+".png"
+            image:process.env.IMAGE_BASE_URL+imageName+".png"
         })
         await newUser.save().then(() => console.log("Save user"))
         res.status(201).json({"message":"Succes"})

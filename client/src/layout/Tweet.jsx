@@ -100,7 +100,7 @@ export default function Tweet(){
         {/* USER PROFILE */}
         <div className="bg-blue-200 max-h-[75vh] rounded-xl hidden md:flex md:w-1/6 mt-5">
             <div className="w-full flex flex-col items-center" >
-                <img className="w-1/2 mt-5 rounded-full" src={`http://localhost:3000/user/profile/image/${userProfile.image}`} alt="" />
+                <img className="w-1/2 mt-5 rounded-full" src={`${userProfile.image}`} alt="" />
 
                 <p>{userProfile.name} {userProfile.surname}</p>
 
@@ -132,7 +132,7 @@ export default function Tweet(){
                     <button onClick={followedTweetData} className={`border-2 ${tweetFollowedData ? "border-black" : "border-gray-400"} rounded-xl px-2 py-1 hover:border-black duration-300`} >Takip Edilenler</button>
                 </div>    
                 {/* TWEET LIST */}
-                <div className="flex flex-col gap-5 mx-5 md:mx-10">
+                <div className="flex flex-col gap-5 mx-5 md:mx-10 pb-5">
                     <TweetList tweetList={tweetList} />
                 </div>
             </div>

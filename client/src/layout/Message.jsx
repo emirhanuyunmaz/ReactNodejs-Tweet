@@ -142,7 +142,7 @@ export default function Message(){
                 {/* Mesajlaşılan kullanıcı kart tasarımı  */}
                 <div className="w-full flex flex-col gap-3">
                     {userMessageList?.map((user) => <a href={`/message/${user._id}`} key={user._id} className="bg-blue-300 mx-5 rounded-xl cursor-pointer flex flex-col md:flex-row items-center hover:bg-blue-400 hover:text-white duration-300 ">
-                        <img src={`http://localhost:3000/user/profile/image/${user.image}`} className="w-16 h-16 my-1 mx-3 rounded-full" alt="" />
+                        <img src={`${user.image}`} className="w-16 h-16 my-1 mx-3 rounded-full" alt="" />
                         <p>{user.name} {user.surname}</p>
                     </a>)}
                 </div>
@@ -152,7 +152,7 @@ export default function Message(){
             {/* Mesajlaşma kısmı */}
             {id != undefined ? <div className="w-3/4 h-[full] ">
                 <div className="flex items-center gap-3 bg-blue-400 p-2">
-                    <img src={`http://localhost:3000/user/profile/image/${userProfile?.image}`} className="w-16 h-16 rounded-full" alt="" />
+                    <img src={`${userProfile?.image}`} className="w-16 h-16 rounded-full" alt="" />
                     <p className="text-xl">{userProfile?.name} {userProfile?.surname} </p>
                 </div>    
 
@@ -166,14 +166,14 @@ export default function Message(){
                         {/* Gelen Mesaj */}
                         {message.senderUserId == id &&<div  className="border-2 rounded-r-xl rounded-t-xl px-6 py-2 me-auto">
                             {message.isImage == false && <p>{  message.message}</p>}
-                            {message.isImage == true && <img src={`http://localhost:3000/user/profile/image/${message.message}`} className="w-32 h-32" />}
+                            {message.isImage == true && <img src={`${message.message}`} className="w-32 h-32" />}
                             <p className="text-[10px] text-end">{formatDate(message.createAt)}</p>
                         </div>}
 
                         {/* Giden Mesaj */}
                         { message.recipientUserId == id &&<div  className="flex flex-col border-2 rounded-l-xl rounded-t-xl px-6 py-2 ms-auto">
                             {message.isImage == false && <p>{message.message}</p>}
-                            {message.isImage == true && <img src={`http://localhost:3000/user/profile/image/${message.message}`} className="w-32 h-32" />}
+                            {message.isImage == true && <img src={`${message.message}`} className="w-32 h-32" />}
                             <p className="text-[10px]">{formatDate(message.createAt)}</p>
                         </div>}
                         

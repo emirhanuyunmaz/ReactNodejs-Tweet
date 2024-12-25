@@ -183,6 +183,13 @@ export const userApiSlice = createApi({
                 invalidatesTags:["Task"]
             }),
 
+            getSingleTask:builder.query({
+                query:(id) => {
+                    return `/user/getSingleTask/${id}`
+                },
+                providesTags:["Task"]
+            }),
+
             getTaskList:builder.query({
                 query:() => {
                     return `/user/taskList`
@@ -217,9 +224,18 @@ export const userApiSlice = createApi({
                 invalidatesTags:["Task"]
             }),
 
+            taskImageUpdate:builder.mutation({
+                query:(body) => ({
+                    url:`/user/taskImageUpdate`,
+                    method:"POST",
+                    body:body
+                }),
+                invalidatesTags:["Task"]
+            })
+
 
         }
     },
 })
 
-export const {useGetDemoQuery,useUserLoginMutation,useGetTweetListQuery,useAddTweetMutation,useGetUserProfileQuery,useTweetLikeMutation,useGetUserTweetLikeListQuery,useUserTweetDislikeMutation,useGetSingleTweetQuery,useUserTweetAddCommentMutation, useTweetCommentListQuery,useUserTweetProfileQuery,useGetUserShortProfileQuery,useAddRetweetMutation,useUpdateUserProfileMutation,useGetTagListQuery,useGetUserTagListQuery,useGetSingleUserTagQuery,useAddTaskMutation,useGetTaskListQuery,useDeleteTaskMutation,useTaskToTweetMutation,useTaskUpdateMutation,useDeleteTweetMutation} = userApiSlice
+export const {useGetDemoQuery,useUserLoginMutation,useGetTweetListQuery,useAddTweetMutation,useGetUserProfileQuery,useTweetLikeMutation,useGetUserTweetLikeListQuery,useUserTweetDislikeMutation,useGetSingleTweetQuery,useUserTweetAddCommentMutation, useTweetCommentListQuery,useUserTweetProfileQuery,useGetUserShortProfileQuery,useAddRetweetMutation,useUpdateUserProfileMutation,useGetTagListQuery,useGetUserTagListQuery,useGetSingleUserTagQuery,useAddTaskMutation,useGetTaskListQuery,useDeleteTaskMutation,useTaskToTweetMutation,useTaskUpdateMutation,useDeleteTweetMutation,useTaskImageUpdateMutation,useGetSingleTaskQuery} = userApiSlice

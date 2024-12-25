@@ -16,6 +16,8 @@ const fs = require("fs")
 async function main(){
     try{
 
+
+
         mongoose.connect('mongodb://127.0.0.1:27017/tweet').then(() => console.log('Connected!'));
 
         io.use((socket, next) => {
@@ -71,7 +73,7 @@ async function main(){
                         fs.writeFile(filePath , messageData.text.split(";base64,").pop(), {encoding: 'base64'}, function(err) {
                             console.log('File created');
                         });
-                        const newMessage = new MessageModel({message:imageName+".png",senderUserId:decoded.id,recipientUserId:messageData.getUserId,isImage:messageData.isImage})
+                        const newMessage = new MessageModel({message:process.env.IMAGE_BASE_URL+imageName+".png",senderUserId:decoded.id,recipientUserId:messageData.getUserId,isImage:messageData.isImage})
                         await newMessage.save()
                         io.to(socket.recipientId).emit("receiveMessage",newMessage)
                     }
@@ -96,9 +98,10 @@ async function main(){
 
         })
 
-        
-        server.listen(3000,() =>{
-            console.log("Listening port 3000");
+        const PORT = process.env.PORT || 3000
+        server.listen(PORT,() =>{
+            console.log(`BASE URL : ${process.env.BASE_URL}`);
+            console.log(`Listening port ${PORT}`);
         })
     }catch(err){
         console.log("ERR:",err);

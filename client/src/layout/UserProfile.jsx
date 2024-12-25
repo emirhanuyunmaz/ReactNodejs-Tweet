@@ -107,7 +107,7 @@ export default function UserProfile(){
         {/* Kullanıcı profili için temel yapı */}
         <div className="bg-blue-100  md:px-10 py-5 rounded-xl">
             <div className="flex gap-5" >
-                <img className="w-32 h-32 rounded-full" src={`http://localhost:3000/user/profile/image/${userProfile.image}`} alt="" />
+                <img className="w-32 h-32 rounded-full" src={`${userProfile.image}`} alt="" />
                 <div className="mt-5 flex flex-col gap-3">
                     <p className="font-bold" > {userProfile.name} {userProfile.surname}</p>
                     <p>{userProfile.description}</p>
@@ -121,7 +121,7 @@ export default function UserProfile(){
                     {!getUserIsFollow?.data?.data && <button onClick={userFollowOnClick} className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Takip Et</button>}
                     {getUserIsFollow?.data?.data && <button onClick={userUnfollowOnClick} className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Takipten Çık</button>}
 
-                    <button className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Mesaj At</button>
+                    <a href={`/message/${params.id}`} className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Mesaj At</a>
                 </div>}
                 {
                     isProfile &&<div className="ms-auto flex flex-col justify-center"> <a href="/profile" className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Profili Düzenle</a></div>
@@ -135,7 +135,7 @@ export default function UserProfile(){
             </div>
 
             {/* Tweet List */}
-            <div className="flex px-5 md:px-10 flex-col w-full gap-5 mt-3">
+            <div className="flex px-5 md:px-10 flex-col w-full gap-5 mt-3 pb-5">
                 <TweetList tweetList={tweetList} isUserProfile={true}  />
             </div>
             <ContactDialog setShowModal={setContactDialogControl} showModal={contactDialogControl} userList={contactUserList} />

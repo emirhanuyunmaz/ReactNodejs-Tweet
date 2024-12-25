@@ -24,7 +24,8 @@ const upl = async (req,res) => {
         
         const id = req.headers.id
         const user = await SignUpModel.findById(id)
-        const imageName = user.image
+
+        const imageName = user.image.split("image/").pop()
         // console.log("Kullanıcı bilgisi :",user.image);
         
         const filePath = __dirname + "/.." + `/uploads/${imageName}`
@@ -92,6 +93,8 @@ const updateUserProfile = async (req,res) => {
 // *****************GET USER IMAGE***************** //
 //Kullanıcı Profil Resmini Çekme İşlemi
 const getUserImage = async(req,res) => {
+    // console.log("******************************");
+    // console.log("RESİM ÇEKME İŞLEMİ :",req.params);
     
     try{
         const name = req.params.name
@@ -160,7 +163,7 @@ const addTweet = async (req,res) => {
             const newTweet = new TweetModel({
                 userId:id,
                 isImage:true,
-                text : imageName+".png",
+                text :process.env.IMAGE_BASE_URL + imageName+".png",
                 tag:predictionResponse.data.prediction,
                 userTag:userTag
             })
@@ -185,7 +188,9 @@ const deleteTweet = async (req,res) => {
         const tweetData = await TweetModel.findByIdAndDelete(id)
 
         if(tweetData.isImage == true){
-            fs.rmSync(__dirname+"/.."+`/uploads/${tweetData.text}`)
+            const imageName =tweetData.text.split("image/").pop()
+
+            fs.rmSync(__dirname+"/.."+`/uploads/${imageName}`)
         }
         
         res.status(201).json({message:"succees",succes:true})
@@ -396,7 +401,7 @@ const userTweetProfile = async(req,res) => {
     try{
         const searchText = req.headers.text
         const tweetUserId = req.params.id
-        const tweetData = await TweetModel.find({userId:tweetUserId,text:{ $regex: `${searchText}`, $options: 'i' } }).populate("userId","name surname image")
+        const tweetData = await TweetModel.find({userId:tweetUserId,text:{ $regex: `${searchText}`, $options: 'i' } }).populate("userId","name surname image").sort({createdAt:"desc"}).exec()
         const userId = req.headers.id
         const userProfile = userId == tweetUserId
         console.log("Kullanıcı profili mi ? = ",userProfile);
@@ -499,8 +504,6 @@ const getSingleUserTag = async (req,res) => {
 //Kullanıcıya ait task kaydetme işlemi.
 const addTask = async (req,res) => {
 
-    // resim gelmesi işlemine göre düzenleme yapılacak .
-
     try{
         const userId = req.headers.id
         const isImage = req.body.isImage
@@ -519,7 +522,7 @@ const addTask = async (req,res) => {
             const newTask = new TaskModel({
                 userId:userId,
                 isImage:isImage,
-                text:imageName+".png",
+                text:process.env.IMAGE_BASE_URL +imageName+".png",
                 userTag:userTag
             })
             await newTask.save()
@@ -541,6 +544,20 @@ const addTask = async (req,res) => {
         
     }
 }
+
+//******************GET SINGLE TASK ***************************//
+
+const getSingleTask = async(req,res) => {
+    try{
+        const taskId = req.params.id
+        const data = await TaskModel.findById(taskId)
+        res.status(201).json({message:"succes",succes:true,data:data})
+    }catch(err){
+        console.log("Tek task çekilirken bir hata ile karşılaşıldı.",err);
+        res.status(404).json({message:err,succes:false})
+    }
+}
+
 
 
 //********** GET TASK LIST ****************//
@@ -566,7 +583,8 @@ const deleteTask = async (req,res) => {
         console.log("TASK SİL:",task);
         
         if(isImage = "true"){
-            fs.rmSync(__dirname+"/.."+`/uploads/${task.text}`)
+            const imageName = task.text.split("image/").pop()
+            fs.rmSync(__dirname+"/.."+`/uploads/${imageName}`)
         }
         res.status(201).json({message:"succes",succes:true})
     }catch(err){
@@ -585,11 +603,12 @@ const taskToTweet = async (req,res) => {
         const getTaskId = req.body._id
         const task = await TaskModel.findByIdAndDelete(getTaskId)
         // console.log(task);
-        
-        
+    
         if(task.isImage){
             console.log("Resim var");
-            const imageData = fs.readFileSync(__dirname+"/.."+`/uploads/${task.text}`,{encoding:'base64'})
+            const taskImageName = task.text.split("image/").pop()
+            
+            const imageData = fs.readFileSync(__dirname+"/.."+`/uploads/${taskImageName}`,{encoding:'base64'})
             // console.log("RESİM:",imageData[2]);
             // Veriyi flask kullanarak oluşturlan bir api den çekme işlemi.
             const predictionResponse = await axios.post("http://127.0.0.1:5000/predictImage",{
@@ -642,6 +661,40 @@ const updateTask = async (req,res) => {
     }
 }
 
+const taskImageUpdate = async (req,res) => {
+    console.log("Task resim güncelleme işlemi");
+    
+    try{
+        const taskId = req.body.taskId
+        console.log("RESİM VAR MI:",req.body.image);
+        if(req.body.image){
+            const updateImageName =  uuid.v4()
+
+            const image = req.body.image.split(';base64,').pop();
+            // console.log("RESİM:",image);
+            const task = await TaskModel.findById(taskId)
+            
+            const imageName = task.text.split("image/").pop()
+            fs.rmSync(__dirname+"/.."+`/uploads/${imageName}`)
+
+
+            const filePath = __dirname + "/.." + `/uploads/${updateImageName}.png`
+            fs.writeFile(filePath ,image , {encoding: 'base64'}, function(err) {
+                console.log(`File created ${updateImageName+".png"} `);
+            });
+
+            await TaskModel.findByIdAndUpdate(taskId,{text:process.env.IMAGE_BASE_URL+updateImageName+".png"})
+            res.status(201).json({succes:true,message:"succes"})
+        }else{
+            res.status(401)
+        }
+
+    }catch(err) {
+        console.log("Task resmi güncellenirken bir hata ile karşılaşıldı.",err)
+        res.status(404).json({succes:false,message:err})
+    }
+}
+
 
 // kullanıcıya ait tweetleri veren api oluşturulacak . 
 // /user/...
@@ -664,9 +717,11 @@ router.route("/likeTweet").post(authControl,likeTweet)
 router.route("/likeTweetList").get(authControl,getUserLikeList)
 router.route("/dislikeTweet").post(authControl,userTweetDislike)
 router.route("/addTask").post(authControl,addTask)
+router.route("/getSingleTask/:id").get(authControl,getSingleTask)
 router.route("/taskList").get(authControl,getTaskList)
 router.route("/deleteTask").post(authControl,deleteTask)
 router.route("/taskToTweet").post(authControl,taskToTweet)
 router.route("/taskUpdate").post(authControl,updateTask)
+router.route("/taskImageUpdate").post(authControl,taskImageUpdate)
 
 module.exports = router

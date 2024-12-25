@@ -1,14 +1,17 @@
 import { Camera } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ReactImageUploading from "react-images-uploading";
-import { useTaskUpdateMutation } from "../store/userApi/userApiSlicer";
+import { useGetSingleTaskQuery, useTaskImageUpdateMutation, useTaskUpdateMutation } from "../store/userApi/userApiSlicer";
 
 
 export default function TaskUpdateDialog({showModal,setShowModal,task}){
+    const getSingleTask = useGetSingleTaskQuery(task._id) 
     const [updateTask,responseUpdateTask] = useTaskUpdateMutation()
+    const [taskImageUpdate,responseTaskImageUpdate] = useTaskImageUpdateMutation()
     const [image,setImage] = useState([])
-    const maxNumber = 1;
+    const [updateImage,setUpdateImage] = useState("")
+    const maxNumber = 1;    
 
     const {
         register,
@@ -17,7 +20,7 @@ export default function TaskUpdateDialog({showModal,setShowModal,task}){
         reset,
         setValue,
         getValues
-      } = useForm({defaultValues: task})
+      } = useForm()
 
     const onChange = (imageList, addUpdateIndex) => {
     // data for submit
@@ -30,6 +33,27 @@ export default function TaskUpdateDialog({showModal,setShowModal,task}){
         reset()
         setShowModal(false)
     }
+
+    async function updateImageTask(e){
+      console.log(e);
+      const reader = new FileReader()
+      reader.readAsDataURL(e.target.files[0])
+      
+      reader.onload = async () => {
+        await taskImageUpdate({image:reader.result,taskId:task._id})
+      }
+    }
+
+    useEffect(() => {
+      if(getSingleTask.isSuccess){
+        console.log("VERİ GUNCELLENDİ");
+        
+        setValue("text",getSingleTask.data.data.text)
+        setUpdateImage(getSingleTask.data.data.text)
+        setValue("userTag",getSingleTask.data.data.userTag)
+      }
+
+    },[getSingleTask.isFetching,getSingleTask.isSuccess,getSingleTask.isError])
 
     return(<>
         {showModal ? (
@@ -57,7 +81,6 @@ export default function TaskUpdateDialog({showModal,setShowModal,task}){
                     {/*body*/}
                     <div className="relative p-6 flex-auto ">
                     <form className="flex flex-col gap-3" onSubmit={handleSubmit(onSubmit)}>
-
                         <input  {...register("userTag", { required: true })} placeholder="Etiket" className="px-4 mb-3 py-2 outline-none border-2 rounded-xl w-full" />
                         {errors.userTag?.type === "required" && (
                           <p className="text-red-600 mb-3 mt-0 ms-3" role="alert">Etiket boş bırakılamaz.</p>
@@ -98,7 +121,14 @@ export default function TaskUpdateDialog({showModal,setShowModal,task}){
                                   &nbsp;
                                   <button onClick={onImageRemoveAll}></button>
                                   {task.isImage ?<div  className="image-item flex flex-col gap-2">
-                                  <img src={`http://localhost:3000/${task.text}`} alt="" width="100" className="mx-auto"/></div> : imageList.map((img, index) => (
+                                    <img key={Date.now()} src={updateImage} alt="" width="100" className="mx-auto"/>
+                                    <div className="flex gap">
+                                      <label htmlFor="updateImageInput" className="border-2 px-2 py-1 rounded-xl hover:border-green-400 duration-300 cursor-pointer">Güncelle</label>
+                                      <input  type="file" hidden onChange={(e) => updateImageTask(e)} id="updateImageInput" />
+                                      <button  className="border-2 px-2 py-1 rounded-xl hover:border-red-400 duration-300">Sil</button>
+
+                                    </div>
+                                  </div> : imageList.map((img, index) => (
                                   <div key={index} className="image-item flex flex-col gap-2">
                                       <img src={img['data_url']  } alt="" width="100" className="mx-auto"/>
                                       <div className="image-item__btn-wrapper">

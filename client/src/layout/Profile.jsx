@@ -129,7 +129,7 @@ export default function Profile(){
     return(
     <div className="flex flex-col md:flex-row gap-5 md:mx-32 mt-16 ">
         <div className="flex flex-col items-center justify-start gap-3 w-full md:w-1/4">
-            <img className="rounded-full w-52 md:w-48 md:h-48" src={changeImage ? newImage :`http://localhost:3000/user/profile/image/${image}`} alt="" />
+            <img className="rounded-full w-52 md:w-48 md:h-48" src={changeImage ? newImage :`${image}`} alt="" />
             
             <label className="hover:cursor-pointer bg-blue-200 hover:bg-blue-400 hover:text-white px-2 py-1 rounded-xl duration-300 " htmlFor="user_image">
                 Change Images

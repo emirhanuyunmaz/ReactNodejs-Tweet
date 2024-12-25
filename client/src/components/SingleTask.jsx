@@ -39,9 +39,10 @@ export default function SingleTask({task}){
         <div>
             <h6 className="font-bold">{task?.userTag}</h6>
             { !task.isImage  && <p>{task.text}</p>}
-            { task.isImage  && <img src={`http://localhost:3000/user/profile/image/${task.text}`} className="w-32 h-32" />}
+            {/* http://localhost:3000/user/profile/image/ */}
+            { task.isImage  && <img src={`${task.text}`} className="w-32 h-32" />}
         </div>
-        <TaskUpdateDialog  setShowModal={setShowTaskUpdate} showModal={showTaskUpdate} task={task} />
+        <TaskUpdateDialog setShowModal={setShowTaskUpdate} showModal={showTaskUpdate} task={task} />
 
     </div>)
 }
