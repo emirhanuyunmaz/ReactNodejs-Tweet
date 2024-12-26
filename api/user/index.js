@@ -212,10 +212,16 @@ const getTweetList = async (req,res) => {
         if(followedData == "true"){
             const userId = req.headers.id            
             const contactData = await UserContactModel.findOne({userId:userId})
-            // Populate ile sadece yazılan verilerin getirilmesine olanak sağlandı .            
-            const dataList = await TweetModel.find({userId:{$in:contactData.followed}}).populate("userId","name surname image tag").sort({createdAt:"desc"}).exec()
-            // console.log(dataList);
-            res.status(200).json({tweetList:dataList})
+            // Populate ile sadece yazılan verilerin getirilmesine olanak sağlandı . 
+            console.log(contactData);
+                       
+            if(contactData){
+                const dataList = await TweetModel.find({userId:{$in:contactData.followed}}).populate("userId","name surname image tag").sort({createdAt:"desc"}).exec()
+                // console.log(dataList);
+                res.status(200).json({tweetList:dataList})
+            }else{
+                res.status(200).json({tweetList:[]})
+            }
 
         }else{
 

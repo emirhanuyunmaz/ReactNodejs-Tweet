@@ -58,7 +58,6 @@ export default function Tweet(){
     }
 
     useEffect(() => {
-        console.log("::YENİDEN ÇEKİLDİ::");
         refetch()
     },[tweetFollowedData])
 

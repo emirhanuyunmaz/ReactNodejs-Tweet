@@ -20,7 +20,7 @@ export default function TaskUpdateDialog({showModal,setShowModal,task}){
         reset,
         setValue,
         getValues
-      } = useForm()
+      } = useForm({defaultValues:task})
 
     const onChange = (imageList, addUpdateIndex) => {
     // data for submit
@@ -47,10 +47,11 @@ export default function TaskUpdateDialog({showModal,setShowModal,task}){
     useEffect(() => {
       if(getSingleTask.isSuccess){
         console.log("VERİ GUNCELLENDİ");
+        // console.log(getSingleTask.data.data);
         
-        setValue("text",getSingleTask.data.data.text)
-        setUpdateImage(getSingleTask.data.data.text)
-        setValue("userTag",getSingleTask.data.data.userTag)
+        setValue("text",getSingleTask.data?.data.text)
+        setUpdateImage(getSingleTask.data?.data.text)
+        setValue("userTag",getSingleTask?.data.data.userTag)
       }
 
     },[getSingleTask.isFetching,getSingleTask.isSuccess,getSingleTask.isError])
