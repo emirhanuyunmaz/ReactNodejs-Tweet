@@ -28,9 +28,9 @@ export default function RetweetDialog({showModal, setShowModal,tweetId}){
     }
 
 
-    function AddRetweetHandleClick(){
+    async function AddRetweetHandleClick(){
         const retweetBody = {text:text,tweetId:tweetId}
-        addRetweet(retweetBody)
+        await addRetweet(retweetBody)
         setShowModal(false)
     }
 

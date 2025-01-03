@@ -12,7 +12,7 @@ export default function Login(){
     const [email,setEmail] = useState("")
     const [password,setPassword] = useState("")
 
-    console.log(token);
+    // console.log(token);
     
     
     const showToastError = () => toast.error('Aranan Kullanıcı Bulunamadı', {

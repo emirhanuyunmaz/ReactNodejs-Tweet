@@ -46,19 +46,19 @@ export default function UserProfile(){
     }
 
     // Takip etme işlemi için fonk.
-    function userFollowOnClick(){
+    async function userFollowOnClick(){
         const body={
             userId:params.id
         }
-        contactUserFollow(body)
+        await contactUserFollow(body)
     }
 
     // Takipten çıkma işlemi
-    function userUnfollowOnClick(){
+    async function userUnfollowOnClick(){
         const body={
             userId:params.id
         }
-        contactUserUnfollow(body)
+        await contactUserUnfollow(body)
     }
 
     // Takipçi listesi çekilmesi işlemi.

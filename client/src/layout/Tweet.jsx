@@ -40,8 +40,8 @@ export default function Tweet(){
         setTagList(getTagList.data.data)
     }
 
-    function searchUserOnClick(){
-        searchUserApi({searchText:searchText})
+    async function searchUserOnClick(){
+       await searchUserApi({searchText:searchText})
     }
 
     // Sadece takip edilen kullanıcılara ait gönderileri gösterme işlemi.

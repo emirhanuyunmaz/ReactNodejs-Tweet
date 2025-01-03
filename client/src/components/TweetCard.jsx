@@ -32,7 +32,7 @@ export default function TweetCard({tweet,userTweetLike,isUserProfile}){
     }
 
     async function userTweetDislike(tweetId){        
-        tweetDislike({tweetId:tweetId})
+        await tweetDislike({tweetId:tweetId})
     }
 
     async function setLikeTweet(tweetId){

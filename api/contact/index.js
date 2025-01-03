@@ -85,7 +85,7 @@ const userConnectionUnfollow = async (req,res) => {
     }
 }
 
-// 
+// **********************CONTACT LIST ***************************//
 //Takipçi/Takip Edilen listesini döner.
 const contactList = async (req,res) => {
     console.log("Kullanıcı takip etme ve takipçi listesi çekilmesi işlemi");
@@ -97,7 +97,7 @@ const contactList = async (req,res) => {
         const data = await UserContactModel.findOne({userId:userId})
         // console.log("Contact list:",data);
         
-        res.status(201).json({message:"succes",succes:true,followed:data.followed.length,follower:data.follower.length})
+        res.status(201).json({message:"succes",succes:true,followed:data?.followed?.length,follower:data?.follower?.length})
     }catch(err){
         console.log("Takipçi ve takip edilen listesi çekilirken bir hata ile karşılaşıldı.",err)
         res.status(404).json({message:err,succes:false})
@@ -161,13 +161,15 @@ const userFollowerList = async (req,res) => {
         console.log("Kullanıcı bilgisi :",req.params.id);
         const userId = req.params.id 
         const data = await UserContactModel.findOne({userId:userId}).populate("follower","name surname image")  
-        console.log("*************************");
+
         console.log(data);
-        console.log("*************************");
-        
-        res.status(201).json({message:"succes",succes:true,data:data.follower})
+        if(data?.follower){
+            res.status(201).json({message:"succes",succes:true,data:data.follower})
+        }else{
+            res.status(201).json({message:"succes",succes:true,data:[]})
+        }
     }catch(err){
-        console.log("TAkipçi listesi çekilirken bir hata ile karşılaşıldı.",err);
+        console.log("Takipçi listesi çekilirken bir hata ile karşılaşıldı.",err);
         res.status(404).json({message:err,succes:false})
     }
 }
@@ -180,11 +182,11 @@ const userFollowedList = async(req,res) => {
     try{
         const userId = req.params.id 
         const data = await UserContactModel.findOne({userId:userId}).populate("followed","name surname image")
-        console.log("###################################################");
-        console.log(data);
-        console.log("###################################################");
-        
-        res.status(201).json({message:"succes",succes:false,data:data.followed})
+        if(data?.followed){
+            res.status(201).json({message:"succes",succes:false,data:data.followed})
+        }else{
+            res.status(201).json({message:"succes",succes:false,data:[]})
+        }
     }catch(err){
         console.log("Takip edilenler çekilirken bir hata ile karşılaşıldı.",err);
         res.status(404).json({message:err,succes:false})

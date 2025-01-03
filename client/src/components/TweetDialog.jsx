@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useAddTaskMutation, useAddTweetMutation } from "../store/userApi/userApiSlicer";
 import { useForm } from "react-hook-form"
-import ReactImageUploading from "react-images-uploading";
-import { Camera } from "lucide-react";
+import { Camera, CameraIcon } from "lucide-react";
+import { getBase64 } from "../utils/imageProcess";
 
 
 export default function TweetDialog({showModal, setShowModal}){
@@ -10,14 +10,8 @@ export default function TweetDialog({showModal, setShowModal}){
     const [addTweet,responseAddTweet] = useAddTweetMutation()
     const [addTasks,responseAddTasks] = useAddTaskMutation() 
     const [isImage,setIsImage] = useState(false)
-    const [image,setImage] = useState([])
-    const maxNumber = 1;
+    const [image,setImage] = useState()
 
-    const onChange = (imageList, addUpdateIndex) => {
-      // data for submit
-      console.log(imageList, addUpdateIndex);
-      setImage(imageList);
-    };
     const {
       register,
       formState: { errors },
@@ -26,13 +20,30 @@ export default function TweetDialog({showModal, setShowModal}){
       setValue,
       getValues
     } = useForm()
+    
+    async function uploadImage(e) {
+      const file = e.target.files[0]
+      const image = await getBase64(file)
+      setIsImage(true)
+      setImage(image)
+      setValue("text",image)
+    } 
 
+    function deleteImage(){
+      setValue("text","")
+      setImage(undefined)
+      setIsImage(false)
+    }
+
+    // Tweet atma işlemi .
     const onSubmit = async (data) => {
-      if(image.length > 0 ){
-        setValue("text",image[0].data_url)
+      console.log(data);
+      
+      if(image !=  undefined ){
+        
         const newData= {
           ...data,
-          isImage:image.length > 0 ? true : false
+          isImage:image != undefined
         }
         console.log("Tweet data resim:",newData)
         await addTweet(newData)
@@ -41,7 +52,7 @@ export default function TweetDialog({showModal, setShowModal}){
       }else{
         const newData= {
           ...data,
-          isImage:image.length > 0 ? true : false
+          isImage:image != undefined
         }
         console.log("Tweet data:",newData)
         await addTweet(newData)
@@ -50,28 +61,28 @@ export default function TweetDialog({showModal, setShowModal}){
       }
     }
 
-    function addTaskOnClick(){
-
-      if(image.length>0){        
-        setValue("text",image[0].data_url)
+    async function addTaskOnClick(){
+      
+      if(image != undefined){        
+        
         const newData = {
           ...getValues(),
-          isImage:image.length > 0 ? true : false,
+          isImage:image != undefined,
         }
         console.log("New task data:",newData);
-        addTasks(newData)
+        await addTasks(newData)
       }else{
         const newData = {
           ...getValues(),
-          isImage:image.length > 0 ? true : false,
+          isImage:image != undefined,
         }
         console.log("New task data:",newData);
-        addTasks(newData)
+        await addTasks(newData)
       }
 
-      setShowModal(false)
       reset()
-      setImage([])
+      setImage(undefined)
+      setShowModal(false)
     }
     
 
@@ -92,7 +103,7 @@ export default function TweetDialog({showModal, setShowModal}){
                       </h3>
                       <button
                         className="p-1 ml-auto bg-transparent border-0 text-black opacity-50 hover:opacity-100 float-right text-3xl leading-none font-semibold outline-none focus:outline-none duration-300"
-                        onClick={() => setShowModal(false)}
+                        onClick={() => {reset();setImage([]);setShowModal(false);}}
                       >
                         <span className=" text-black h-6 w-6 text-2xl ">
                           X
@@ -107,60 +118,27 @@ export default function TweetDialog({showModal, setShowModal}){
                         {errors.userTag?.type === "required" && (
                           <p className="text-red-600 mb-3 mt-0 ms-3" role="alert">Etiket boş bırakılamaz.</p>
                         )}
-                        {!(image.length > 0) && <><textarea {...register("text", { required: true })} placeholder="Tweet" className="px-4 py-2 outline-none border-2 rounded-xl w-full h-32" />
+                        {(image == undefined) && <><textarea {...register("text", { required: true })} placeholder="Tweet" className="px-4 py-2 outline-none border-2 rounded-xl w-full h-32" />
                         {errors.text?.type === "required" && (
                           <p className="text-red-600 mb-3 mt-0 ms-3" role="alert">Tweet boş bırakılamaz.</p>
                         )}</>}
 
-                        <div>
-                          {/* Resim yükleme için gereken kütüphane */}
-                          <ReactImageUploading
-                              multiple
-                              value={image}
-                              onChange={onChange}
-                              maxNumber={maxNumber}
-                              dataURLKey="data_url"
-                          >
-                              {({
-                              imageList,
-                              onImageUpload,
-                              onImageRemoveAll,
-                              onImageUpdate,
-                              onImageRemove,
-                              isDragging,
-                              dragProps,
-                              }) => (
-                              // write your building UI
-                              <div className="upload__image-wrapper w-40 h-40 flex items-center justify-center border-2">
-                                  <button
-                                  className="flex justify-center items-center"
-                                  style={isDragging ? { color: 'red' } : undefined}
-                                  onClick={onImageUpload}
-                                  {...dragProps}
-                                  >
-                                  {image.length === 0 &&<Camera/>}
-                                  </button>
-                                  &nbsp;
-                                  <button onClick={onImageRemoveAll}></button>
-                                  {imageList.map((img, index) => (
-                                  <div key={index} className="image-item flex flex-col gap-2">
-                                      <img src={img['data_url']} alt="" width="100" className="mx-auto"/>
-                                      <div className="image-item__btn-wrapper">
-                                      <button className="border-2 px-2 py-1 rounded-xl hover:border-green-400 duration-300" onClick={() => onImageUpdate(index)}>Update</button>
-                                      <button className="border-2 px-2 py-1 rounded-xl hover:border-red-400 duration-300" onClick={() => {onImageRemove(index);setValue("text","")}}>Remove</button>
-                                  </div>
-                                  </div>
-                                  ))}
-                              </div>
-                              )}
-                          </ReactImageUploading>
+                        <div >
+                          {/* Resim yükleme */}
+                          <label htmlFor="imageUpload" className="w-40 h-40 flex justify-center items-center border-2 cursor-pointer">
+                            {image == undefined ? <CameraIcon/>: <img src={`${image}`} className="w-full h-full" />}
+                          </label>
+                          {image != undefined && <div className="w-40 text-center">
+                            <button onClick={deleteImage} className="border-2 border-red-500 hover:opacity-80 px-4 py-1 rounded-xl mx-auto">Delete</button>
+                          </div>}
+                          <input onChange={(e) => uploadImage(e)} hidden id="imageUpload" type="file" />
                         </div>
 
                         <div className="flex gap-3">
                           <button
                             className="border-2 w-full px-4 py-2 rounded-xl hover:border-blue-400 duration-300"
                             type="submit"
-                            onClick={(e) => {setIsImage(false);onSubmit()}}
+                            
                           >
                             Tweet Ekle
                           </button>

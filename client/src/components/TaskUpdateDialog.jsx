@@ -45,9 +45,9 @@ export default function TaskUpdateDialog({showModal,setShowModal,task}){
     }
 
     useEffect(() => {
-      if(getSingleTask.isSuccess){
+      if(getSingleTask.isSuccess && getSingleTask.data.data){
         console.log("VERİ GUNCELLENDİ");
-        // console.log(getSingleTask.data.data);
+        console.log(getSingleTask.data.data);
         
         setValue("text",getSingleTask.data?.data.text)
         setUpdateImage(getSingleTask.data?.data.text)

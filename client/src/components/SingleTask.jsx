@@ -11,17 +11,17 @@ export default function SingleTask({task}){
     const [taskToTweet,responseTaskToTweet] = useTaskToTweetMutation()
     const [showTaskUpdate,setShowTaskUpdate] = useState(false)
 
-    function deleteTaskOnClick(){
+    async function deleteTaskOnClick(){
         const body = {
           taskId:task._id
         }
-        deleteTask(body)
+        await deleteTask(body)
     }
 
-    function shareOnClick(){
+    async function shareOnClick(){
         // console.log(task);
         
-        taskToTweet(task)
+        await taskToTweet(task)
     }
 
     return (<div className="bg-blue-200 flex flex-col gap-3 min-w-32 min-h-32 px-2 py-1 rounded-xl items-center ">

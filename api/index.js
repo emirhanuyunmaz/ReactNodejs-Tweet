@@ -62,8 +62,6 @@ async function main(){
                         
                         const newMessage = new MessageModel({message:messageData.text,senderUserId:decoded.id,recipientUserId:messageData.getUserId,isImage:messageData.isImage})
                         await newMessage.save()
-                        console.log("RERERER::",messageData.getUserId);
-                        
                         io.to(socket.recipientId).emit("receiveMessage",newMessage)
                     }else{
                         const imageName = uuid.v4()
@@ -77,10 +75,8 @@ async function main(){
                         await newMessage.save()
                         io.to(socket.recipientId).emit("receiveMessage",newMessage)
                     }
-                    // io.to(socket.user.id).emit("receiveMessage",newMessage)
                 }catch(err){
                     console.log("Bir hata socket io:",err);
-                    
                 }
             })
 

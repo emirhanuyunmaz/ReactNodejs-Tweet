@@ -135,7 +135,7 @@ export default function Message(){
             <div className="w-1/4 border-r-2 border-gray-200  h-full ">
                 {/* Kullanıcı arama işlemi için input */}
                 <div className="flex flex-col  md:flex-row  justify-center items-center gap-1 px-5 pt-5 pb-5">
-                    <input className="w-full outline-none px-4 py-2 border-2 rounded-xl " type="text" placeholder="Kullanıcı Adı"/>
+                    {/* <input className="w-full outline-none px-4 py-2 border-2 rounded-xl " type="text" placeholder="Kullanıcı Adı"/> */}
                     {/* <button className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300  ">Ara</button> */}
                 </div>
 

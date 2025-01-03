@@ -118,7 +118,9 @@ const addTweet = async (req,res) => {
         const userTag = req.body.userTag
         const isImage = req.body.isImage
         console.log("İmage: ",req.body);
+        console.log("LLLL:",text);
         
+
         if(text && !isImage){
             console.log("USER TAG:",userTag)
             console.log("TEXT:",text);
@@ -515,6 +517,7 @@ const addTask = async (req,res) => {
         const isImage = req.body.isImage
         const text = req.body.text
         const userTag = req.body.userTag
+        
         if(isImage && text){
 
             const imageName = uuid.v4()

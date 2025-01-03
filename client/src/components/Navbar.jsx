@@ -56,31 +56,22 @@ export default function Navbar(){
         </div>} */}
         {settingsControl && <div onClick={() => {setSettingsControl(false)}}  className="bg-opacity-0 z-0 fixed inset-0  w-screen h-screen"></div>}
         
-        {token && <div className={`ms-auto"`}>
+        {/* {token && <div className={`ms-auto"`}>
             <button onClick={notificationOnClick} className="hover:text-gray-300">
                 <Bell />
             </button>
 
-            {/* Kullanıcı bildirim componenti */}
             {notificationControl && <>
                 <NotificationCard/>
                 <div onClick={notificationOnClick} className=" opacity-0 fixed inset-0 z-40"></div>
             </>
             }
-        </div>}
+        </div>} */}
 
         
             
-        {/* {searchControl && <div>
-            <div data-aos="fade-down" className="mt-16 h-16 flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none bg-blue-500">
-                <input  className="w-1/4 outline-none px-4 py-2 border-2 text-black rounded-xl" type="text" placeholder="Kullanıcı Adı"/>
-            </div>
-            <div onClick={() => {setSearchControl(false);document.body.style.overflow = "auto"}} className="mt-16 opacity-25 fixed inset-0 z-10 bg-black"></div>
-            
-            <div className="z-50 h-1/2 absolute mt-24 left-0 w-[100%] ">
-                <UserSearchList/>
-            </div>
-        </div>} */}
+        
+        
         
 
     </nav>)
