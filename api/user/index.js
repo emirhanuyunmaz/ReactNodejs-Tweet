@@ -428,11 +428,14 @@ const userTweetProfile = async(req,res) => {
 const userShortProfile = async (req,res) => {
     try{
         const loginUserId = req.params.id
-        const userData = await signupModel.findById(loginUserId).select("name surname description image email createdAt")
-        
+        // console.log("Kullanıcı id:",loginUserId != "undefined");
+        let userData = null
+        if(loginUserId != "undefined"){
+            userData = await signupModel.findById(loginUserId).select("name surname description image email createdAt")
+        }
         res.status(201).json({message:"Succes",succes:true,data:userData})
     }catch(err) {
-        console.log("Kısa profil gösterilirken bir hata ile karşılaşıldı.");
+        console.log("Kısa profil gösterilirken bir hata ile karşılaşıldı.",err);
         res.status(404).json({message:err,succes:false})
     }
 }

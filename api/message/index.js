@@ -24,11 +24,13 @@ const getAllMessage = async(req,res) => {
 
         const senderUserId = req.headers.id
         const recipientUserId = req.params.id
-        console.log("MESSAGE:::USER:::",senderUserId);
-        console.log("MESSAGE:::USER:::",recipientUserId);
-        
-        const data = await  MessageModel.find({$or:[{senderUserId:senderUserId,recipientUserId:recipientUserId},{senderUserId:recipientUserId,recipientUserId:senderUserId}]})
-        console.log("MESSAGE DATA DATA: ",data);
+        console.log("MESSAGE:::USER:::",senderUserId != "undefined");
+        console.log("MESSAGE:::USER:::",recipientUserId != "undefined");
+        let data = []
+        if(recipientUserId != "undefined" && senderUserId != "undefined"){
+            data = await  MessageModel.find({$or:[{senderUserId:senderUserId,recipientUserId:recipientUserId},{senderUserId:recipientUserId,recipientUserId:senderUserId}]})
+            console.log("MESSAGE DATA DATA: ",data);
+        }
         
         res.status(201).json({message:"succes",succes:true,data:data})
     }catch(err){
