@@ -5,6 +5,7 @@ import {io} from "socket.io-client"
 import Cookies from "js-cookie"
 import { useGetUserAllMessageQuery, useGetUserMessageListQuery } from "../store/messageApi/messageApiSlicer"
 import { useGetUserShortProfileQuery } from "../store/userApi/userApiSlicer"
+import { getBase64 } from "../utils/imageProcess"
 
 export default function Message(){
 
@@ -71,23 +72,15 @@ export default function Message(){
     async function imageUpdate(event){
         if(socket !== null){
             console.log("Resmi güncelleme işlemi yapıldı");
-                    
+            const file = event.target.files[0]
+            const image = await getBase64(file)
+            const token = Cookies.get("accessToken")                
+
             const reader = new FileReader()
             reader.readAsDataURL(event.target.files[0])
-            let image ; 
-            reader.onload = () => {
-                image = reader.result
-                const token = Cookies.get("accessToken")                
-                // Sunucuya mesaj gönderme olayı
-                try{
-                    // console.log("MESAJ GİTTİ:",token);
-                    socket.emit('sendMessage', {text:image,token:token ,getUserId:id,isImage:true})
-                    setMessageText("")
-                }catch(err){
-                    console.log("EEEE::",err);
-                    // Toast message:
-                }
-            }
+            socket.emit('sendMessage', {text:image,token:token ,getUserId:id,isImage:true})
+            setMessageText("")
+            
           }else{
             console.log("NOTSOCKET:::::");
           }
@@ -178,8 +171,6 @@ export default function Message(){
                         </div>}
                         
                         </div>
-
-
 
                         )
                     }

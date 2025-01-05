@@ -24,7 +24,7 @@ export default function SingleTask({task}){
         await taskToTweet(task)
     }
 
-    return (<div className="bg-blue-200 flex flex-col gap-3 min-w-32 min-h-32 px-2 py-1 rounded-xl items-center ">
+    return (<div className="bg-blue-200 flex flex-col gap-3 max-w-40 min-w-32 min-h-32 px-2 py-1 rounded-xl items-center ">
         <div className="relative flex items-end justify-end w-full">
             <button onClick={() => setPreferenceControl(!preferenceControl)}><EllipsisVertical width={16} /></button>
             {preferenceControl && <div className="absolute flex flex-col gap-1 bg-blue-50 border-2 border-gray-300 rounded-xl px-4 py-1 top-2 right-4 ">

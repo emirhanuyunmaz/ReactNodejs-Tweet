@@ -117,20 +117,20 @@ const addTweet = async (req,res) => {
         const text = req.body.text
         const userTag = req.body.userTag
         const isImage = req.body.isImage
-        console.log("İmage: ",req.body);
-        console.log("LLLL:",text);
+        // console.log("İmage: ",req.body);
+        // console.log("LLLL:",text);
         
 
         if(text && !isImage){
-            console.log("USER TAG:",userTag)
-            console.log("TEXT:",text);
+            // console.log("USER TAG:",userTag)
+            // console.log("TEXT:",text);
                         
             // Veriyi flask kullanarak oluşturlan bir api den çekme işlemi.
             const predictionResponse = await axios.post("http://127.0.0.1:5000/predict",{
                 text:text
             })
     
-            console.log("GELEN VERİİ:::",predictionResponse.data.prediction);
+            // console.log("GELEN VERİİ:::",predictionResponse.data.prediction);
             
             
             const newTweet = new TweetModel({
@@ -144,7 +144,7 @@ const addTweet = async (req,res) => {
             res.status(200).json({message:"Succes"})
         }
         else if(text && isImage){
-            console.log("Resim gelimiş");
+            // console.log("Resim gelimiş");
 
             const imageName = uuid.v4()
             const filePath = __dirname + "/.." + `/uploads/${imageName}.png`
@@ -428,12 +428,17 @@ const userTweetProfile = async(req,res) => {
 const userShortProfile = async (req,res) => {
     try{
         const loginUserId = req.params.id
+        const id = req.headers.id
+        console.log("ID",loginUserId);
+        console.log("LOGİNID",id);
+        console.log(loginUserId == id);
+        
         // console.log("Kullanıcı id:",loginUserId != "undefined");
         let userData = null
         if(loginUserId != "undefined"){
             userData = await signupModel.findById(loginUserId).select("name surname description image email createdAt")
         }
-        res.status(201).json({message:"Succes",succes:true,data:userData})
+        res.status(201).json({message:"Succes",succes:true,data:userData,isUserProfile:loginUserId == id})
     }catch(err) {
         console.log("Kısa profil gösterilirken bir hata ile karşılaşıldı.",err);
         res.status(404).json({message:err,succes:false})

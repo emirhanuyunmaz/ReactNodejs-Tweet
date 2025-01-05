@@ -10,6 +10,7 @@ export default function UserProfile(){
     const params = useParams()
     // Kullanıcı id bilgisine göre safada gönderilerin görüntülenmesi işlemi.
     // console.log(params.id);
+    const [isUserProfile,setIsUserProfile] = useState(false)
     const [tweetList,setTweetList] = useState([])
     const [isProfile,setIsProfile] = useState(false)
     const [searchText,setSearchText] = useState("")
@@ -78,6 +79,9 @@ export default function UserProfile(){
     useEffect(() => {
         if(userShortProfile.isSuccess){
             getShortProfile()
+            console.log(userShortProfile.data.isUserProfile);
+            
+            setIsUserProfile(userShortProfile.data.isUserProfile)
         }
     },[userShortProfile.isSuccess,userShortProfile.isFetching])
 
@@ -88,6 +92,7 @@ export default function UserProfile(){
                 id:params.id,
                 text:searchText
             }
+
             setTweetList(userTweetProfile.data.data)
             // console.log("SS:::SS",userTweetProfile.data.userProfile);
             setIsProfile(userTweetProfile.data.userProfile)
@@ -136,7 +141,7 @@ export default function UserProfile(){
 
             {/* Tweet List */}
             <div className="flex px-5 md:px-10 flex-col w-full gap-5 mt-3 pb-5">
-                <TweetList tweetList={tweetList} isUserProfile={true}  />
+                <TweetList tweetList={tweetList} isUserProfile={isUserProfile}  />
             </div>
             <ContactDialog setShowModal={setContactDialogControl} showModal={contactDialogControl} userList={contactUserList} />
     </div>)

@@ -46,15 +46,15 @@ async function main(){
         // Socket io ile veri dinleme işlemi .
         io.on("connection", (socket) => {
             socket.join(socket.user.id)
-            console.log("KULLANİCİ::",socket.user.id);
+            // console.log("KULLANİCİ::",socket.user.id);
             
 
             socket.on('sendMessage' ,async (messageData) => {
                 try{
 
                     // isImage => bu veriye göre kaydetme işlemi yapılacak.
-                    console.log("SOCKET:",socket.recipientId);
-                    console.log("RESİMMİ::",messageData.isImage);
+                    // console.log("SOCKET:",socket.recipientId);
+                    // console.log("RESİMMİ::",messageData.isImage);
                     const decoded = jwt.decode(messageData.token,process.env.TOKEN_SECRET)            
 
                     if(!messageData.isImage){
@@ -66,7 +66,7 @@ async function main(){
                     }else{
                         const imageName = uuid.v4()
                         const filePath = __dirname + `/uploads/${imageName}.png`
-                        console.log("File Path:",filePath);
+                        // console.log("File Path:",filePath);
                         
                         fs.writeFile(filePath , messageData.text.split(";base64,").pop(), {encoding: 'base64'}, function(err) {
                             console.log('File created');
