@@ -121,12 +121,14 @@ export default function TaskUpdateDialog({showModal,setShowModal,task}){
                                   </button>
                                   &nbsp;
                                   <button onClick={onImageRemoveAll}></button>
-                                  {task.isImage ?<div  className="image-item flex flex-col gap-2">
-                                    <img key={Date.now()} src={updateImage} alt="" width="100" className="mx-auto"/>
+                                  {task.isImage ?<div  className=" image-item flex flex-col gap-2 ">
+                                    <div className="w-28 h-28">
+                                      <img key={Date.now()} src={updateImage} alt=""  className="w-full h-full"/>
+                                    </div>
                                     <div className="flex gap">
                                       <label htmlFor="updateImageInput" className="border-2 px-2 py-1 rounded-xl hover:border-green-400 duration-300 cursor-pointer">Güncelle</label>
                                       <input  type="file" hidden onChange={(e) => updateImageTask(e)} id="updateImageInput" />
-                                      <button  className="border-2 px-2 py-1 rounded-xl hover:border-red-400 duration-300">Sil</button>
+                                      
 
                                     </div>
                                   </div> : imageList.map((img, index) => (

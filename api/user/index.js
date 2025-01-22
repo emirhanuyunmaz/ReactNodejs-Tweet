@@ -203,7 +203,6 @@ const deleteTweet = async (req,res) => {
 
 }
 
-
 // ******************************GET TWEET LIST*************************** //
 //Tüm tweet listesini çekme işlemi. 
 const getTweetList = async (req,res) => {
