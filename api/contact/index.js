@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 
-const {UserContactModel} = require("./model")
+const {UserContactModel,UserNotificationModel} = require("./model")
 const SignUpModel = require("../singnup/model")
 const authControl = require("../middleware/auth")
 /**
@@ -195,11 +195,27 @@ const userFollowedList = async(req,res) => {
 /**
  * Bildirim ekleme işlemi yapılack beğeni-yorum-takip isteği-
 */
+//**********************GET NOTIFICATIN********************// 
+// Tüm bildirimleri çekme işlemi.
+const getAllNotification = async(req,res) => {
+    try{
+        const id = req.headers.id
+        const data = await UserNotificationModel.find({userId:id}).populate("transactionUser","name surname image")
+        console.log("Bildirim verisi:",data);
+        
+        res.status(200).json({succes:true,data:data})
+    }catch(err){
+        console.log("Bildirim çekme işleminde bir hata ile karşılaşıldı.",err);
+        
+        res.status(404).json({message:err,succes:false})
+    }
+}
 
 // contact/...
 router.route("/follow").post(authControl,userConnectionFollow)
 router.route("/unfollow").post(authControl,userConnectionUnfollow)
 router.route("/searchUser").post(authControl,userSearch)
+router.route("/notification").get(authControl,getAllNotification)
 router.route("/contactList/:id").get(authControl,contactList)
 router.route("/isFollow/:id").get(authControl,userIsFollow)
 router.route("/userFollowedList/:id").get(authControl,userFollowedList)

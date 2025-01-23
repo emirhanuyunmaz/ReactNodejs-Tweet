@@ -11,6 +11,7 @@ const uuid = require("uuid")
 const { default: axios } = require("axios")
 const SignUpModel = require("../singnup/model")
 
+const socket = require("socket.io")
 
 // Kullanıcı Profil resmini güncelleme işlemi .
 const upl = async (req,res) => {
@@ -242,6 +243,7 @@ const getTweetList = async (req,res) => {
 // *********************TWEET LIKE******************** //
 //Bir tweet beğenme işlemi.
 const likeTweet = async (req,res) => {
+        
     try{
         const userId = req.headers.id
         const tweetId = req.body.tweetId

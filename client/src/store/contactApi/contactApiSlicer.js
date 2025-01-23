@@ -74,8 +74,14 @@ export const contactApiSlice = createApi({
                 providesTags:["contact"]
             }),
 
+            userNotificationList:builder.query({
+                query:() => {
+                    return `/contact/notification`
+                },
+            }),
+
         }
     }
 })
 
-export const {useFollowUserMutation,useUnfollowUserMutation,useIsFollowUserQuery,useSearchUserMutation,useContactListQuery,useUserFollowerListQuery,useUserFollowedListQuery} = contactApiSlice
+export const {useFollowUserMutation,useUnfollowUserMutation,useIsFollowUserQuery,useSearchUserMutation,useContactListQuery,useUserFollowerListQuery,useUserFollowedListQuery,useUserNotificationListQuery} = contactApiSlice

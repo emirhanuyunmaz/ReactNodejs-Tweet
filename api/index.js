@@ -8,22 +8,23 @@ const io = new Server(server,{
         methods:["GET","POST","DELETE"]
     }
 })
+global.io = io
+
 const mongoose = require('mongoose')
 const jwt = require("jsonwebtoken")
 const { MessageModel } = require("./message/model")
+const {UserNotificationModel} = require("./contact/model")
 const uuid = require("uuid")
 const fs = require("fs")
 async function main(){
     try{
 
-
-
-        mongoose.connect('mongodb://127.0.0.1:27017/tweet').then(() => console.log('Connected!'));
+        mongoose.connect('mongodb://127.0.0.1:27017/tweet').then(() => console.log('Connected! MongoDB'));
 
         io.use((socket, next) => {
             const token = socket.handshake.query.token;
             const userId = socket.handshake.query.userId
-            // console.log("LDLDLDLLDLDLL");
+            console.log("LDLDLDLLDLDLL");
             
             if (token) {
               jwt.verify(token, process.env.TOKEN_SECRET, (err, decoded) => {
@@ -42,21 +43,19 @@ async function main(){
         } 
         });
 
-        
+        // console.log("SOCKETIO");
+                
         // Socket io ile veri dinleme işlemi .
         io.on("connection", (socket) => {
             socket.join(socket.user.id)
             // console.log("KULLANİCİ::",socket.user.id);
             
-
+            console.log("::SOCKETIIIIÇ:");
+            // Mesaj Gönderme Ve Alma İşlemi
             socket.on('sendMessage' ,async (messageData) => {
                 try{
-
-                    // isImage => bu veriye göre kaydetme işlemi yapılacak.
-                    // console.log("SOCKET:",socket.recipientId);
-                    // console.log("RESİMMİ::",messageData.isImage);
                     const decoded = jwt.decode(messageData.token,process.env.TOKEN_SECRET)            
-
+                    
                     if(!messageData.isImage){
                         // Kullanıcı mesaj gönderdiği zaman sunucunun mesajı kaydetme ve kullnıcılara göndermesi işlemi.
                         
@@ -80,6 +79,38 @@ async function main(){
                 }
             })
 
+            // Bildirim Alma işlemi
+            socket.on("notification",async (notification) => {
+                // notification ile gelen userId bilgisi bildirim gönderilercek kullanıcıyı belirler.
+                try{
+                    //Burada başka kullanıcıdan gelen bildirimler sayısı verilecek ve görülmeyenler için     
+                    if((socket.user.id != notification.tweet.userId._id) && notification.process=="follow" ){
+                        console.log("Başka bir kullanıcı .");
+                        const newNotification = new UserNotificationModel({
+                            postId:notification.tweet._id,
+                            userId:notification.tweet.userId._id,
+                            process:notification.process,
+                            transactionUser:socket.user.id
+                        })
+                        await newNotification.save()
+                        io.to(notification.tweet.userId._id).emit("notification",{notification:"WORLD"})                        
+                    }else{
+                        console.log("Kendi hesabı");
+                    }
+                    if((socket.user.id != notification.tweet.userId._id) && notification.process=="unfollow" ){
+                        // console.log("BEĞENİ ÇEKME İŞLEMİ:::::",notification);
+                        await UserNotificationModel.findOneAndDelete({userId:notification.tweet.userId._id,
+                        transactionUser:socket.user.id,
+                        // process:notification.process,
+                        postId:notification.tweet._id
+                    })   
+                    }
+                    
+                }catch(err) {
+                    console.log("Bildirim işlemi yapılırken bir hata ile karşılaşıldı.",err);
+                    
+                }
+            }) 
             socket.on('connect_error', (err) => {
                 console.log('Connection Error:', err); // Bağlantı hatasını logla
             });

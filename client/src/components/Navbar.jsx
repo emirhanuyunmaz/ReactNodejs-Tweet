@@ -5,14 +5,16 @@ import "aos/dist/aos.css";
 import Aos from "aos"
 import { Bell } from "lucide-react";
 import NotificationCard from "./NotificationCard";
-import UserSearchList from "./UserSearchList";
+import {io} from "socket.io-client"
+import { useUserNotificationListQuery } from "../store/contactApi/contactApiSlicer";
+// import UserSearchList from "./UserSearchList";
 
 export default function Navbar(){
     const [settingsControl,setSettingsControl] = useState(false)
-    const [searchControl,setSearchControl] = useState(false)
     const [notificationControl,setNotificationControl] = useState(false)
+    const[ socket,setSocket] = useState(null)
     let {token,logout} = useContext(userContext) 
-    // console.log("Context Token :",token);
+    
     function notificationOnClick(){
         if(notificationControl){
             setNotificationControl(false)
@@ -22,15 +24,41 @@ export default function Navbar(){
             document.body.style.overflow = "hidden"
         }
     }
-    
 
-    useEffect(() =>{
-        Aos.init({
-            disable: "phone",
-            duration: 200,
-            easing: "ease-out-cubic",
-          });
-    },[])
+    const connectSocket = async () => {
+        const token = Cookies.get('accessToken'); // Token'ı async storage'dan al
+        
+        let s = io('http://localhost:3000/', {query:{token:token}, transports: ['websocket'], reconnection: true });;
+        setSocket(s)
+        
+        // Alıcıya mesaj geldiğinde dinle
+        s.on('notification', (notification) => {
+            console.log("SOCKET NOTİFİCATİON",notification);
+            // setMessageList((prevMessages) => [...prevMessages, newMessage]);
+          // }
+        });
+    }
+    useEffect(() => {  
+            
+        connectSocket();
+        
+        // Bağlantı kesilmeden önce Socket'i temizle
+        // return () => {
+        //   socket.disconnect();
+        // }
+    
+        },[])
+
+
+
+
+    // useEffect(() =>{
+    //     Aos.init({
+    //         disable: "phone",
+    //         duration: 500,
+    //         easing: "ease-out-cubic",
+    //       });
+    // },[])
 
     return(
     <nav className="bg-blue-500 text-white px-16 md:px-32 py-4 flex items-center justify-between">
@@ -56,7 +84,7 @@ export default function Navbar(){
         </div>} */}
         {settingsControl && <div onClick={() => {setSettingsControl(false)}}  className="bg-opacity-0 z-0 fixed inset-0  w-screen h-screen"></div>}
         
-        {/* {token && <div className={`ms-auto"`}>
+        {token && <div className={`ms-auto"`}>
             <button onClick={notificationOnClick} className="hover:text-gray-300">
                 <Bell />
             </button>
@@ -66,7 +94,7 @@ export default function Navbar(){
                 <div onClick={notificationOnClick} className=" opacity-0 fixed inset-0 z-40"></div>
             </>
             }
-        </div>} */}
+        </div>}
 
         
             

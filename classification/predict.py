@@ -37,8 +37,8 @@ def preprocess_image(image_data):
 #Resim sınıflandırma işlemi için modelin yüklenmesi işlemi
 
 # image_classification = Sequential()
-# image_classification = load_model("emotiondetector.keras")
-image_classification = load_model("emotiondetector_2.keras")
+image_classification = load_model("emotiondetector.keras")
+# image_classification = load_model("emotiondetector_2.keras")
 # Model ve CountVectorizer'ı yükleme işlemi.
 with open('model.pkl', 'rb') as model_file:
     model = pickle.load(model_file)

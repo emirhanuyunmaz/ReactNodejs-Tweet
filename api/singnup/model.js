@@ -7,7 +7,11 @@ const signUpShema = new Schema({
     email:String,
     image:String,
     password:String,
-    description:String
+    description:String,
+    profilePrivate:{
+        type:Boolean,
+        default:false
+    }
 },{timestamps:true})
 
 

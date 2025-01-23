@@ -1,10 +1,12 @@
 import { EllipsisVertical, Heart, MessageCircle } from "lucide-react";
 import { useDeleteTweetMutation, useTweetLikeMutation, useUserTweetDislikeMutation } from "../store/userApi/userApiSlicer";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { userContext } from "../context/userContext";
 
 
 export default function TweetCard({tweet,userTweetLike,isUserProfile}){
+    const context = useContext(userContext)
     const navigate = useNavigate() 
     const [userLikeTweet,responseLikeTweet] = useTweetLikeMutation()
     const [tweetDislike,responseTweetDislike] = useUserTweetDislikeMutation()
@@ -12,6 +14,8 @@ export default function TweetCard({tweet,userTweetLike,isUserProfile}){
     const [preferenceControl,setPreferenceControl] = useState(false)
     const [deleteTweet,responseDeleteTweet] = useDeleteTweetMutation()
     
+
+
     function formatDate(date) {
         let d =new Date(date)
         let datePart = [
@@ -25,7 +29,7 @@ export default function TweetCard({tweet,userTweetLike,isUserProfile}){
         ].map((n, i) => n.toString().padStart(2, "0")).join(":");
         return datePart + " " + timePart;
     }
-
+    
 
     function CommentPage(tweetId){
         navigate(`/tweet/${tweetId}`)
@@ -33,13 +37,14 @@ export default function TweetCard({tweet,userTweetLike,isUserProfile}){
 
     async function userTweetDislike(tweetId){        
         await tweetDislike({tweetId:tweetId})
+        await context.tweetUnfollowSocket(tweet,"unfollow")
     }
 
     async function setLikeTweet(tweetId){
         const tweetLikeBody = {tweetId:tweetId} 
         await userLikeTweet(tweetLikeBody)
+        await context.tweetFollowSocket(tweet,"follow")
     }
-
 
     return(<div key={tweet._id} className="flex flex-col gap-3 border-2 bg-blue-100 p-3 rounded-xl hover:shadow-xl duration-300">
         {/* USER */}

@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken")
 
 
 const authControl = async(req,res,next) => {
-    console.log("AUTH CONTROL");
+    // console.log("AUTH CONTROL");
     try{
 
         // console.log(req.headers);
@@ -17,15 +17,15 @@ const authControl = async(req,res,next) => {
                 succeded:false,
                 message:"Error",            
             })
-            console.log("::TOKEN YOK::");
+            // console.log("::TOKEN YOK::");
             
         }else{
             jwt.verify(token,process.env.TOKEN_SECRET,async(err,decodedToken) => {
                 if(err){
                     //Refresh token kontrol edilecek.
-                    console.log("Token Süresi geçmiş");
+                    // console.log("Token Süresi geçmiş");
                 }else{
-                    console.log("DECODED TOKEN:",decodedToken);
+                    // console.log("DECODED TOKEN:",decodedToken);
                     req.headers.id = decodedToken.id
                 }
             })

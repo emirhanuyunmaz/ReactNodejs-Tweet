@@ -21,7 +21,35 @@ const userContactSchema = new Schema({
     }]
 })
 
+//************BILDIRIM***********// 
+const notificationSchema = new Schema({
+    userId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"SignUp"
+    },
+    transactionUser:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"SignUp"
+    },
+    process:String,
+    postId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Tweet"
+    },
+    isShowed:{
+        type:Boolean,
+        default:false
+    },
+    createAt:{
+        type:Date,
+        default:Date.now()
+    }
+    
+})
+
+
 
 const UserContactModel = mongoose.model("Contact",userContactSchema)
+const UserNotificationModel = mongoose.model("Notification",notificationSchema)
 
-module.exports = {UserContactModel,UserContactModel}
+module.exports = {UserContactModel,UserNotificationModel }
