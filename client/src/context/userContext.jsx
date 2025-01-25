@@ -22,6 +22,7 @@ function UserContextProvider({children}){
         setSocket(s)
     }
 
+    // Socket ile beğenme işleminde bildirim gönderme işlemi.
     async function tweetFollowSocket(tweet,process){
 
         if(socket !== null){
@@ -41,7 +42,26 @@ function UserContextProvider({children}){
         }
     }
 
+    // Socket ile beğeni çekme işleminde bildirimi silme işlemi
     async function tweetUnfollowSocket(tweet,process){
+
+        if(socket !== null){            
+            const token = Cookies.get("accessToken")
+            // Sunucuya bildirim gönderme olayı
+            try{
+            socket.emit('notification', {tweet:tweet,token:token,process})
+            
+            }catch(err){
+                console.log("EEEE::",err);
+            // Toast message:
+            }
+        }else{
+            console.log("NOTSOCKET:::::");
+        }
+    }
+
+    // Veride ufak bir dğzenleme ile yorum bildirim ekleme işlemi.
+    async function tweetCommentSocket(tweet,process){
 
         if(socket !== null){            
             const token = Cookies.get("accessToken")
@@ -63,7 +83,7 @@ function UserContextProvider({children}){
     },[])
 
 
-    return(<userContext.Provider value={{token,refreshToken,logout,tweetFollowSocket,tweetUnfollowSocket}} >{children}</userContext.Provider>)
+    return(<userContext.Provider value={{token,refreshToken,logout,tweetFollowSocket,tweetUnfollowSocket,tweetCommentSocket}} >{children}</userContext.Provider>)
 }
 
 

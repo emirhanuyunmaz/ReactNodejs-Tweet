@@ -22,12 +22,23 @@ export default function NotificationCard({setControl}){
                 {/* Son 5 bildirim ve bildirimleri tamamı için bir sayfa. */}
                 <ul className="flex flex-col gap-2">
                     {
-                        data.map((item) => <li key={item._id} className="flex items-center gap-2 hover:bg-blue-400 px-6 py-1 rounded-xl hover:shadow-xl duration-300">
+                        data.map((item) => item.process == "follow" ? <li key={item._id} className="flex items-center gap-2 hover:bg-blue-400 px-6 py-1 rounded-xl hover:shadow-xl duration-300">
                             <a href={`/tweet/${item.postId}`} className="flex items-center gap-3">
                                 <img src={item.transactionUser.image} className="w-12 rounded-full" alt="" />
-                                <p>Tweetinizi beğendi</p>
+                                <div className="flex flex-col">
+                                    <p className="font-semibold">{item.transactionUser.name} {item.transactionUser.surname}</p>
+                                    <p>Tweetinizi beğendi</p>
+                                </div>
                             </a>
-                    </li>)
+                    </li> : item.process == "tweetComment" ? <li key={item._id} className="flex items-center gap-2 hover:bg-blue-400 px-6 py-1 rounded-xl hover:shadow-xl duration-300">
+                            <a href={`/tweet/${item.postId}`} className="flex items-center gap-3">
+                                <img src={item.transactionUser.image} className="w-12 rounded-full" alt="" />
+                                <div className="flex flex-col">
+                                    <p className="font-semibold">{item.transactionUser.name} {item.transactionUser.surname}</p>
+                                    <p>Tweetinize Yorum yaptı</p>
+                                </div>
+                            </a>
+                    </li>:<></>)
                     }
                     
 

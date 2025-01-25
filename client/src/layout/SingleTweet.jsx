@@ -1,12 +1,14 @@
 import { useParams } from "react-router-dom"
 import { useGetSingleTweetQuery, useGetUserTweetLikeListQuery, useTweetCommentListQuery, useUserTweetAddCommentMutation } from "../store/userApi/userApiSlicer";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import TweetCard from "../components/TweetCard";
 import TweetCommentCard from "../components/TweetCommentCard";
 import TagsCard from "../components/TagsCard";
+import { userContext } from "../context/userContext";
 
 
 export default function SingleTweet(){
+    const context = useContext(userContext) 
     const {id} = useParams()
     const {data,isLoading,error,isSuccess,isFetching} = useGetSingleTweetQuery(id)
     const userTweetLikeList = useGetUserTweetLikeListQuery()
@@ -33,7 +35,7 @@ export default function SingleTweet(){
     }
 
     function getCommentList (){        
-        console.log(tweetCommentList.data.commentTagList);
+        // console.log(tweetCommentList.data.commentTagList);
         setTagList(tweetCommentList.data.commentTagList)
         setComments(tweetCommentList.data.data)
     }
@@ -42,6 +44,7 @@ export default function SingleTweet(){
     async function addComment(){
         const body = {tweetId:id,text:text}
         await addTweetComment(body)
+        context.tweetCommentSocket(tweet,"tweetComment")
         setText("")
     }
 

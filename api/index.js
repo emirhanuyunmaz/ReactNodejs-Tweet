@@ -93,17 +93,32 @@ async function main(){
                             transactionUser:socket.user.id
                         })
                         await newNotification.save()
+
                         io.to(notification.tweet.userId._id).emit("notification",{notification:"WORLD"})                        
                     }else{
                         console.log("Kendi hesabı");
                     }
+                    // Tweet beğeni işlemini geri alma işlemi.
                     if((socket.user.id != notification.tweet.userId._id) && notification.process=="unfollow" ){
                         // console.log("BEĞENİ ÇEKME İŞLEMİ:::::",notification);
                         await UserNotificationModel.findOneAndDelete({userId:notification.tweet.userId._id,
                         transactionUser:socket.user.id,
                         // process:notification.process,
                         postId:notification.tweet._id
-                    })   
+                        })   
+                    }
+
+                    // Tweet yorum yapma işlemi.
+                    if((socket.user.id != notification.tweet.userId._id) && notification.process=="tweetComment" ){
+                        console.log("Yorum yapma İŞLEMİ:::::",notification);
+                        const newNotification = new UserNotificationModel({
+                            postId:notification.tweet._id,
+                            userId:notification.tweet.userId._id,
+                            process:notification.process,
+                            transactionUser:socket.user.id
+                        })
+                        await newNotification.save()
+                          
                     }
                     
                 }catch(err) {
