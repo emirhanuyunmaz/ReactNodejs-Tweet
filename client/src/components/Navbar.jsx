@@ -6,21 +6,26 @@ import Aos from "aos"
 import { Bell } from "lucide-react";
 import NotificationCard from "./NotificationCard";
 import {io} from "socket.io-client"
-import { useUserNotificationListQuery } from "../store/contactApi/contactApiSlicer";
-// import UserSearchList from "./UserSearchList";
+import { useNotificationShowedMutation, useUserNotificationLengthQuery } from "../store/contactApi/contactApiSlicer";
 
 export default function Navbar(){
     const [settingsControl,setSettingsControl] = useState(false)
     const [notificationControl,setNotificationControl] = useState(false)
-    const[ socket,setSocket] = useState(null)
+    const [notificationLength,setNotificationLength] = useState(0)
+    const [socket,setSocket] = useState(null)
+
+    const getUserNotificationLength = useUserNotificationLengthQuery()
+    const [notificationShowed,resNotificationShowed] = useNotificationShowedMutation()
     let {token,logout} = useContext(userContext) 
     
-    function notificationOnClick(){
+    async function notificationOnClick(){
         if(notificationControl){
             setNotificationControl(false)
             document.body.style.overflow = "auto"
         }else{
             setNotificationControl(true)
+            await notificationShowed()
+            getUserNotificationLength.refetch()
             document.body.style.overflow = "hidden"
         }
     }
@@ -32,12 +37,11 @@ export default function Navbar(){
         setSocket(s)
         
         // Alıcıya mesaj geldiğinde dinle
-        s.on('notification', (notification) => {
-            console.log("SOCKET NOTİFİCATİON",notification);
-            // setMessageList((prevMessages) => [...prevMessages, newMessage]);
-          // }
+        s.on('notification', (notification) => {            
+            setNotificationLength(notification.notificationLength)
         });
     }
+    
     useEffect(() => {  
             
         connectSocket();
@@ -47,18 +51,22 @@ export default function Navbar(){
         //   socket.disconnect();
         // }
     
-        },[])
+    },[])
+
+    useEffect(() => {
+        if(getUserNotificationLength.isSuccess){
+            setNotificationLength(getUserNotificationLength.data.data)
+        }
+    },[getUserNotificationLength.isSuccess,getUserNotificationLength.isFetching])
 
 
-
-
-    // useEffect(() =>{
-    //     Aos.init({
-    //         disable: "phone",
-    //         duration: 500,
-    //         easing: "ease-out-cubic",
-    //       });
-    // },[])
+    useEffect(() =>{
+        Aos.init({
+            disable: "phone",
+            duration: 300,
+            easing: "ease-out-cubic",
+          });
+    },[])
 
     return(
     <nav className="bg-blue-500 text-white px-16 md:px-32 py-4 flex items-center justify-between">
@@ -85,14 +93,17 @@ export default function Navbar(){
         {settingsControl && <div onClick={() => {setSettingsControl(false)}}  className="bg-opacity-0 z-0 fixed inset-0  w-screen h-screen"></div>}
         
         {token && <div className={`ms-auto"`}>
-            <button onClick={notificationOnClick} className="hover:text-gray-300">
+            <button onClick={notificationOnClick} className="hover:text-gray-300 relative">
                 <Bell />
+                <span className="absolute -top-3 -right-3 ">
+                    {notificationLength}
+                </span>
             </button>
 
-            {notificationControl && <>
-                <NotificationCard/>
+            {notificationControl && <div data-aos="fade-down">
+                <NotificationCard notificationLength={notificationLength} />
                 <div onClick={notificationOnClick} className=" opacity-0 fixed inset-0 z-40"></div>
-            </>
+            </div>
             }
         </div>}
 

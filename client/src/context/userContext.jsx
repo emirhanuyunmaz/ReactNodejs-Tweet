@@ -23,7 +23,7 @@ function UserContextProvider({children}){
     }
 
     // Socket ile beğenme işleminde bildirim gönderme işlemi.
-    async function tweetFollowSocket(tweet,process){
+    async function tweetLikeSocket(tweet,process){
 
         if(socket !== null){
             console.log("SSSSS:::");
@@ -43,7 +43,7 @@ function UserContextProvider({children}){
     }
 
     // Socket ile beğeni çekme işleminde bildirimi silme işlemi
-    async function tweetUnfollowSocket(tweet,process){
+    async function tweetUnlikeSocket(tweet,process){
 
         if(socket !== null){            
             const token = Cookies.get("accessToken")
@@ -60,7 +60,7 @@ function UserContextProvider({children}){
         }
     }
 
-    // Veride ufak bir dğzenleme ile yorum bildirim ekleme işlemi.
+    // Yorum bildirim ekleme işlemi.
     async function tweetCommentSocket(tweet,process){
 
         if(socket !== null){            
@@ -78,12 +78,48 @@ function UserContextProvider({children}){
         }
     }
 
+    // Kullaıcı takip isteği atma işlemi.
+    async function userFollowSocket(userId,process){
+
+        if(socket !== null){            
+            const token = Cookies.get("accessToken")
+            // Sunucuya bildirim gönderme olayı
+            try{
+            socket.emit('notification', {userId:userId,token:token,process})
+            
+            }catch(err){
+                console.log("EEEE::",err);
+            // Toast message:
+            }
+        }else{
+            console.log("NOTSOCKET:::::");
+        }
+    }
+
+    // Kullaıcı takip isteğini geri çekme işlemi.
+    async function userUnfollowSocket(userId,process){
+
+        if(socket !== null){            
+            const token = Cookies.get("accessToken")
+            // Sunucuya bildirim gönderme olayı
+            try{
+                socket.emit('notification', {userId:userId,token:token,process})
+            
+            }catch(err){
+                console.log("EEEE::",err);
+            // Toast message:
+            }
+        }else{
+            console.log("NOTSOCKET:::::");
+        }
+    }
+
     useEffect(() => {
         connectSocket()
     },[])
 
 
-    return(<userContext.Provider value={{token,refreshToken,logout,tweetFollowSocket,tweetUnfollowSocket,tweetCommentSocket}} >{children}</userContext.Provider>)
+    return(<userContext.Provider value={{token,refreshToken,logout,tweetLikeSocket,tweetUnlikeSocket,tweetCommentSocket,userFollowSocket,userUnfollowSocket}} >{children}</userContext.Provider>)
 }
 
 

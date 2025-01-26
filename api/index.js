@@ -50,7 +50,7 @@ async function main(){
             socket.join(socket.user.id)
             // console.log("KULLANİCİ::",socket.user.id);
             
-            console.log("::SOCKETIIIIÇ:");
+            // console.log("::SOCKETIIIIÇ:");
             // Mesaj Gönderme Ve Alma İşlemi
             socket.on('sendMessage' ,async (messageData) => {
                 try{
@@ -65,7 +65,6 @@ async function main(){
                     }else{
                         const imageName = uuid.v4()
                         const filePath = __dirname + `/uploads/${imageName}.png`
-                        // console.log("File Path:",filePath);
                         
                         fs.writeFile(filePath , messageData.text.split(";base64,").pop(), {encoding: 'base64'}, function(err) {
                             console.log('File created');
@@ -79,12 +78,39 @@ async function main(){
                 }
             })
 
-            // Bildirim Alma işlemi
+            // ******************Bildirim Alma işlemi******************* //
             socket.on("notification",async (notification) => {
                 // notification ile gelen userId bilgisi bildirim gönderilercek kullanıcıyı belirler.
                 try{
+
+                    // console.log("A:",notification);
+                    
+                    // Takip isteği atma işlemi.
+                    if(notification.process=="follow" && (socket.user.id != notification.userId)  ){
+                        console.log("Takip isteği İŞLEMİ:::::",notification);
+                        const newNotification = new UserNotificationModel({
+                            userId:notification.userId,
+                            process:notification.process,
+                            transactionUser:socket.user.id
+                        })
+                        await newNotification.save()
+                        const notificationLength = await UserNotificationModel.find({userId:notification.userId,isShowed:false})
+                        io.to(notification.userId).emit("notification",{notificationLength:notificationLength.length})
+                    }
+
+                    // Takip isteğini geri çekme işlemi.
+                    if(notification.process=="unfollow" && (socket.user.id != notification.userId)  ){
+                        console.log("Takip isteği Çekme İŞLEMİ:::::",notification);
+                        await UserNotificationModel.findOneAndDelete({userId:notification.userId,
+                            transactionUser:socket.user.id,
+                            process:"follow",
+                            })
+                        const notificationLength = await UserNotificationModel.find({userId:notification.tweet.userId._id,isShowed:false})
+                        io.to(notification.tweet.userId._id).emit("notification",{notificationLength:notificationLength.length})
+                    }
+
                     //Burada başka kullanıcıdan gelen bildirimler sayısı verilecek ve görülmeyenler için     
-                    if((socket.user.id != notification.tweet.userId._id) && notification.process=="follow" ){
+                    if(notification.process=="like" && (socket.user.id != notification.tweet.userId._id)  ){
                         console.log("Başka bir kullanıcı .");
                         const newNotification = new UserNotificationModel({
                             postId:notification.tweet._id,
@@ -93,23 +119,26 @@ async function main(){
                             transactionUser:socket.user.id
                         })
                         await newNotification.save()
-
-                        io.to(notification.tweet.userId._id).emit("notification",{notification:"WORLD"})                        
-                    }else{
-                        console.log("Kendi hesabı");
+                        const notificationLength = await UserNotificationModel.find({userId:notification.tweet.userId._id,isShowed:false})
+                        io.to(notification.tweet.userId._id).emit("notification",{notificationLength:notificationLength.length})                        
                     }
+                    // else{
+                    //     console.log("Kendi hesabı");
+                    // }
                     // Tweet beğeni işlemini geri alma işlemi.
-                    if((socket.user.id != notification.tweet.userId._id) && notification.process=="unfollow" ){
-                        // console.log("BEĞENİ ÇEKME İŞLEMİ:::::",notification);
+                    if(notification.process=="unlike" && (socket.user.id != notification.tweet.userId._id)  ){
+                        console.log("BEĞENİ ÇEKME İŞLEMİ:::::");
                         await UserNotificationModel.findOneAndDelete({userId:notification.tweet.userId._id,
                         transactionUser:socket.user.id,
-                        // process:notification.process,
+                        process:"like",
                         postId:notification.tweet._id
-                        })   
+                        })
+                        const notificationLength = await UserNotificationModel.find({userId:notification.tweet.userId._id,isShowed:false})
+                        io.to(notification.tweet.userId._id).emit("notification",{notificationLength:notificationLength.length})
                     }
 
                     // Tweet yorum yapma işlemi.
-                    if((socket.user.id != notification.tweet.userId._id) && notification.process=="tweetComment" ){
+                    if(notification.process=="tweetComment" && (socket.user.id != notification.tweet.userId._id)){
                         console.log("Yorum yapma İŞLEMİ:::::",notification);
                         const newNotification = new UserNotificationModel({
                             postId:notification.tweet._id,
@@ -118,8 +147,10 @@ async function main(){
                             transactionUser:socket.user.id
                         })
                         await newNotification.save()
-                          
+                        const notificationLength = await UserNotificationModel.find({userId:notification.tweet.userId._id,isShowed:false})
+                        io.to(notification.tweet.userId._id).emit("notification",{notificationLength:notificationLength.length})
                     }
+
                     
                 }catch(err) {
                     console.log("Bildirim işlemi yapılırken bir hata ile karşılaşıldı.",err);

@@ -80,8 +80,46 @@ export const contactApiSlice = createApi({
                 },
             }),
 
+            userNotificationLength:builder.query({
+                query:() => {
+                    return `/contact/notificationLength`
+                },
+            }),
+
+            userIsFollowRequestSent:builder.query({
+                query:(id) => {
+                    return `/contact/isFollowRequestSent/${id}`
+                },
+            }),
+
+            notificationFollowAccept:builder.mutation({
+                query:(body) => ({
+                    url:"/contact/notificationFollowAccept",
+                    method: "POST",
+                    body:body
+                }),
+                // invalidatesTags:["contact"]
+            }),
+
+            notificationFollowReject:builder.mutation({
+                query:(body) => ({
+                    url:"/contact/notificationFollowReject",
+                    method: "POST",
+                    body:body
+                }),
+                // invalidatesTags:["contact"]
+            }),
+
+            notificationShowed:builder.mutation({
+                query:() => ({
+                    url:"/contact/notificationShowed",
+                    method: "POST",
+                    // body:body
+                }),
+                // invalidatesTags:["contact"]
+            }),
         }
     }
 })
 
-export const {useFollowUserMutation,useUnfollowUserMutation,useIsFollowUserQuery,useSearchUserMutation,useContactListQuery,useUserFollowerListQuery,useUserFollowedListQuery,useUserNotificationListQuery} = contactApiSlice
+export const {useFollowUserMutation,useUnfollowUserMutation,useIsFollowUserQuery,useSearchUserMutation,useContactListQuery,useUserFollowerListQuery,useUserFollowedListQuery,useUserNotificationListQuery,useUserNotificationLengthQuery,useUserIsFollowRequestSentQuery,useNotificationFollowAcceptMutation,useNotificationFollowRejectMutation,useNotificationShowedMutation} = contactApiSlice

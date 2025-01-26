@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {  useParams } from "react-router-dom"
 import { useGetUserShortProfileQuery,useUserTweetProfileQuery } from "../store/userApi/userApiSlicer";
 import TweetList from "../components/TweetList";
-import { useContactListQuery, useFollowUserMutation, useIsFollowUserQuery, useUnfollowUserMutation, useUserFollowedListQuery, useUserFollowerListQuery } from "../store/contactApi/contactApiSlicer";
+import { useContactListQuery, useFollowUserMutation, useIsFollowUserQuery, useUnfollowUserMutation, useUserFollowedListQuery, useUserFollowerListQuery, useUserIsFollowRequestSentQuery } from "../store/contactApi/contactApiSlicer";
 import ContactDialog from "../components/ContactDialog";
+import { userContext } from "../context/userContext";
 
 
 export default function UserProfile(){
@@ -17,10 +18,13 @@ export default function UserProfile(){
     const [userProfile,setUserProfile] = useState({})
     const [contactDialogControl,setContactDialogControl] = useState(false)
     const [contactUserList,setContactUserList] = useState([])  
+    const [postIsShow,setPostIsShow] = useState(true)
+    const [followRequest,setFollowRequest] = useState(false)
     let data = {
         id:params.id,
         text:searchText
     }
+
     const userTweetProfile = useUserTweetProfileQuery(data)
     const userShortProfile = useGetUserShortProfileQuery(params.id)
     const [contactUserFollow,responseContactFollow] = useFollowUserMutation()
@@ -29,6 +33,9 @@ export default function UserProfile(){
     const contactList = useContactListQuery(params.id) 
     const getUserFollowerList = useUserFollowerListQuery(params.id) //takipçi listesi
     const getUserFollowedList = useUserFollowedListQuery(params.id) // Takip edilen listesi
+    const isFollowRequestSent = useUserIsFollowRequestSentQuery(params.id)
+    const context = useContext(userContext)
+
 
     function formatDateProfile(date) {
         let d =new Date(date)
@@ -40,8 +47,27 @@ export default function UserProfile(){
         return datePart ;
     }
 
+    // Kullanıcı takip isteği atma işlemi.
+    async function UserFollowSocketOnClick(){
+        console.log("TAKİP İSTEĞİ");
+        await context.userFollowSocket(params.id,"follow")
+        isFollowRequestSent.refetch()
+        // location.reload()
+    }
+
+    // Kullanıcı takip isteği atma işlemi.
+    async function UserUnfollowSocketOnClick(){
+        console.log("TAKİP Geri Çekme İSTEĞİ");
+        await context.userUnfollowSocket(params.id,"unfollow")
+        isFollowRequestSent.refetch()
+
+        // location.reload()
+    }
+
     function getShortProfile(){
-        console.log(userProfile);
+        // console.log("SSSS:AAA::A",userShortProfile.data.data.profilePrivate);
+        // setProfilePrivate(userShortProfile.data.data.profilePrivate)
+        // setProfilePrivate(userProfile.data.data.profilePrivate)
         setUserProfile(userShortProfile.data.data)
         // console.log("User Profile:",userShortProfile.data.data);
     }
@@ -64,14 +90,14 @@ export default function UserProfile(){
 
     // Takipçi listesi çekilmesi işlemi.
     function getFollowerList(){
-        console.log(getUserFollowerList.data)
+        // console.log(getUserFollowerList.data)
         setContactUserList(getUserFollowerList.data.data)
         setContactDialogControl(true)
     } 
 
     // Takip edilen listesi çekilmesi işlemi.
     function getFollowedList(){
-        console.log(getUserFollowedList.data)
+        // console.log(getUserFollowedList.data)
         setContactUserList(getUserFollowedList.data.data)
         setContactDialogControl(true)
     } 
@@ -100,12 +126,26 @@ export default function UserProfile(){
     },[userTweetProfile.isFetching,userTweetProfile.isSuccess,searchText])
 
     useEffect(() => {
-        if(getUserIsFollow.isSuccess){
+        // console.log("getUserIsFollow?.data?.data:",getUserIsFollow?.data?.data);
+        // console.log("profilePrivate",profilePrivate);
+        
+        if((userShortProfile.isSuccess && getUserIsFollow.isSuccess && !userShortProfile.data.data.profilePrivate) || getUserIsFollow?.data?.data || userShortProfile.data?.isUserProfile ){
             // console.log(getUserIsFollow.data.data);
-            
+            console.log("Profili göster");
+            setPostIsShow(true)
+        }else{
+            console.log("Profili gizle");
+            setPostIsShow(false)
         }
-    },[getUserIsFollow.isFetching,getUserIsFollow.isSuccess,getUserIsFollow.isError])
+    },[userShortProfile.isSuccess,userShortProfile.isFetching,getUserIsFollow.isFetching])
     
+
+    useEffect(() => {
+        if(isFollowRequestSent.isSuccess){
+            // console.log("SA:",isFollowRequestSent.data);
+            setFollowRequest(isFollowRequestSent.data.data)
+        }
+    },[isFollowRequestSent.isSuccess,isFollowRequestSent.isFetching])
 
     return (<div className="md:w-3/4 md:mx-auto mt-10">
 
@@ -123,10 +163,15 @@ export default function UserProfile(){
                     <button onClick={getFollowedList} className="font-bold hover:underline">{contactList?.data?.followed ? contactList?.data?.followed :0 } takip</button>
                 </div>
                 {!isProfile && <div className="ms-auto flex flex-col justify-center">
-                    {!getUserIsFollow?.data?.data && <button onClick={userFollowOnClick} className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Takip Et</button>}
+                    {!getUserIsFollow?.data?.data && postIsShow && <button onClick={userFollowOnClick} className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Takip Et</button>}
+
+                    {!getUserIsFollow?.data?.data && !postIsShow && !followRequest && <button onClick={UserFollowSocketOnClick} className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Takip İsteği At</button>}
+
+                    {!getUserIsFollow?.data?.data && !postIsShow && followRequest && <button onClick={UserUnfollowSocketOnClick} className="border-2 px-8 py-2 rounded-xl bg-blue-200 hover:bg-blue-400 hover:text-white duration-300 " >Takip İsteğini Çek</button>}
+
                     {getUserIsFollow?.data?.data && <button onClick={userUnfollowOnClick} className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Takipten Çık</button>}
 
-                    <a href={`/message/${params.id}`} className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Mesaj At</a>
+                    <a href={`/message/${params.id}`} className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 text-center" >Mesaj At</a>
                 </div>}
                 {
                     isProfile &&<div className="ms-auto flex flex-col justify-center"> <a href="/profile" className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Profili Düzenle</a></div>
@@ -134,7 +179,7 @@ export default function UserProfile(){
             </div>
         </div>
             {/* Tweet arama işlemi */}
-            <div className="flex  justify-start items-center gap-3 ms-10 mt-3">
+            {postIsShow ? <><div className="flex  justify-start items-center gap-3 ms-10 mt-3">
                 <input onChange={(e) => setSearchText(e.target.value)} value={searchText} className="w-1/2 outline-none px-4 py-2 border-2 border-black  rounded-xl" type="text" placeholder="Tweet Ara"/>
                 {/* <button onClick={(e) => searchTweetUser(e)} className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Ara</button> */}
             </div>
@@ -143,6 +188,6 @@ export default function UserProfile(){
             <div className="flex px-5 md:px-10 flex-col w-full gap-5 mt-3 pb-5">
                 <TweetList tweetList={tweetList} isUserProfile={isUserProfile}  />
             </div>
-            <ContactDialog setShowModal={setContactDialogControl} showModal={contactDialogControl} userList={contactUserList} />
+            <ContactDialog setShowModal={setContactDialogControl} showModal={contactDialogControl} userList={contactUserList} /></> : <p className="text-center mt-10 text-xl font-bold">Profil Gizlidir</p>}
     </div>)
 }

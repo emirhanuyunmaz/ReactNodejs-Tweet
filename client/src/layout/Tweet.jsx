@@ -97,7 +97,7 @@ export default function Tweet(){
     return(
     <div className="flex w-full md:min-h-[90vh] justify-center ">
         {/* USER PROFILE */}
-        <div className="bg-blue-200 max-h-[75vh] rounded-xl hidden md:flex md:w-1/6 mt-5">
+        <div className="bg-blue-200 h-full pb-6  rounded-xl hidden md:flex md:w-1/6 mt-5">
             <div className="w-full flex flex-col items-center" >
                 <img className="w-1/2 mt-5 rounded-full" src={`${userProfile.image}`} alt="" />
 

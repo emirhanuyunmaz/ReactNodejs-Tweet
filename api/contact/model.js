@@ -40,6 +40,10 @@ const notificationSchema = new Schema({
         type:Boolean,
         default:false
     },
+    followProcess:{
+        type:String,
+        default:"none"
+    },
     createAt:{
         type:Date,
         default:Date.now()

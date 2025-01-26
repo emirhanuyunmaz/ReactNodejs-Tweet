@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react"
+import {useEffect, useState } from "react"
 import { useGetUserProfileQuery, useUpdateUserProfileMutation } from "../store/userApi/userApiSlicer"
 import { toast, Zoom } from "react-toastify"
 import axios from "axios"
-import { useNavigate } from "react-router-dom"
 import Cookies from "js-cookie"
 
 
 export default function Profile(){
-    const navigate = useNavigate()
+
     const {data,isFetching,isSuccess,isError} = useGetUserProfileQuery()
     const [updateProfile,responseUpdateProfile] = useUpdateUserProfileMutation()
+
     const [name,setName] = useState("")
     const [surname , setSurname] = useState("")
     const [email,setEmail] = useState("")
@@ -18,7 +18,7 @@ export default function Profile(){
     const [image,setImage] = useState()
     const [newImage,setNewImage] = useState()
     const [changeImage,setChangeImage] = useState(false)
-
+    const [profilePrivate,setProfilePrivate] = useState(false)
 
     // Metinleri güncelleme sonucu toast mesaj
     const showToastSucces = () => toast.success('Güncelleme Başarılı', {
@@ -48,13 +48,14 @@ export default function Profile(){
 
     // Kullanıcı bilgilerinin çekilmesi işlemi.
     function getData(){
-        // console.log(data);
+        console.log(data);
         setName(data.name)
         setSurname(data.surname)
         setEmail(data.email)
         setPassword(data.password)
         setDescription(data.description)
         setImage(data.image)
+        setProfilePrivate(data.profilePrivate)
         // setImageName(data.image)
     }
 
@@ -66,7 +67,7 @@ export default function Profile(){
             email:email,
             password:password,
             description:description,
-
+            profilePrivate:profilePrivate
         }
         updateProfile(bodyData)
     }
@@ -136,6 +137,12 @@ export default function Profile(){
             </label>
             {/* window.location.reload(); */}
             <input className="hidden"  onChange={(e) => imageUpdate(e)} type="file" name="" id="user_image" />
+            <div>
+                <select value={profilePrivate} onChange={(e) => setProfilePrivate(e.target.value)} className="outline-none border-2 rounded-xl px-2 py-1" name="profileIsSecret" id="">
+                    <option value="true">Profil Gizli</option>
+                    <option value="false">Profil Açık</option>
+                </select>
+            </div>
         </div>
         <div className="flex flex-col w-full px-5 md:px-0 mb-5 md:w-2/4">
 

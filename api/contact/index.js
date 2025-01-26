@@ -200,7 +200,7 @@ const userFollowedList = async(req,res) => {
 const getAllNotification = async(req,res) => {
     try{
         const id = req.headers.id
-        const data = await UserNotificationModel.find({userId:id}).populate("transactionUser","name surname image")
+        const data = await UserNotificationModel.find({userId:id}).populate("transactionUser","name surname image").sort({createAt:"descending"}).exec()
         console.log("Bildirim verisi:",data);
         
         res.status(200).json({succes:true,data:data})
@@ -211,11 +211,135 @@ const getAllNotification = async(req,res) => {
     }
 }
 
+//******************GET USER NOTIFICATIN LENGTH*********************// 
+// Kullanıcıya ait bildirim sayısı 
+const getUserNotificationLength = async (req,res )=> {
+    try{
+        const id = req.headers.id
+        const data = await UserNotificationModel.find({userId:id,isShowed:false})
+
+        res.status(200).json({succes:true,data:data.length})
+    }catch(err){
+        console.log("Kullanıcı bildirim sayısı çekilirken bir hata ile karşılaşıldı.",err);
+        res.status(404).json({message:err,succes:false})
+    }
+}
+
+//*******************IS FOLLOW REQUSET SENT**********************// 
+// Takip isteği atılmış mı diye kontrol edilme işlemi.
+const isFollowRequestSent = async (req,res) => {
+    try{
+        // Takip edecek kullanıcı
+        const id = req.headers.id
+        // Takip edilecek kullanıcı
+        const followedUserId = req.params.id 
+
+        const user = await UserNotificationModel.find({transactionUser:id,userId:followedUserId,process:"follow"})
+        // console.log("USER:",user);
+        if(user.length==0){
+            console.log("Hiç istek atılmamış.");
+            res.status(200).json({succes:true,data:false})
+        }else{
+            console.log("istek atılmış");
+            res.status(200).json({succes:true,data:true})
+        }
+    }catch(err){
+        console.log("Takip işteği kontrol edilirken bir hata ile karşılaşıldı.",err);
+        res.status(404).json({message:err,succes:false})
+    }
+}
+
+//******************* NOTIFICATIN FOLLOW ACCEPT *****************// 
+// Kullanıcı bildirim olarak gelen takip isteğini kabul etme işlemi. 
+const notificationFollowAccept = async (req,res) => {
+    try{
+        // Takip edilecek kullanıcı
+        const id = req.headers.id
+        // Takip edecek kullanıcı
+        const userId = req.body.userId
+
+
+        const getUserFollowerData = await UserContactModel.findOne({userId:userId})
+        
+        console.log("Kullanıcı takip listesi ve takipçi listesi",getUserFollowerData)
+        // Kullanıcı takip etme işlemi için ...
+        if(getUserFollowerData){
+            // Takip etme işlemi
+            console.log("Daha önce takip işlemi yapmış");
+            await UserContactModel.findOneAndUpdate({userId:userId},{$addToSet : {followed:id}})
+        }else{
+            // Takip etme işlemi
+            console.log("Daha önce takip işlemi yapmamış");
+
+            const contactModel = new UserContactModel({
+                userId:userId,
+                followed:[id],
+                
+            })
+            await contactModel.save()
+        }
+
+        // Kullanıcı takipçi ekleme işlemi ...
+        const getUserFollowedData = await UserContactModel.findOne({userId:id})
+        console.log("TAKİPÇİ EKLENCEK KULLANICI:::",getUserFollowedData);
+        
+        if(getUserFollowedData){
+            console.log("Daha önce takip veya takipçi eklenmiş");
+            await UserContactModel.findOneAndUpdate({userId:id},{$addToSet : {follower:userId}})
+        }else{
+            console.log("Daha önce takip veya takipçi eklenmemiş");
+            const contactModel = new UserContactModel({
+                userId:id,
+                follower:[userId],
+            })
+            await contactModel.save()
+        }
+        await UserNotificationModel.findOneAndUpdate({transactionUser:userId,userId:id,process:"follow"},{followProcess:"accept"})
+        res.status(201).json({succes:true})
+    }catch(err){
+        console.log("Bildirim takip kabul işleminde bir hata ile karşılaşıldı.",err);
+        res.status(404).json({message:err,succes:false})
+    }
+}
+
+//*****************NOTIFICATION FOLLOW REJECT******************// 
+// Kullanıcı takip isteğini reddederse yapılacak işlem .
+const notificationFollowReject = async(req,res) => {
+    try{
+        const id = req.headers.id
+        const userId = req.body.userId
+        await UserNotificationModel.findOneAndUpdate({transactionUser:userId,userId:id,process:"follow"},{followProcess:"reject"})
+
+        res.status(201).json({succes:true})
+    }catch(err){
+        console.log("Takip isteği reddedilirken bir hata ile karşılaşıldı.",err);
+        res.status(404).json({message:err,succes:false})
+    }
+}
+
+//*********************NOTIFICATION SHOWED********************// 
+// Kullanıcıya ait bildirimleri okundu olarak işaretleme işlemi.
+const notificationShowed = async(req,res) => {
+    try{
+        const id = req.headers.id 
+        await UserNotificationModel.findOneAndUpdate({userId:id},{isShowed:true})
+        res.status(201).json({succes:true})
+    }catch(err){
+        console.log("Kullanıcı bildirimleri okundu olarak işaretlenirken bir hata ile karşılaşıldı.",err);
+        res.status(404).json({succes:false,message:err})
+    }
+}
+
 // contact/...
 router.route("/follow").post(authControl,userConnectionFollow)
 router.route("/unfollow").post(authControl,userConnectionUnfollow)
 router.route("/searchUser").post(authControl,userSearch)
+router.route("/notificationFollowAccept").post(authControl,notificationFollowAccept)
+router.route("/notificationFollowReject").post(authControl,notificationFollowReject)
+router.route("/notificationShowed").post(authControl,notificationShowed)
 router.route("/notification").get(authControl,getAllNotification)
+router.route("/notificationLength").get(authControl,getUserNotificationLength)
+router.route("/isFollowRequestSent/:id").get(authControl,isFollowRequestSent)
 router.route("/contactList/:id").get(authControl,contactList)
 router.route("/isFollow/:id").get(authControl,userIsFollow)
 router.route("/userFollowedList/:id").get(authControl,userFollowedList)

@@ -37,13 +37,13 @@ export default function TweetCard({tweet,userTweetLike,isUserProfile}){
 
     async function userTweetDislike(tweetId){        
         await tweetDislike({tweetId:tweetId})
-        await context.tweetUnfollowSocket(tweet,"unfollow")
+        await context.tweetUnlikeSocket(tweet,"unlike")
     }
 
     async function setLikeTweet(tweetId){
         const tweetLikeBody = {tweetId:tweetId} 
         await userLikeTweet(tweetLikeBody)
-        await context.tweetFollowSocket(tweet,"follow")
+        await context.tweetLikeSocket(tweet,"like")
     }
 
     return(<div key={tweet._id} className="flex flex-col gap-3 border-2 bg-blue-100 p-3 rounded-xl hover:shadow-xl duration-300">

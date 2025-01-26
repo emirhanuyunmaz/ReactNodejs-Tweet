@@ -437,7 +437,7 @@ const userShortProfile = async (req,res) => {
         // console.log("Kullanıcı id:",loginUserId != "undefined");
         let userData = null
         if(loginUserId != "undefined"){
-            userData = await signupModel.findById(loginUserId).select("name surname description image email createdAt")
+            userData = await signupModel.findById(loginUserId).select("name surname description image email profilePrivate createdAt")
         }
         res.status(201).json({message:"Succes",succes:true,data:userData,isUserProfile:loginUserId == id})
     }catch(err) {
