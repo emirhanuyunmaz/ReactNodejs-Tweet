@@ -12,6 +12,7 @@ const { default: axios } = require("axios")
 const SignUpModel = require("../singnup/model")
 
 const socket = require("socket.io")
+const { default: mongoose } = require("mongoose")
 
 // Kullanıcı Profil resmini güncelleme işlemi .
 const upl = async (req,res) => {
@@ -207,18 +208,19 @@ const deleteTweet = async (req,res) => {
 // ******************************GET TWEET LIST*************************** //
 //Tüm tweet listesini çekme işlemi. 
 const getTweetList = async (req,res) => {
-    console.log("TWEETDATA:::",typeof(req.headers.is_followed_data));
+    // console.log("TWEETDATA:::",typeof(req.headers.is_followed_data));
     
     try{    
         const followedData = req.headers.is_followed_data
+        const userId = req.headers.id            
         if(followedData == "true"){
-            const userId = req.headers.id            
             const contactData = await UserContactModel.findOne({userId:userId})
             // Populate ile sadece yazılan verilerin getirilmesine olanak sağlandı . 
-            console.log(contactData);
+            console.log("AA:",contactData);
                        
             if(contactData){
-                const dataList = await TweetModel.find({userId:{$in:contactData.followed}}).populate("userId","name surname image tag").sort({createdAt:"desc"}).exec()
+                contactData.followed.push(userId)
+                const dataList = await TweetModel.find({userId:{$in:contactData.followed}}).populate("userId","name surname image tag profilePrivate").sort({createdAt:"desc"}).exec()
                 // console.log(dataList);
                 res.status(200).json({tweetList:dataList})
             }else{
@@ -226,11 +228,59 @@ const getTweetList = async (req,res) => {
             }
 
         }else{
-
-            // Populate ile sadece yazılan verilerin getirilmesine olanak sağlandı .
-            const dataList = await TweetModel.find().populate("userId","name surname image tag").sort({createdAt:"desc"}).exec()
-            // console.log(dataList);
-            res.status(200).json({tweetList:dataList})
+            const contactData = await UserContactModel.findOne({userId:userId})
+            contactData.followed.push(userId)
+            console.log(contactData);
+            // contactData.followed.push(userId)
+            const data = await TweetModel.aggregate([
+                // 1. `userId` ile `SignUp` bilgilerini birleştir
+                {
+                  $lookup: {
+                    from: 'signups', // SignUp koleksiyon adı
+                    localField: 'userId', // Tweet modelindeki userId
+                    foreignField: '_id', // SignUp modelindeki _id
+                    as: 'userId', // Kullanıcı bilgilerini getir
+                  },
+                },
+                {
+                  $unwind: '$userId', // userId dizisini aç
+                },
+          
+                {
+                  $match: {
+                    $or: [
+                      { 'userId.profilePrivate': false }, 
+                      { "userId._id": { $in: contactData.followed } },
+                      
+                    ],
+                  },
+                },
+          
+                // 3. İstenen alanları seç
+                {
+                    $project: {
+                        _id: 1, // Tweet ID
+                        text: 1, // Tweet içeriği
+                        tag: 1,
+                        userTag: 1,
+                        isImage: 1,
+                        likes: 1,
+                        comments:1,
+                        createdAt: 1,
+                        'userId._id': 1, // Kullanıcı adı
+                        'userId.name': 1, // Kullanıcı adı
+                        'userId.surname': 1,
+                        'userId.email': 1,
+                        'userId.image': 1,
+                        'userId.tag': 1,
+                        'userId.profilePrivate': 1,
+                    }
+                },
+                { $sort: { createdAt: -1 } }, // En yeni tweetler önce gelir
+              ]);
+            // console.log(data);
+            
+            res.status(200).json({tweetList:data})
         }
          
         

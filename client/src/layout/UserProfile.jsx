@@ -24,7 +24,8 @@ export default function UserProfile(){
         id:params.id,
         text:searchText
     }
-
+    console.log(params.id);
+    
     const userTweetProfile = useUserTweetProfileQuery(data)
     const userShortProfile = useGetUserShortProfileQuery(params.id)
     const [contactUserFollow,responseContactFollow] = useFollowUserMutation()
