@@ -1,13 +1,10 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import TweetCard from '../components/TweetCard'
 
-export default function HomeScreen() {
+export default function NotificationScreen() {
   return (
     <View>
-
-      <Text>HomeScreen</Text>
-      <TweetCard/>
+      <Text>NotificationScreen</Text>
     </View>
   )
 }

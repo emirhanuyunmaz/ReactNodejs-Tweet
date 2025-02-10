@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-export default function TagCard() {
+export default function TagListCard() {
   return (
     <View>
-      <Text>TagCard</Text>
+      <Text>TagListCard</Text>
     </View>
   )
 }
