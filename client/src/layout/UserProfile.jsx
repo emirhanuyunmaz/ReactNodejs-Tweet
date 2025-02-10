@@ -153,7 +153,7 @@ export default function UserProfile(){
         {/* Kullanıcı profili için temel yapı */}
         <div className="bg-blue-100  md:px-10 py-5 rounded-xl">
             <div className="flex gap-5" >
-                <img className="w-32 h-32 rounded-full" src={`${userProfile.image}`} alt="" />
+                <img className="w-32 h-32 rounded-full" src={`http://localhost:3000/${userProfile.image}`} alt="" />
                 <div className="mt-5 flex flex-col gap-3">
                     <p className="font-bold" > {userProfile.name} {userProfile.surname}</p>
                     <p>{userProfile.description}</p>

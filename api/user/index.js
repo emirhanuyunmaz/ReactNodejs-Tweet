@@ -11,8 +11,6 @@ const uuid = require("uuid")
 const { default: axios } = require("axios")
 const SignUpModel = require("../singnup/model")
 
-const socket = require("socket.io")
-const { default: mongoose } = require("mongoose")
 
 // Kullanıcı Profil resmini güncelleme işlemi .
 const upl = async (req,res) => {
@@ -27,14 +25,13 @@ const upl = async (req,res) => {
         const id = req.headers.id
         const user = await SignUpModel.findById(id)
 
-        const imageName = user.image.split("image/").pop()
-        // console.log("Kullanıcı bilgisi :",user.image);
+        const imageName = user.image.split("uploads/").pop()
         
-        const filePath = __dirname + "/.." + `/uploads/${imageName}`
+        const filePath = `/uploads/${imageName}`
         console.log("File Path:",filePath);
         let base64Image = req.body.image.split(';base64,').pop();
         
-        fs.writeFile(filePath ,base64Image , {encoding: 'base64'}, function(err) {
+        fs.writeFile(__dirname + "/.." + filePath ,base64Image , {encoding: 'base64'}, function(err) {
             console.log(`File created ${imageName} `);
         });
         res.status(201).json({message:"succes",isSucces:true})
@@ -146,10 +143,10 @@ const addTweet = async (req,res) => {
             res.status(200).json({message:"Succes"})
         }
         else if(text && isImage){
-            // console.log("Resim gelimiş");
+            console.log("Resim gelimiş");
 
             const imageName = uuid.v4()
-            const filePath = __dirname + "/.." + `/uploads/${imageName}.png`
+            const filePath = `/uploads/${imageName}.png`
             console.log("File Path:",filePath);
             let base64Image = req.body.text.split(';base64,').pop();
             // Veriyi flask kullanarak oluşturlan bir api den çekme işlemi.
@@ -160,14 +157,14 @@ const addTweet = async (req,res) => {
             console.log("Resim sınıflandırma sonucu :",predictionResponse.data.prediction);
             
             
-            fs.writeFile(filePath ,base64Image , {encoding: 'base64'}, function(err) {
+            fs.writeFile(__dirname +"/.." + filePath ,base64Image , {encoding: 'base64'}, function(err) {
                 console.log(`File created ${imageName} `);
             });
 
             const newTweet = new TweetModel({
                 userId:id,
                 isImage:true,
-                text :process.env.IMAGE_BASE_URL + imageName+".png",
+                text :filePath,
                 tag:predictionResponse.data.prediction,
                 userTag:userTag
             })
@@ -229,8 +226,11 @@ const getTweetList = async (req,res) => {
 
         }else{
             const contactData = await UserContactModel.findOne({userId:userId})
-            contactData.followed.push(userId)
-            console.log(contactData);
+            let liste = [] //Kullanıcı gönderi gösterme listesi.
+            liste.push(contactData?.followed)
+            liste.push(userId)
+            // contactData?.followed?.push(userId)
+            console.log(liste);
             // contactData.followed.push(userId)
             const data = await TweetModel.aggregate([
                 // 1. `userId` ile `SignUp` bilgilerini birleştir
@@ -250,7 +250,7 @@ const getTweetList = async (req,res) => {
                   $match: {
                     $or: [
                       { 'userId.profilePrivate': false }, 
-                      { "userId._id": { $in: contactData.followed } },
+                      { "userId._id": { $in: liste } },
                       
                     ],
                   },
@@ -267,8 +267,8 @@ const getTweetList = async (req,res) => {
                         likes: 1,
                         comments:1,
                         createdAt: 1,
-                        'userId._id': 1, // Kullanıcı adı
-                        'userId.name': 1, // Kullanıcı adı
+                        'userId._id': 1, 
+                        'userId.name': 1, 
                         'userId.surname': 1,
                         'userId.email': 1,
                         'userId.image': 1,
@@ -580,17 +580,17 @@ const addTask = async (req,res) => {
         if(isImage && text){
 
             const imageName = uuid.v4()
-            const filePath = __dirname + "/.." + `/uploads/${imageName}.png`
+            const filePath = `/uploads/${imageName}.png`
             console.log("File Path:",filePath);
             let base64Image = req.body.text.split(';base64,').pop();
-            fs.writeFile(filePath ,base64Image , {encoding: 'base64'}, function(err) {
+            fs.writeFile(__dirname+"/.."+filePath ,base64Image , {encoding: 'base64'}, function(err) {
                 console.log(`File created ${imageName} `);
             });
 
             const newTask = new TaskModel({
                 userId:userId,
                 isImage:isImage,
-                text:process.env.IMAGE_BASE_URL +imageName+".png",
+                text:filePath,
                 userTag:userTag
             })
             await newTask.save()
@@ -674,7 +674,7 @@ const taskToTweet = async (req,res) => {
     
         if(task.isImage){
             console.log("Resim var");
-            const taskImageName = task.text.split("image/").pop()
+            const taskImageName = task.text.split("uploads/").pop()
             
             const imageData = fs.readFileSync(__dirname+"/.."+`/uploads/${taskImageName}`,{encoding:'base64'})
             // console.log("RESİM:",imageData[2]);
@@ -746,7 +746,7 @@ const taskImageUpdate = async (req,res) => {
             fs.rmSync(__dirname+"/.."+`/uploads/${imageName}`)
 
 
-            const filePath = __dirname + "/.." + `/uploads/${updateImageName}.png`
+            const filePath = `/uploads/${updateImageName}.png`
             fs.writeFile(filePath ,image , {encoding: 'base64'}, function(err) {
                 console.log(`File created ${updateImageName+".png"} `);
             });

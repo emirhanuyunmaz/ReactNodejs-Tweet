@@ -45,11 +45,12 @@ export default function TweetCard({tweet,userTweetLike,isUserProfile}){
         await userLikeTweet(tweetLikeBody)
         await context.tweetLikeSocket(tweet,"like")
     }
+    // console.log("BASE URL",process.env.VITE_BASE_URL);
 
     return(<div key={tweet._id} className="flex flex-col gap-3 border-2 bg-blue-100 p-3 rounded-xl hover:shadow-xl duration-300">
         {/* USER */}
         <div className="relative flex items-center gap-5">
-            <img className="w-10 h-10 rounded-full" src={`${tweet.userId.image}`} alt="" />
+            <img className="w-10 h-10 rounded-full" src={`http://localhost:3000/${tweet.userId.image}`} alt="" />
             <div className="flex flex-col">
                 <a href={`/user/${tweet.userId._id}`}>{tweet.userId.name}  {tweet.userId.surname}</a>
                 <p className="text-xs">{formatDate(tweet.createdAt)}</p>
@@ -74,7 +75,7 @@ export default function TweetCard({tweet,userTweetLike,isUserProfile}){
         <div className="ms-10">
             { !tweet.isImage && <p>{ tweet.text}</p>}
             {/* http://localhost:3000/user/profile/image/ */}
-            { tweet.isImage && <img src={`${tweet.text}`} className="w-1/2 mx-auto border-2 rounded-xl" />}
+            { tweet.isImage && <img src={`http://localhost:3000${tweet.text}`} className="w-1/2 mx-auto border-2 rounded-xl" />}
         </div>
         <div className="flex justify-between md:px-16">
             {   

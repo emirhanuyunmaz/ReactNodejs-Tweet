@@ -310,7 +310,8 @@ const notificationFollowReject = async(req,res) => {
     try{
         const id = req.headers.id
         const userId = req.body.userId
-        await UserNotificationModel.findOneAndUpdate({transactionUser:userId,userId:id,process:"follow"},{followProcess:"reject"})
+        // Reddedilirse silinme işlemi yapılacak
+        await UserNotificationModel.findOneAndDelete({transactionUser:userId,userId:id,process:"follow"})
 
         res.status(201).json({succes:true})
     }catch(err){

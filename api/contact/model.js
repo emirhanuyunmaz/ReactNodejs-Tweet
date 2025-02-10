@@ -6,6 +6,7 @@ const Schema = mongoose.Schema
 // fallowed => takip edilen
 // wishList => istekListesi
 
+// Takipleşme
 const userContactSchema = new Schema({
     userId:{
         type:mongoose.Schema.Types.ObjectId,

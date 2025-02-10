@@ -50,7 +50,7 @@ export default function TaskUpdateDialog({showModal,setShowModal,task}){
         console.log(getSingleTask.data.data);
         
         setValue("text",getSingleTask.data?.data.text)
-        setUpdateImage(getSingleTask.data?.data.text)
+        setUpdateImage("http://localhost:3000"+getSingleTask.data?.data.text)
         setValue("userTag",getSingleTask?.data.data.userTag)
       }
 

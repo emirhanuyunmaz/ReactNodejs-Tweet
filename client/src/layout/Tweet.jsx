@@ -99,7 +99,7 @@ export default function Tweet(){
         {/* USER PROFILE */}
         <div className="bg-blue-200 h-full pb-6  rounded-xl hidden md:flex md:w-1/6 mt-5">
             <div className="w-full flex flex-col items-center" >
-                <img className="w-1/2 mt-5 rounded-full" src={`${userProfile.image}`} alt="" />
+                <img className="w-1/2 mt-5 rounded-full" src={`http://localhost:3000/${userProfile.image}`} alt="" />
 
                 <p>{userProfile.name} {userProfile.surname}</p>
 
