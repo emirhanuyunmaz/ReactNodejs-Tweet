@@ -1,10 +1,15 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { Heart, MessageCircle } from 'lucide-react-native'
+import { useNavigation } from '@react-navigation/native';
 
 export default function TweetCard() {
-  console.log("AAA:",process.env.BASE_URL);
   
+  const navigation = useNavigation()
+
+  function tweetCommentPage(){
+    navigation.navigate("SingleTweet")
+  }
 
   return (
     <View style={styles.container}>
@@ -24,15 +29,21 @@ export default function TweetCard() {
       </Text>
       <View style={styles.buttonStyle}>
         <TouchableOpacity>
+          <View style={styles.iconStyle}>
             <Heart size={28} color={"black"} />
+            <Text style={styles.iconTextStyle}>12</Text>
+          </View>
         </TouchableOpacity>
 
         {/* <TouchableOpacity>
             <Heart size={28} fill={"red"} color={"red"} />
         </TouchableOpacity> */}
         
-        <TouchableOpacity>
-            <MessageCircle size={28} color={"black"} />
+        <TouchableOpacity onPress={tweetCommentPage}>
+            <View style={styles.iconStyle}>
+              <MessageCircle size={28} color={"black"} />
+              <Text style={styles.iconTextStyle}>12</Text>
+            </View>
         </TouchableOpacity>
         
       </View>
@@ -86,6 +97,14 @@ const styles = StyleSheet.create({
     justifyContent:"space-between",
     paddingHorizontal:16,
     flexDirection:"row"
+  },
+  iconStyle:{
+    flexDirection:"row",
+    alignItems:"center",
+    gap:3
+  },
+  iconTextStyle:{
+    fontSize:16
   }
 
 })

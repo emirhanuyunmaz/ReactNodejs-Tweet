@@ -5,11 +5,15 @@ import {  StyleSheet, Text, View } from 'react-native';
 import LoginScreen from './layouts/LoginScreen';
 import SignupScreen from './layouts/SignupScreen';
 import HomeScreen from './layouts/HomeScreen';
-import { AlignLeft, Bell, House, Mail, Search, User } from 'lucide-react-native';
-import TagListScreen from './layouts/TagListScreen';
+import {  Bell, House, Mail, Search, User } from 'lucide-react-native';
 import ProfileScreen from './layouts/ProfileScreen';
 import UserListScreen from './layouts/UserListScreen';
 import NotificationScreen from './layouts/NotificationScreen';
+import SingleTweetScreen from './layouts/SingleTweetScreen';
+import MessageScreen from './layouts/MessageScreen';
+import { Provider } from 'react-redux';
+import { store } from './store/reduxStore';
+import SearchScreen from './layouts/SearchScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,19 +21,23 @@ const Tab = createBottomTabNavigator();
 
 
 function TabNavigate(){
-  return (<Tab.Navigator>
+  return (<Tab.Navigator screenOptions={{
+    sceneStyle:{
+      backgroundColor:"#fff"
+    }
+  }} >
     <Tab.Screen name="Home"  component={HomeScreen} options={{
       headerShown:false,
       tabBarLabel:"Tweet",
       tabBarIcon:() => <House color={"black"} size={32} />
     }} />
-    <Tab.Screen name="Search" component={TagListScreen} options={{
+    <Tab.Screen name="Search" component={SearchScreen} options={{
       headerShown:false,
       tabBarLabel:"Ara",
       tabBarIcon:() => <Search color={"black"} size={32} />
     }} />
 
-    <Tab.Screen name="Message" component={UserListScreen} options={{
+    <Tab.Screen name="UserList" component={UserListScreen} options={{
       headerShown:false,
       tabBarLabel:"Mesaj",
       tabBarIcon:() => <Mail color={"black"} size={32} />
@@ -48,14 +56,25 @@ function TabNavigate(){
 }
 
 export default function App() {
+
+  const baseUrl = process.env.BASE_URL
+
+  console.log(baseUrl);
+  
   return (
-    <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen options={{headerShown:false}}  name="Tab" component={TabNavigate} />
-          <Stack.Screen options={{headerShown:false}} name="Login" component={LoginScreen} />
-          <Stack.Screen options={{headerShown:false}}  name="Signup" component={SignupScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
+          <Stack.Navigator screenOptions={{contentStyle:{
+            backgroundColor:"#fff"
+          }}} >
+            <Stack.Screen options={{headerShown:false}}  name="Tab" component={TabNavigate} />
+            <Stack.Screen options={{headerShown:false}} name="Login" component={LoginScreen} />
+            <Stack.Screen options={{headerShown:false}}  name="Signup" component={SignupScreen} />
+            <Stack.Screen name="SingleTweet" component={SingleTweetScreen} />
+            <Stack.Screen name="Message" component={MessageScreen} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </Provider>
   );
 }
 

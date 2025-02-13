@@ -1,12 +1,158 @@
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native'
 import React from 'react'
+import { useNavigation } from '@react-navigation/native'
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from 'zod';
+import { Controller, useForm } from 'react-hook-form';
+import { useUserLoginMutation } from '../store/userApi/userApiSlicer';
+
+const schema = z.object({
+  email: z.string().min(2, { message: "Email must be at least 2 characters long" }),
+  password: z.string().min(2,{message : "Password min 3"}),
+});
+
 
 export default function LoginScreen() {
+
+  const [login,resLogin] = useUserLoginMutation()
+  const navigation = useNavigation()
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
+  });
+
+  const onSubmit = async (data) => {
+    console.log(data);
+    await login(data).unwrap().then(async (res) => {
+        console.log("RESSR:",res);
+        await AsyncStorage.setItem("access_token",res.accessToken)
+        navigation.navigate("Tab")
+    })
+};
+
+  function signupPage(){
+    navigation.navigate("Signup")
+  }
+
+
+
+  
   return (
-    <View>
-      <Text>LoginScreen</Text>
+    <View style={styles.container} >
+      <View >
+        <Text style={styles.titleStyle} >Login</Text>
+      </View>
+      <View style={styles.inputGroupStyle} >
+        <View style={styles.inputContainer}>
+          <Text style={styles.labelStyle} >Email</Text>
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+                style={[styles.inputStyle,errors.email && styles.errorBorderStyle]}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                placeholder="Email"
+            />
+            )}
+        />
+        {errors.email && <Text style={styles.errorMessageStyle} >{errors.email.message}</Text>}
+
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.labelStyle} >Password</Text>
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+                style={[styles.inputStyle,errors.email && styles.errorBorderStyle]}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                secureTextEntry={true}
+                placeholder='Password'
+            />
+            )}
+        />
+        {errors.password && <Text style={styles.errorMessageStyle} >{errors.password.message}</Text>}
+
+        </View>
+
+        <TouchableOpacity style={styles.buttonStyle} onPress={handleSubmit(onSubmit)} >
+          <Text style={styles.buttonTextStyle} >Giriş Yap</Text>
+        </TouchableOpacity>
+
+        <View>
+          <TouchableOpacity onPress={signupPage} >
+            <Text style={styles.signupButtonStyle} >Üye Ol</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
     </View>
   )
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  container:{
+    flex:1,
+    marginTop:32,
+    marginHorizontal:10,
+    justifyContent:"center",
+    
+  },
+  titleStyle:{
+    fontSize:32,
+    fontWeight:"bold",
+    textAlign:"center"
+  },
+  inputGroupStyle:{
+    gap:10
+  },
+  inputContainer:{
+
+  },
+  labelStyle:{
+    marginStart:3,
+    fontSize:16,
+    marginBottom:3,
+    fontWeight:"500"
+  },
+  inputStyle:{
+    backgroundColor:"white",
+    borderRadius:10,
+    borderColor:"gray",
+    borderWidth:2,
+    paddingHorizontal:12
+  },
+  errorBorderStyle:{
+    borderColor:"red"
+  },
+  errorMessageStyle:{
+    color:"red",
+    fontWeight:"600",
+    fontSize:12
+  },
+  buttonStyle:{
+    backgroundColor:"dodgerblue",
+    paddingVertical:10,
+    borderRadius:10
+  },
+  buttonTextStyle:{
+    textAlign:"center",
+    color:"white"
+  },
+  signupButtonStyle:{
+    textAlign:"center",
+    fontSize:16
+  }
+
+})
