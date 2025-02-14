@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { ClipboardList, LogOut, Settings } from 'lucide-react-native'
 import { useNavigation } from '@react-navigation/native'
@@ -12,9 +12,16 @@ export default function ProfileScreen() {
     navigation.navigate("UserProfile")
   }
 
+  function userSettingsScreen(){
+    navigation.navigate("Settings")
+  }
+  
+  function userTasksScreen(){
+    navigation.navigate("Tasks")
+  }
+
   return (
     <View style={styles.container}>
-
       <TouchableOpacity onPress={userProfileScreen} style={styles.profileContainerStyle}>
         <Image source={{uri:`${baseUrl}/uploads/12f2f34b-b523-405a-92f3-c09a47263b86.png`}} style={styles.profileImageStyle} />
         <View>
@@ -24,12 +31,13 @@ export default function ProfileScreen() {
       </TouchableOpacity>
 
       <View style={styles.buttonContainerStyle}>
-          <TouchableOpacity style={styles.buttonStyle} >
+
+          <TouchableOpacity onPress={userSettingsScreen} style={styles.buttonStyle} >
             <Settings size={26} color={"black"}  />
             <Text style={styles.buttonTextStyle} >Ayarlar</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.buttonStyle} >
+          <TouchableOpacity onPress={userTasksScreen} style={styles.buttonStyle} >
             <ClipboardList size={26} color={"black"}  />
             <Text style={styles.buttonTextStyle} >Taslaklar</Text>
           </TouchableOpacity>

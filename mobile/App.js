@@ -14,6 +14,13 @@ import MessageScreen from './layouts/MessageScreen';
 import { Provider } from 'react-redux';
 import { store } from './store/reduxStore';
 import SearchScreen from './layouts/SearchScreen';
+import { StatusBar } from 'expo-status-bar';
+import UserProfileScreen from './layouts/UserProfileScreen';
+import TaskListScreen from './layouts/TaskListScreen';
+import SettingsScreen from './layouts/SettingsScreen';
+import TaskUploadScreen from './layouts/TaskUploadScreen';
+import { MenuProvider } from 'react-native-popup-menu';
+import AddTweetScreen from './layouts/AddTweetScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -21,6 +28,7 @@ const Tab = createBottomTabNavigator();
 
 
 function TabNavigate(){
+
   return (<Tab.Navigator screenOptions={{
     sceneStyle:{
       backgroundColor:"#fff"
@@ -63,6 +71,11 @@ export default function App() {
   
   return (
     <Provider store={store}>
+      <MenuProvider>
+      <StatusBar
+        animated={true}
+        backgroundColor="#BFDBFF"
+      />
       <NavigationContainer>
           <Stack.Navigator screenOptions={{contentStyle:{
             backgroundColor:"#fff"
@@ -71,9 +84,15 @@ export default function App() {
             <Stack.Screen options={{headerShown:false}} name="Login" component={LoginScreen} />
             <Stack.Screen options={{headerShown:false}}  name="Signup" component={SignupScreen} />
             <Stack.Screen name="SingleTweet" component={SingleTweetScreen} />
+            <Stack.Screen name="Tasks" component={TaskListScreen} />
+            <Stack.Screen name="AddTweet" component={AddTweetScreen} />
+            <Stack.Screen name="Settings" component={SettingsScreen} />
+            <Stack.Screen name="TaskUpload" component={TaskUploadScreen} />
             <Stack.Screen name="Message" component={MessageScreen} />
+            <Stack.Screen name="UserProfile" component={UserProfileScreen} />
           </Stack.Navigator>
         </NavigationContainer>
+        </MenuProvider>
       </Provider>
   );
 }

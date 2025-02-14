@@ -56,7 +56,9 @@ const styles = StyleSheet.create({
     padding:10,
     marginHorizontal:12,
     backgroundColor:"#BFDBFF",
-    borderRadius:10
+    borderRadius:10,
+    marginTop:10,
+    marginBottom:5
   },
   userAndTag:{
     flexDirection:"row",

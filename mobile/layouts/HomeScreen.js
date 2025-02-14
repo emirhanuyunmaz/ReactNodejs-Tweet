@@ -1,13 +1,37 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import { RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useState } from 'react'
 import TweetCard from '../components/TweetCard'
+import { FloatingAction } from "react-native-floating-action";
+import { Plus } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
+
+const actions = [
+  {
+    text: "Tweet Ekle",
+    icon: <Plus size={22} color={"black"} />,
+    name: "fab_add",
+    position: 1
+  },
+  
+];
 
 export default function HomeScreen() {
+  const navigation = useNavigation()
+  const [refreshing, setRefreshing] = useState(false);
   
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
 
   return (
-    <View style={styles.container}>
-      
+    <View style={styles.container} >
+    {/* <ScrollView  > */}
+   
+
       <View style={styles.selectContainerStyle} >
         <TouchableOpacity style={styles.selectStyle} >
           <Text style={styles.selectTextStyle} >Global</Text>
@@ -18,15 +42,41 @@ export default function HomeScreen() {
         </TouchableOpacity>
 
       </View>
-      
-      <TweetCard/>
+      <ScrollView style={styles.tweetContainer} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} >
+        <TweetCard/>
+        <TweetCard/>
+        <TweetCard/>
+        <TweetCard/>
+      </ScrollView>
+      <View style={styles.floatActionButton} >
+
+        <FloatingAction
+          actions={actions}
+          onPressItem={name => {
+            if( name == "fab_add"){
+              // console.log("ADD");
+              navigation.navigate("AddTweet")
+            }
+          }}
+        />
+
+      </View>
+    {/* </ScrollView> */}
     </View>
   )
 }
 
 const styles = StyleSheet.create({
+
   container:{
-    marginTop:32
+    flex:1,
+    
+    marginTop:22,
+    // backgroundColor:"red"
+  },
+  tweetContainer:{
+    flexDirection:"column",
+    
   },
   selectContainerStyle:{
     flexDirection:"row",
@@ -47,5 +97,10 @@ const styles = StyleSheet.create({
   selectedStyle:{
     borderBottomColor:"black",
     borderBottomWidth:3
+  },
+  floatActionButton:{
+    position:"absolute",
+    bottom:0,
+    right:0
   }
 })
