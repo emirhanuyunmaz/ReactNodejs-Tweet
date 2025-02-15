@@ -22,6 +22,7 @@ import { MenuProvider } from 'react-native-popup-menu';
 import AddTweetScreen from './layouts/AddTweetScreen';
 import TaskUpdateScreen from './layouts/TaskUpdateScreen';
 import CommentScreen from './layouts/CommentScreen';
+import TagTweetListScreen from './layouts/TagTweetListScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -92,6 +93,7 @@ export default function App() {
             <Stack.Screen name="Message" component={MessageScreen} />
             <Stack.Screen name="UserProfile" component={UserProfileScreen} />
             <Stack.Screen name="Comment" component={CommentScreen} />
+            <Stack.Screen name="TagTweetList" component={TagTweetListScreen} />
           </Stack.Navigator>
         </NavigationContainer>
         </MenuProvider>
