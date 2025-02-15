@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TextInput, View } from 'react-native'
+import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
 import React from 'react'
 import ClassificationTagList from '../components/ClassificationTagList'
 import TagList from '../components/TagList'
@@ -8,13 +8,17 @@ export default function SearchScreen() {
     <View style={styles.container}>
       <TextInput style={styles.searchInputStyle} placeholder='Ara' />
       
-      <View>
+      <ScrollView style={styles.tagContainerStyle} >
+
+      <View style={styles.classificationContainerStyle} >
         <ClassificationTagList/>
       </View>
 
       <View>
         <TagList  />
       </View>
+
+      </ScrollView>
       
     </View>
   )
@@ -23,7 +27,7 @@ export default function SearchScreen() {
 const styles = StyleSheet.create({
   container:{
     marginTop:52,
-
+    marginBottom:52
   },
 
   searchInputStyle:{
@@ -33,5 +37,12 @@ const styles = StyleSheet.create({
     borderRadius:10,
     borderColor:"gray",
     borderWidth:2
+  },
+  tagContainerStyle:{
+    marginTop:10,
+    
+  },
+  classificationContainerStyle:{
+    marginBottom:10
   }
 })

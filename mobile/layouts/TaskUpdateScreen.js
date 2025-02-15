@@ -1,8 +1,8 @@
 import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React from 'react'
-import { Camera } from 'lucide-react-native'
 
-export default function AddTweetScreen() {
+
+export default function TaskUpdateScreen() {
   return (
     <KeyboardAvoidingView>
       <View style={styles.container} >
@@ -25,7 +25,7 @@ export default function AddTweetScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.buttonStyle} >
-          <Text style={styles.buttonTextStyle} >Task Olarak Kaydet</Text>
+          <Text style={styles.buttonTextStyle} >Kaydet</Text>
         </TouchableOpacity>
 
         {/* <TouchableOpacity>

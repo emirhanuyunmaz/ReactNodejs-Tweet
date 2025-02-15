@@ -18,9 +18,10 @@ import { StatusBar } from 'expo-status-bar';
 import UserProfileScreen from './layouts/UserProfileScreen';
 import TaskListScreen from './layouts/TaskListScreen';
 import SettingsScreen from './layouts/SettingsScreen';
-import TaskUploadScreen from './layouts/TaskUploadScreen';
 import { MenuProvider } from 'react-native-popup-menu';
 import AddTweetScreen from './layouts/AddTweetScreen';
+import TaskUpdateScreen from './layouts/TaskUpdateScreen';
+import CommentScreen from './layouts/CommentScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -87,9 +88,10 @@ export default function App() {
             <Stack.Screen name="Tasks" component={TaskListScreen} />
             <Stack.Screen name="AddTweet" component={AddTweetScreen} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
-            <Stack.Screen name="TaskUpload" component={TaskUploadScreen} />
+            <Stack.Screen name="TaskUpdate" component={TaskUpdateScreen} />
             <Stack.Screen name="Message" component={MessageScreen} />
             <Stack.Screen name="UserProfile" component={UserProfileScreen} />
+            <Stack.Screen name="Comment" component={CommentScreen} />
           </Stack.Navigator>
         </NavigationContainer>
         </MenuProvider>

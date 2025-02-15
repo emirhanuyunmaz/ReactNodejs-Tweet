@@ -15,7 +15,7 @@ export default function TaskCard() {
   }
 
   function taskUploadScreen(){
-    navigation.navigate("TaskUpload")
+    navigation.navigate("TaskUpdate")
   }
 
   return (

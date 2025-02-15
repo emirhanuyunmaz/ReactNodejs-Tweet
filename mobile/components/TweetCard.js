@@ -11,18 +11,26 @@ export default function TweetCard() {
     navigation.navigate("SingleTweet")
   }
 
+  function UserProfileOnClick(){
+    
+    
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.userAndTag}>
-        <View style={styles.userContainerStyle}>
+        
+        <TouchableOpacity onPress={UserProfileOnClick} style={styles.userContainerStyle}>
           <Image style={styles.userProfileImageStyle} source={{uri:`https://randomuser.me/api/portraits/men/78.jpg`}}/>
           <View>
             <Text style={styles.userNameStyle} >User Name</Text>
             <Text  >12/12/2025</Text>
           </View>
-        </View>
+        </TouchableOpacity>
+
         <Text style={styles.tagStyle}>MUTLU</Text>
       </View>
+
       {/* <Image style={styles.postImageContainer} source={{uri:`https://randomuser.me/api/portraits/men/78.jpg`}}/> */}
       <Text style={styles.postContainer}>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga exercitationem laudantium explicabo possimus similique illo eaque nulla dolore asperiores aliquid aspernatur aut dolor repudiandae, eius ratione molestias consectetur, consequuntur assumenda.
