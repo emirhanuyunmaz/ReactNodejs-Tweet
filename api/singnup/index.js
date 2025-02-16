@@ -37,11 +37,11 @@ const signup = async (req,res) => {
     console.log("Kullanıcı kayıt için istek atıldı");
     console.log(req.body);
     const imageName = uuid.v4()
-    const filePath = __dirname + "/.." + `/uploads/${imageName}.png`
+    const filePath =`/uploads/${imageName}.png`
     console.log("File Path:",filePath);
     let base64Image = req.body.image.split(';base64,').pop();
 
-    fs.writeFile(filePath ,base64Image , {encoding: 'base64'}, function(err) {
+    fs.writeFile( __dirname + "/.." + filePath ,base64Image , {encoding: 'base64'}, function(err) {
         console.log(`File created ${imageName} `);
     });
     
@@ -52,7 +52,7 @@ const signup = async (req,res) => {
             email:req.body.email,
             password:req.body.password,
             description:req.body.description,
-            image:process.env.IMAGE_BASE_URL+imageName+".png"
+            image:filePath
         })
         await newUser.save().then(() => console.log("Save user"))
         res.status(201).json({"message":"Succes"})

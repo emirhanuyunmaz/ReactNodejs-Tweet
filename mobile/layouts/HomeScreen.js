@@ -1,9 +1,10 @@
-import { RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import { FlatList, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import TweetCard from '../components/TweetCard'
 import { FloatingAction } from "react-native-floating-action";
 import { Plus } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useGetTweetListQuery } from '../store/userApi/userApiSlicer';
 
 const actions = [
   {
@@ -19,6 +20,12 @@ export default function HomeScreen() {
   const navigation = useNavigation()
   const [refreshing, setRefreshing] = useState(false);
   
+  const [tweetList,setTweetList] = useState([])
+
+  const getTweetList = useGetTweetListQuery({tweetFollowedData : false})
+
+
+
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
@@ -26,6 +33,15 @@ export default function HomeScreen() {
     }, 2000);
   }, []);
 
+
+  useEffect(() => {
+    if(getTweetList.isSuccess){
+      console.log(getTweetList.data.tweetList);
+      
+      setTweetList(getTweetList.data.tweetList)
+    }
+
+  },[getTweetList.isSuccess,getTweetList.isFetching])
 
   return (
     <View style={styles.container} >
@@ -42,12 +58,20 @@ export default function HomeScreen() {
         </TouchableOpacity>
 
       </View>
-      <ScrollView style={styles.tweetContainer} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} >
-        <TweetCard/>
-        <TweetCard/>
-        <TweetCard/>
-        <TweetCard/>
-      </ScrollView>
+      {/* <ScrollView style={styles.tweetContainer} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} > */}
+        {tweetList.length > 0 && 
+        
+        <FlatList
+          data={tweetList}
+          renderItem={({item}) => <TweetCard {...item} />}
+          keyExtractor={item => item._id}
+        />
+        
+        
+        }  
+        
+        
+      {/* </ScrollView> */}
       <View style={styles.floatActionButton} >
 
         <FloatingAction

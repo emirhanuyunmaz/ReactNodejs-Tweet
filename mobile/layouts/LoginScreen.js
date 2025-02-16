@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from 'zod';
 import { Controller, useForm } from 'react-hook-form';
 import { useUserLoginMutation } from '../store/userApi/userApiSlicer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const schema = z.object({
   email: z.string().min(2, { message: "Email must be at least 2 characters long" }),
@@ -30,6 +31,7 @@ export default function LoginScreen() {
     await login(data).unwrap().then(async (res) => {
         console.log("RESSR:",res);
         await AsyncStorage.setItem("access_token",res.accessToken)
+        await AsyncStorage.getItem("access_token")
         navigation.navigate("Tab")
     })
 };
@@ -38,7 +40,7 @@ export default function LoginScreen() {
     navigation.navigate("Signup")
   }
 
-
+ 
 
   
   return (

@@ -41,7 +41,7 @@ export default function UserProfileScreen() {
         <TextInput style={styles.inputStyle} placeholder='Ara'  />
       </View>
 
-      <TweetCard/>
+      {/* <TweetCard/> */}
       
     </View>
   )

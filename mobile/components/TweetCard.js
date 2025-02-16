@@ -3,16 +3,26 @@ import React from 'react'
 import { Heart, MessageCircle } from 'lucide-react-native'
 import { useNavigation } from '@react-navigation/native';
 
-export default function TweetCard() {
-  
+export default function TweetCard({text,comments,createdAt,userTag,tag,likes,userId,isImage,userIsFollow}) {
+  const baseUrl = process.env.BASE_URL
+
   const navigation = useNavigation()
 
+  // Yorum sayfasına gönderme işlemi.
   function tweetCommentPage(){
     navigation.navigate("SingleTweet")
   }
 
+  // Kullanıcı profiline gönderme işlemi.
   function UserProfileOnClick(){
     
+  }
+
+  function likeTweet(){
+
+  }
+
+  function dislikeTweet(){
     
   }
 
@@ -21,36 +31,42 @@ export default function TweetCard() {
       <View style={styles.userAndTag}>
         
         <TouchableOpacity onPress={UserProfileOnClick} style={styles.userContainerStyle}>
-          <Image style={styles.userProfileImageStyle} source={{uri:`https://randomuser.me/api/portraits/men/78.jpg`}}/>
+          <Image style={styles.userProfileImageStyle} source={{uri:`${baseUrl}/${userId.image}`}}/>
           <View>
-            <Text style={styles.userNameStyle} >User Name</Text>
+            <Text style={styles.userNameStyle} >{userId.name} {userId.surname}</Text>
             <Text  >12/12/2025</Text>
           </View>
         </TouchableOpacity>
-
-        <Text style={styles.tagStyle}>MUTLU</Text>
+        <Text style={styles.tagStyle}>{tag.toUpperCase()}</Text>
       </View>
 
-      {/* <Image style={styles.postImageContainer} source={{uri:`https://randomuser.me/api/portraits/men/78.jpg`}}/> */}
+      {isImage ? <Image style={styles.postImageContainer} source={{uri:`${baseUrl}/${text}`}}/>:
       <Text style={styles.postContainer}>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga exercitationem laudantium explicabo possimus similique illo eaque nulla dolore asperiores aliquid aspernatur aut dolor repudiandae, eius ratione molestias consectetur, consequuntur assumenda.
-      </Text>
+          {text}
+      </Text>}
+      
       <View style={styles.buttonStyle}>
+        
+
+        {userIsFollow ? <TouchableOpacity>
+            <View style={styles.iconStyle}>
+              <Heart size={28} fill={"red"} color={"red"} />
+              <Text style={styles.iconTextStyle}>{likes.length}</Text>
+            </View>
+        </TouchableOpacity>
+        :
         <TouchableOpacity>
           <View style={styles.iconStyle}>
             <Heart size={28} color={"black"} />
-            <Text style={styles.iconTextStyle}>12</Text>
+            <Text style={styles.iconTextStyle}>{likes.length}</Text>
           </View>
         </TouchableOpacity>
-
-        {/* <TouchableOpacity>
-            <Heart size={28} fill={"red"} color={"red"} />
-        </TouchableOpacity> */}
+        }
         
         <TouchableOpacity onPress={tweetCommentPage}>
             <View style={styles.iconStyle}>
               <MessageCircle size={28} color={"black"} />
-              <Text style={styles.iconTextStyle}>12</Text>
+              <Text style={styles.iconTextStyle}>{comments.length}</Text>
             </View>
         </TouchableOpacity>
         

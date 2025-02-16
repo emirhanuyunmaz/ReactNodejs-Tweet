@@ -23,6 +23,9 @@ import AddTweetScreen from './layouts/AddTweetScreen';
 import TaskUpdateScreen from './layouts/TaskUpdateScreen';
 import CommentScreen from './layouts/CommentScreen';
 import TagTweetListScreen from './layouts/TagTweetListScreen';
+import { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import LoadingComponent from './components/LoadingComponent';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,7 +33,6 @@ const Tab = createBottomTabNavigator();
 
 
 function TabNavigate(){
-
   return (<Tab.Navigator screenOptions={{
     sceneStyle:{
       backgroundColor:"#fff"
@@ -65,40 +67,109 @@ function TabNavigate(){
   </Tab.Navigator>)
 }
 
+function LoggedIn(){
+  return <Provider store={store}>
+  <MenuProvider>
+  <StatusBar
+    animated={true}
+    backgroundColor="#BFDBFF"
+  />
+  <NavigationContainer>
+      <Stack.Navigator screenOptions={{contentStyle:{
+        backgroundColor:"#fff"
+      }}} >
+        <Stack.Screen options={{headerShown:false}}  name="Tab" component={TabNavigate} />
+        <Stack.Screen name="SingleTweet" component={SingleTweetScreen} />
+        <Stack.Screen name="Tasks" component={TaskListScreen} />
+        <Stack.Screen name="AddTweet" component={AddTweetScreen} />
+        <Stack.Screen name="Settings" component={SettingsScreen} />
+        <Stack.Screen name="TaskUpdate" component={TaskUpdateScreen} />
+        <Stack.Screen name="Message" component={MessageScreen} />
+        <Stack.Screen name="UserProfile" component={UserProfileScreen} />
+        <Stack.Screen name="Comment" component={CommentScreen} />
+        <Stack.Screen name="TagTweetList" component={TagTweetListScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+    </MenuProvider>
+  </Provider>
+}
+
+function NotLoggedIn(){
+  return (<Provider store={store}>
+        <NavigationContainer>
+            <Stack.Navigator screenOptions={{contentStyle:{
+              backgroundColor:"#fff"
+            }}} >
+            <Stack.Screen options={{headerShown:false}} name="Login" component={LoginScreen} />
+            <Stack.Screen options={{headerShown:false}}  name="Signup" component={SignupScreen} />
+            <Stack.Screen options={{headerShown:false}}  name="Tab" component={TabNavigate} />
+
+          </Stack.Navigator>
+        </NavigationContainer>
+        </Provider>);
+}
+
 export default function App() {
+
+  const [isLoading,setIsLoading] = useState(false)
+  const [loginControl,setLoginControl] = useState(false)
+
+  async function isLogin(){
+    setIsLoading(true)
+    const data = await AsyncStorage.getItem("access_token")
+    console.log(data);
+    if(data == null ){
+      console.log("Giriş yok");
+      setLoginControl(false)
+    } else{
+      console.log("giriş var");
+      setLoginControl(true)
+    }
+    setIsLoading(false)
+  }
+
+  useEffect(() => {
+    isLogin()
+  },[])
 
   const baseUrl = process.env.BASE_URL
 
   console.log(baseUrl);
+
+  if(loginControl){
+    return (isLoading ? <LoadingComponent/> :<LoggedIn/>)
+  } else{
+    return ( isLoading ? <LoadingComponent/> : <NotLoggedIn/>)
+  }
   
-  return (
-    <Provider store={store}>
-      <MenuProvider>
-      <StatusBar
-        animated={true}
-        backgroundColor="#BFDBFF"
-      />
-      <NavigationContainer>
-          <Stack.Navigator screenOptions={{contentStyle:{
-            backgroundColor:"#fff"
-          }}} >
-            <Stack.Screen options={{headerShown:false}}  name="Tab" component={TabNavigate} />
-            <Stack.Screen options={{headerShown:false}} name="Login" component={LoginScreen} />
-            <Stack.Screen options={{headerShown:false}}  name="Signup" component={SignupScreen} />
-            <Stack.Screen name="SingleTweet" component={SingleTweetScreen} />
-            <Stack.Screen name="Tasks" component={TaskListScreen} />
-            <Stack.Screen name="AddTweet" component={AddTweetScreen} />
-            <Stack.Screen name="Settings" component={SettingsScreen} />
-            <Stack.Screen name="TaskUpdate" component={TaskUpdateScreen} />
-            <Stack.Screen name="Message" component={MessageScreen} />
-            <Stack.Screen name="UserProfile" component={UserProfileScreen} />
-            <Stack.Screen name="Comment" component={CommentScreen} />
-            <Stack.Screen name="TagTweetList" component={TagTweetListScreen} />
-          </Stack.Navigator>
-        </NavigationContainer>
-        </MenuProvider>
-      </Provider>
-  );
+  // return (
+  //   <Provider store={store}>
+  //     <MenuProvider>
+  //     <StatusBar
+  //       animated={true}
+  //       backgroundColor="#BFDBFF"
+  //     />
+  //     <NavigationContainer>
+  //         <Stack.Navigator screenOptions={{contentStyle:{
+  //           backgroundColor:"#fff"
+  //         }}} >
+  //           <Stack.Screen options={{headerShown:false}}  name="Tab" component={TabNavigate} />
+  //           <Stack.Screen options={{headerShown:false}} name="Login" component={LoginScreen} />
+  //           <Stack.Screen options={{headerShown:false}}  name="Signup" component={SignupScreen} />
+  //           <Stack.Screen name="SingleTweet" component={SingleTweetScreen} />
+  //           <Stack.Screen name="Tasks" component={TaskListScreen} />
+  //           <Stack.Screen name="AddTweet" component={AddTweetScreen} />
+  //           <Stack.Screen name="Settings" component={SettingsScreen} />
+  //           <Stack.Screen name="TaskUpdate" component={TaskUpdateScreen} />
+  //           <Stack.Screen name="Message" component={MessageScreen} />
+  //           <Stack.Screen name="UserProfile" component={UserProfileScreen} />
+  //           <Stack.Screen name="Comment" component={CommentScreen} />
+  //           <Stack.Screen name="TagTweetList" component={TagTweetListScreen} />
+  //         </Stack.Navigator>
+  //       </NavigationContainer>
+  //       </MenuProvider>
+  //     </Provider>
+  // );
 }
 
 const styles = StyleSheet.create({

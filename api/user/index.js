@@ -226,6 +226,10 @@ const getTweetList = async (req,res) => {
 
         }else{
             const contactData = await UserContactModel.findOne({userId:userId})
+            
+            const tweetLikeListData = await TweetLikeListModel.findOne({userId:userId})
+            const userLike = tweetLikeListData ? tweetLikeListData.tweetList : []
+            console.log("BEĞENİ LİST::",userLike);
             let liste = [] //Kullanıcı gönderi gösterme listesi.
             liste.push(contactData?.followed)
             liste.push(userId)
@@ -251,8 +255,10 @@ const getTweetList = async (req,res) => {
                     $or: [
                       { 'userId.profilePrivate': false }, 
                       { "userId._id": { $in: liste } },
-                      
                     ],
+                    // $and:[
+                    //     {_id : {$in : userLike}}
+                    // ]
                   },
                 },
           
@@ -274,6 +280,13 @@ const getTweetList = async (req,res) => {
                         'userId.image': 1,
                         'userId.tag': 1,
                         'userId.profilePrivate': 1,
+                        userIsFollow: {
+                            $cond: {
+                                if: { $in: ['$_id', userLike] }, // Eğer tweet'in _id'si `userLike` içinde varsa
+                                then: true,
+                                else: false
+                            }
+                        }
                     }
                 },
                 { $sort: { createdAt: -1 } }, // En yeni tweetler önce gelir

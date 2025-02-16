@@ -20,6 +20,7 @@ export default function Tweet(){
     const [searchText,setSearchText] = useState("")
     const [tagList,setTagList] = useState([])
     const [userList,setUserList] = useState([])
+    
     const {data,isLoading,isError,isSuccess,isFetching,refetch} = useGetTweetListQuery({is_followed_data:tweetFollowedData ? tweetFollowedData : false})
     const getuserP = useGetUserProfileQuery()
     const getUserTagList = useGetUserTagListQuery()
