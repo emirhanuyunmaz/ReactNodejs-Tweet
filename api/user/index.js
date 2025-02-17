@@ -10,6 +10,7 @@ const {UserContactModel} = require("../contact/model")
 const uuid = require("uuid")
 const { default: axios } = require("axios")
 const SignUpModel = require("../singnup/model")
+const { default: mongoose } = require("mongoose")
 
 
 // Kullanıcı Profil resmini güncelleme işlemi .
@@ -112,11 +113,13 @@ const getUserImage = async(req,res) => {
 const addTweet = async (req,res) => {
     // Kullanıcı modeli içerisine user verisi geçilmesi işlemi yapılacak.
     try{
+        console.log("TWEET EKLENDİ");
+        
         const id = req.headers.id
         const text = req.body.text
         const userTag = req.body.userTag
         const isImage = req.body.isImage
-        // console.log("İmage: ",req.body);
+        console.log("İmage: ",req.body);
         // console.log("LLLL:",text);
         
 
@@ -455,9 +458,64 @@ const getTweetCommentList = async (req,res) => {
 const singleTweet = async (req,res) => {
     try{
         const tweetId = req.params.id
-        // console.log("PARAMS IDIDIDI:",req.params.id)
-        const tweetData = await TweetModel.findById(tweetId).populate("userId","name surname image")
-        res.status(201).json({succes:true,message:"Succes",data:tweetData})
+        const userId = req.headers.id
+        console.log("PARAMS IDIDIDI:",userId)
+        let tweet_id = new ObjectId(tweetId);
+        // const tweetData = await TweetModel.findById(tweetId).populate("userId","name surname image")
+
+        const tweetLikeListData = await TweetLikeListModel.findOne({userId:userId})
+        const userLike = tweetLikeListData ? tweetLikeListData.tweetList : []
+
+        const tweetData = await TweetModel.aggregate([
+            {
+                $lookup: {
+                from: 'signups', // SignUp koleksiyon adı
+                localField: 'userId', // Tweet modelindeki userId
+                foreignField: '_id', // SignUp modelindeki _id
+                as: 'userId', // Kullanıcı bilgilerini getir
+                },
+                
+            },
+            {
+                $unwind: '$userId', // userId dizisini aç
+            },
+            {
+                $match :{ 
+                    
+                    $and :[ {_id: {$in:[tweet_id]}} ]
+                    
+                }
+            },
+            {$project: {
+                _id: 1, // Tweet ID
+                text: 1, // Tweet içeriği
+                tag: 1,
+                userTag: 1,
+                isImage: 1,
+                likes: 1,
+                comments:1,
+                createdAt: 1,
+                'userId._id': 1, 
+                'userId.name': 1, 
+                'userId.surname': 1,
+                'userId.email': 1,
+                'userId.image': 1,
+                'userId.tag': 1,
+                'userId.profilePrivate': 1,
+                userIsFollow: {
+                    $cond: {
+                        if: { $in: ['$_id', userLike] }, // Eğer tweet'in _id'si `userLike` içinde varsa
+                        then: true,
+                        else: false
+                    }
+                }
+            }  
+        }
+        ])
+        
+        console.log("L:",tweetData);
+        
+        res.status(201).json({succes:true,message:"Succes",data:tweetData[0]})
 
     } catch(err) {
         console.log("Bir tweet çekilirken hata ile karşılaşıldı :",err);

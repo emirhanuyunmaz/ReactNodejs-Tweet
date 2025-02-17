@@ -1,7 +1,7 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 
-export default function CommentCard() {
+export default function CommentCard({userId,tag,text,createAt}) {
     const baseUrl = process.env.BASE_URL
     function UserProfileOnClick(){
     
@@ -12,19 +12,19 @@ export default function CommentCard() {
         <View style={styles.userAndTag}>
         
             <TouchableOpacity onPress={UserProfileOnClick} style={styles.userContainerStyle}>
-                <Image style={styles.userProfileImageStyle} source={{uri:`https://randomuser.me/api/portraits/men/78.jpg`}}/>
+                <Image style={styles.userProfileImageStyle} source={{uri:`${baseUrl}/${userId.image}`}}/>
                 <View>
-                <Text style={styles.userNameStyle} >User Name</Text>
+                <Text style={styles.userNameStyle} >{userId.name} {userId.surname}</Text>
                 <Text  >12/12/2025</Text>
                 </View>
             </TouchableOpacity>
             
 
-            <Text style={styles.tagStyle}>MUTLU</Text>
+            <Text style={styles.tagStyle}>{tag.toUpperCase()}</Text>
         </View>
         
         <Text style={styles.postContainer}>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga exercitationem laudantium explicabo possimus similique illo eaque nulla dolore asperiores aliquid aspernatur aut dolor repudiandae, eius ratione molestias consectetur, consequuntur assumenda.
+            {text}
         </Text>
     </View>
   )

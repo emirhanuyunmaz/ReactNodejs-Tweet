@@ -2,15 +2,21 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { Heart, MessageCircle } from 'lucide-react-native'
 import { useNavigation } from '@react-navigation/native';
+import { useTweetLikeMutation, useUserTweetDislikeMutation } from '../store/userApi/userApiSlicer';
 
-export default function TweetCard({text,comments,createdAt,userTag,tag,likes,userId,isImage,userIsFollow}) {
+export default function TweetCard({_id,text,comments,createdAt,userTag,tag,likes,userId,isImage,userIsFollow}) {
   const baseUrl = process.env.BASE_URL
-
   const navigation = useNavigation()
+
+  
+
+  const [tweetDislike,responseTweetDislike] = useUserTweetDislikeMutation()
+  const [userLikeTweet,responseLikeTweet] = useTweetLikeMutation()
+
 
   // Yorum sayfasına gönderme işlemi.
   function tweetCommentPage(){
-    navigation.navigate("SingleTweet")
+    navigation.navigate("SingleTweet",{_id:_id})
   }
 
   // Kullanıcı profiline gönderme işlemi.
@@ -18,12 +24,16 @@ export default function TweetCard({text,comments,createdAt,userTag,tag,likes,use
     
   }
 
-  function likeTweet(){
-
+  // Tweet Beğenme işlemi
+  async function likeTweet(){
+    // userIsFollow = true
+    await userLikeTweet({tweetId:_id})
   }
 
-  function dislikeTweet(){
-    
+  // Tweet beğeni çekme işlemi
+  async function dislikeTweet(){
+    // userIsFollow = false 
+    await tweetDislike({tweetId:_id})
   }
 
   return (
@@ -40,7 +50,7 @@ export default function TweetCard({text,comments,createdAt,userTag,tag,likes,use
         <Text style={styles.tagStyle}>{tag.toUpperCase()}</Text>
       </View>
 
-      {isImage ? <Image style={styles.postImageContainer} source={{uri:`${baseUrl}/${text}`}}/>:
+      {isImage ? <Image style={styles.postImageContainer} source={{uri:`${baseUrl}${text}`}}/>:
       <Text style={styles.postContainer}>
           {text}
       </Text>}
@@ -48,14 +58,14 @@ export default function TweetCard({text,comments,createdAt,userTag,tag,likes,use
       <View style={styles.buttonStyle}>
         
 
-        {userIsFollow ? <TouchableOpacity>
+        {userIsFollow ? <TouchableOpacity onPress={dislikeTweet} >
             <View style={styles.iconStyle}>
               <Heart size={28} fill={"red"} color={"red"} />
               <Text style={styles.iconTextStyle}>{likes.length}</Text>
             </View>
         </TouchableOpacity>
         :
-        <TouchableOpacity>
+        <TouchableOpacity onPress={likeTweet} >
           <View style={styles.iconStyle}>
             <Heart size={28} color={"black"} />
             <Text style={styles.iconTextStyle}>{likes.length}</Text>
@@ -116,7 +126,8 @@ const styles = StyleSheet.create({
     width:280,
     height:320,
     marginHorizontal:"auto",
-    borderRadius:10
+    borderRadius:10,
+    resizeMode:"stretch"
   },
   buttonStyle:{
     marginTop:10,

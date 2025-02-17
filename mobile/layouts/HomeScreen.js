@@ -19,25 +19,23 @@ const actions = [
 export default function HomeScreen() {
   const navigation = useNavigation()
   const [refreshing, setRefreshing] = useState(false);
-  
+  const [isRefreshing, setIsRefreshing] = useState(false)
+
   const [tweetList,setTweetList] = useState([])
 
   const getTweetList = useGetTweetListQuery({tweetFollowedData : false})
 
-
-
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 2000);
+    getTweetList.refetch().unwrap().then(() => {
+      setRefreshing(false)
+    })
   }, []);
 
 
   useEffect(() => {
     if(getTweetList.isSuccess){
-      console.log(getTweetList.data.tweetList);
-      
+      // console.log(getTweetList.data.tweetList);
       setTweetList(getTweetList.data.tweetList)
     }
 
@@ -65,7 +63,10 @@ export default function HomeScreen() {
           data={tweetList}
           renderItem={({item}) => <TweetCard {...item} />}
           keyExtractor={item => item._id}
-        />
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          } 
+          />
         
         
         }  
