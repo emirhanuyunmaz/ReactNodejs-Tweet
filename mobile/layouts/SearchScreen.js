@@ -1,22 +1,65 @@
 import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import ClassificationTagList from '../components/ClassificationTagList'
 import TagList from '../components/TagList'
+import { useGetTagListQuery, useGetUserTagListQuery } from '../store/userApi/userApiSlicer'
+import SearchUserList from '../components/SearchUserList'
+import { useSearchUserMutation } from '../store/contactApi/contactApiSlicer'
 
 export default function SearchScreen() {
+  
+  const [tagList,setTagList] = useState([])
+  const [userTagList,setUserTagList] = useState([])
+  const [searchText,setSearchText] = useState("")
+  const [userList,setUserList] = useState([])
+
+  const getTagList = useGetTagListQuery()
+  const getUserTagList = useGetUserTagListQuery() 
+  const [searchUser,resSearchUser] = useSearchUserMutation()
+
+  async function UserSearch(){
+    await searchUser({searchText:searchText}).unwrap()
+    .then((e) => {
+      console.log(e);
+      setUserList(e.data)
+    })
+  }
+
+  useEffect(() => {
+    if(getTagList.isSuccess){
+      setTagList(getTagList.data.data)
+    }
+  },[getTagList.isSuccess,getTagList.isFetching])
+
+  useEffect(() => {
+    if(getUserTagList.isSuccess){
+      setUserTagList(getUserTagList.data.data)
+    }
+  },[getUserTagList.isSuccess,getUserTagList.isFetching])
+
+  useEffect(() => {
+    if(searchText != ""){
+      console.log("AAA::DDD");
+      
+      UserSearch()
+    }
+  },[searchText])
+
   return (
     <View style={styles.container}>
-      <TextInput style={styles.searchInputStyle} placeholder='Ara' />
+      <TextInput value={searchText} onChangeText={(e) => setSearchText(e)} style={styles.searchInputStyle} placeholder='Ara' />
       
       <ScrollView style={styles.tagContainerStyle} >
 
-      <View style={styles.classificationContainerStyle} >
-        <ClassificationTagList/>
-      </View>
+        {searchText == "" ? <View><View style={styles.classificationContainerStyle} >
+          <ClassificationTagList tagList={tagList} />
+        </View>
 
-      <View>
-        <TagList  />
-      </View>
+        <View>
+          <TagList userTagList={userTagList} />
+        </View></View> : <SearchUserList userList={userList} />}
+
+
 
       </ScrollView>
       

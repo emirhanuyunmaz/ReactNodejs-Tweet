@@ -1,15 +1,23 @@
-import { Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import { Image, RefreshControl, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { ClipboardList, LogOut, Settings } from 'lucide-react-native'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
+import { useGetUserProfileQuery, useGetUserShortProfileQuery } from '../store/userApi/userApiSlicer'
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 
 export default function ProfileScreen() {
-  const baseUrl = process.env.BASE_URL
   
+
+  const baseUrl = process.env.BASE_URL
+  const getUserProfile = useGetUserProfileQuery()
+  // const getUserShortProfile = useGetUserShortProfileQuery()
   const navigation = useNavigation()
 
+  const [userData,setUserData] = useState(null)
+  const [refreshing, setRefreshing] = useState(false);
+
   function userProfileScreen(){
-    navigation.navigate("UserProfile")
+    navigation.navigate("UserProfile",{_id:userData._id})
   }
 
   function userSettingsScreen(){
@@ -20,12 +28,34 @@ export default function ProfileScreen() {
     navigation.navigate("Tasks")
   }
 
+  const onRefresh = React.useCallback(async () => {
+  setRefreshing(true);
+
+  await getUserProfile.refetch()
+  
+  setRefreshing(false)
+  }, []);
+
+  useEffect(() => {
+
+    if(getUserProfile.isSuccess){
+      console.log("::AAADDDD:");
+      setUserData(getUserProfile.data)
+      console.log(getUserProfile.data);
+    }
+
+  },[getUserProfile.isFetching,getUserProfile.isSuccess])
+
   return (
+    <SafeAreaProvider style={{flex:1}} >
+      <SafeAreaView style={{flex:1}} >
+      <ScrollView contentContainerStyle={styles.scrollView}
+              refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} >
     <View style={styles.container}>
       <TouchableOpacity onPress={userProfileScreen} style={styles.profileContainerStyle}>
-        <Image source={{uri:`${baseUrl}/uploads/12f2f34b-b523-405a-92f3-c09a47263b86.png`}} style={styles.profileImageStyle} />
+        <Image source={{uri:`${baseUrl}/${userData?.image}`}} style={styles.profileImageStyle} />
         <View>
-          <Text style={styles.profileTextStyle} >ProfileScreen</Text>
+          <Text style={styles.profileTextStyle} >{userData?.name} {userData?.surname}</Text>
           <Text>Profile Git</Text>
         </View>
       </TouchableOpacity>
@@ -50,6 +80,9 @@ export default function ProfileScreen() {
       </View>
 
     </View>
+    </ScrollView>
+    </SafeAreaView>
+    </SafeAreaProvider>
   )
 }
 

@@ -13,6 +13,8 @@ const authControl = async(req,res,next) => {
         // console.log("ACCESS Token : ",token);
         
         if(!token){
+            console.log("Token yok");
+            
             res.status(401).json({
                 succeded:false,
                 message:"Error",            
@@ -23,9 +25,9 @@ const authControl = async(req,res,next) => {
             jwt.verify(token,process.env.TOKEN_SECRET,async(err,decodedToken) => {
                 if(err){
                     //Refresh token kontrol edilecek.
-                    // console.log("Token Süresi geçmiş");
+                    console.log("Token Süresi geçmiş");
                 }else{
-                    // console.log("DECODED TOKEN:",decodedToken);
+                    console.log("DECODED TOKEN:",decodedToken);
                     req.headers.id = decodedToken.id
                 }
             })

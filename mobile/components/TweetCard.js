@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Heart, MessageCircle } from 'lucide-react-native'
 import { useNavigation } from '@react-navigation/native';
 import { useTweetLikeMutation, useUserTweetDislikeMutation } from '../store/userApi/userApiSlicer';
@@ -8,11 +8,10 @@ export default function TweetCard({_id,text,comments,createdAt,userTag,tag,likes
   const baseUrl = process.env.BASE_URL
   const navigation = useNavigation()
 
-  
-
   const [tweetDislike,responseTweetDislike] = useUserTweetDislikeMutation()
   const [userLikeTweet,responseLikeTweet] = useTweetLikeMutation()
-
+  const [isFollow,setIsFollow] = useState(userIsFollow)
+  const [likesLength,setLikesLength] = useState(likes.length)
 
   // Yorum sayfasına gönderme işlemi.
   function tweetCommentPage(){
@@ -26,15 +25,22 @@ export default function TweetCard({_id,text,comments,createdAt,userTag,tag,likes
 
   // Tweet Beğenme işlemi
   async function likeTweet(){
-    // userIsFollow = true
+    userIsFollow = true
+    setIsFollow(true)
+    setLikesLength(likesLength+1)
     await userLikeTweet({tweetId:_id})
   }
 
   // Tweet beğeni çekme işlemi
   async function dislikeTweet(){
-    // userIsFollow = false 
+    userIsFollow = false 
+    setIsFollow(false)
+    setLikesLength(likesLength-1)
     await tweetDislike({tweetId:_id})
   }
+  useEffect(() => {
+
+  },[userIsFollow])
 
   return (
     <View style={styles.container}>
@@ -58,17 +64,17 @@ export default function TweetCard({_id,text,comments,createdAt,userTag,tag,likes
       <View style={styles.buttonStyle}>
         
 
-        {userIsFollow ? <TouchableOpacity onPress={dislikeTweet} >
+        {isFollow ? <TouchableOpacity onPress={dislikeTweet} >
             <View style={styles.iconStyle}>
               <Heart size={28} fill={"red"} color={"red"} />
-              <Text style={styles.iconTextStyle}>{likes.length}</Text>
+              <Text style={styles.iconTextStyle}>{likesLength}</Text>
             </View>
         </TouchableOpacity>
         :
         <TouchableOpacity onPress={likeTweet} >
           <View style={styles.iconStyle}>
             <Heart size={28} color={"black"} />
-            <Text style={styles.iconTextStyle}>{likes.length}</Text>
+            <Text style={styles.iconTextStyle}>{likesLength}</Text>
           </View>
         </TouchableOpacity>
         }

@@ -5,12 +5,12 @@ const jwt = require('jsonwebtoken')
 
 const createToken = (id) => {
     //Bir aylık bir token bilgisi
-   return jwt.sign({id:id,exp: Math.floor(Date.now() / 1000) + (60 * 60 * 30)},process.env.TOKEN_SECRET)
+   return jwt.sign({id:id,exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 30)},process.env.TOKEN_SECRET)
 }
 
 const createRefreshToken = (id) => {
     //Bir aylık bir token bilgisi
-   return jwt.sign({id:id,exp: Math.floor(Date.now() / 1000) + (60 * 60 * 30)},process.env.TOKEN_SECRET)
+   return jwt.sign({id:id,exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 30)},process.env.TOKEN_SECRET)
 }
 
 const userLogin = async (req,res) => {

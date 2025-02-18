@@ -46,6 +46,7 @@ export default function SingleTweetScreen() {
     navigation.navigate("Comment",{_id:id})
   }
 
+  
 
 
   useEffect(() => {

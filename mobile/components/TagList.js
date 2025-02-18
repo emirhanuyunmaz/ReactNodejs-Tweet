@@ -2,7 +2,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { useNavigation } from '@react-navigation/native'
 
-export default function TagList() {
+export default function TagList({userTagList}) {
   const navigation = useNavigation() 
   function tagListScreen(){
     navigation.navigate("TagTweetList")
@@ -13,12 +13,12 @@ export default function TagList() {
       <Text style={styles.titleStyle} >Etiketler</Text>
       
       <View style={styles.tagContainer} >
-        <TouchableOpacity onPress={tagListScreen} >
+        {userTagList?.length > 0 && userTagList.map((item) => <TouchableOpacity key={item._id} onPress={tagListScreen} >
           <View style={styles.tagItemContainer} >
-            <Text style={styles.tagTextStyle} >#Hello </Text>
-            <Text>21</Text>
+            <Text style={styles.tagTextStyle} >#{item?._id} </Text>
+            <Text>{item?.count}</Text>
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity>)}
         
       </View>
       

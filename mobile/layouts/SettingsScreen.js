@@ -1,36 +1,90 @@
-import { Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import { Image, KeyboardAvoidingView, RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import {Picker} from '@react-native-picker/picker';
+import { useGetUserProfileQuery, useUpdateUserProfileMutation } from '../store/userApi/userApiSlicer';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 export default function SettingsScreen() {
+  
   const baseUrl = process.env.BASE_URL
-  const [selectedLanguage, setSelectedLanguage] = useState();
+  const getUserProfile = useGetUserProfileQuery()
+  const [updateProfile,responseUpdateProfile] = useUpdateUserProfileMutation()
 
-  function updateImage(){
+  const [userName,setUserName] = useState("")
+  const [userSurname,setUserSurname] = useState("")
+  const [userEmail,setUserEmail] = useState("")
+  const [userPassword,setUserPassword] = useState("")
+  const [userDescription,setUserDescription] = useState("")
+  const [profilePrivate,setProfilePrivate] = useState(false)
+  const [profileImage,setProfileImage] = useState("")
+  const [refreshing, setRefreshing] = useState(false);
+
+    const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+  
+    await getUserProfile.refetch()
+    
+    setRefreshing(false)
+    }, []);
+
+  function UpdateImageOnClick(){
 
   }
 
-  return (
-    <KeyboardAvoidingView style={styles.container} >
-    <ScrollView style={styles.container} >
+  async function UpdateProfileOnClick(){
+    const body={
+      name:userName,
+      surname:userSurname,
+      email:userEmail,
+      password:userPassword,
+      description:userDescription,
+      profilePrivate:profilePrivate
+    }
+    await updateProfile(body).unwrap()
+    .then(() => {
+      console.log("İŞLEM BAŞARILI");
+    })
+    await getUserProfile.refetch()
+  }
+
+  useEffect(() => {
+    if(getUserProfile.isSuccess){
+      setUserName(getUserProfile.data.name)
+      setUserSurname(getUserProfile.data.surname)
+      setUserEmail(getUserProfile.data.email)
+      setUserPassword(getUserProfile.data.password)
+      setUserDescription(getUserProfile.data.description)
+      setProfilePrivate(getUserProfile.data.profilePrivate)
+      console.log(getUserProfile.data.profilePrivate);
       
-      <TouchableOpacity onPress={updateImage} style={styles.imageButtonStyle} >
+      setProfileImage(getUserProfile.data.image)
+    }
+  },[getUserProfile.isSuccess,getUserProfile.isFetching])
+
+  return (
+  <SafeAreaProvider style={{flex:1}} >
+    <SafeAreaView style={{flex:1}} >
+    <KeyboardAvoidingView style={styles.container} >
+    <ScrollView style={styles.container} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}  >
+      
+      <TouchableOpacity onPress={UpdateImageOnClick} style={styles.imageButtonStyle} >
         <View style={styles.imageContainerStyle} >
-          <Image  style={styles.imageStyle} source={{uri:`${baseUrl}/uploads/12f2f34b-b523-405a-92f3-c09a47263b86.png`}} />
+          <Image  style={styles.imageStyle} source={{uri:`${baseUrl}/${profileImage}`}} />
         </View>
         
       </TouchableOpacity>
       <View style={{marginBottom:10}} >
+        {/* Select İşlemi */}
         <Text style={styles.selectLabelStyle} >Profile Durumu</Text>
         <View style={styles.selectContainer} >
           <Picker
             style={styles.selectStyle}
-            selectedValue={selectedLanguage}
+            selectedValue={`${profilePrivate}`}
             onValueChange={(itemValue, itemIndex) =>
-              setSelectedLanguage(itemValue)
+              setProfilePrivate(itemValue)
             }>
-            <Picker.Item label="Profil Gizli" value="Profil Gizli" />
-            <Picker.Item label="Profil Açık" value="Profil Açık" />
+            <Picker.Item label="Profil Gizli" value="true" />
+            <Picker.Item label="Profil Açık" value="false" />
           </Picker>
           
         </View>
@@ -41,37 +95,39 @@ export default function SettingsScreen() {
         <View style={styles.nameSurnameContainerStyle} >        
           <View style={styles.inputNameContainerStyle} >
             <Text style={styles.labelStyle} >Ad</Text>
-            <TextInput style={styles.inputStyle} placeholder='Ad' />
+            <TextInput value={userName} onChangeText={(e) => setUserName(e)} style={styles.inputStyle} placeholder='Ad' />
           </View>
           <View style={styles.inputNameContainerStyle} >
             <Text style={styles.labelStyle} >Soyad</Text>
-            <TextInput style={styles.inputStyle} placeholder='Soyad' />
+            <TextInput value={userSurname} onChangeText={(e) => setUserSurname(e)} style={styles.inputStyle} placeholder='Soyad' />
           </View>
         </View>
 
         <View style={styles.inputItemContainerStyle} >
             <Text style={styles.labelStyle} >Email</Text>
-            <TextInput  style={styles.inputStyle} placeholder='Email' />
+            <TextInput editable={false} value={userEmail} onChangeText={(e) => setUserEmail(e)} style={styles.emailInputStyle} placeholder='Email' />
         </View>
 
         <View style={styles.inputItemContainerStyle} >
             <Text style={styles.labelStyle} >Password</Text>
-            <TextInput style={styles.inputStyle} placeholder='Password' />
+            <TextInput value={userPassword} onChangeText={(e) => setUserPassword(e)} style={styles.inputStyle} placeholder='Password' />
         </View>
         
         <View style={styles.inputItemContainerStyle} >
             <Text style={styles.labelStyle} >Açıklama</Text>
-            <TextInput style={styles.inputDescriptionStyle} placeholder='Açıklama' multiline={true} numberOfLines={10} />
+            <TextInput value={userDescription} onChangeText={(e) => setUserDescription(e)} style={styles.inputDescriptionStyle} placeholder='Açıklama' multiline={true} numberOfLines={10} />
         </View>
 
       </View>
 
-      <TouchableOpacity style={styles.buttonStyle} >
+      <TouchableOpacity onPress={UpdateProfileOnClick} style={styles.buttonStyle} >
         <Text style={styles.buttonTextStyle} >Güncelle</Text>
       </TouchableOpacity>
 
-    </ScrollView>
-    </KeyboardAvoidingView>
+      </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+    </SafeAreaProvider>
   )
 }
 
@@ -125,6 +181,13 @@ const styles = StyleSheet.create({
   inputStyle:{
     borderWidth:2,
     borderColor:"gray",
+    borderRadius:10,
+    paddingHorizontal:10
+  },
+  emailInputStyle:{
+    borderWidth:2,
+    borderColor:"gray",
+    backgroundColor:"gray",
     borderRadius:10,
     paddingHorizontal:10
   },

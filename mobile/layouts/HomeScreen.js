@@ -1,10 +1,11 @@
-import { FlatList, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import TweetCard from '../components/TweetCard'
 import { FloatingAction } from "react-native-floating-action";
 import { Plus } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useGetTweetListQuery } from '../store/userApi/userApiSlicer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const actions = [
   {
@@ -17,13 +18,14 @@ const actions = [
 ];
 
 export default function HomeScreen() {
+  
   const navigation = useNavigation()
   const [refreshing, setRefreshing] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false)
+  const [followedTweet,setFollowedTweet] = useState(true)
 
   const [tweetList,setTweetList] = useState([])
 
-  const getTweetList = useGetTweetListQuery({tweetFollowedData : false})
+  const getTweetList = useGetTweetListQuery({is_followed_data : followedTweet})
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -32,32 +34,51 @@ export default function HomeScreen() {
     })
   }, []);
 
+  async function getUserTweetListControl(){
+    const item = await AsyncStorage.getItem("followedTweet")
+    setFollowedTweet(item ? item :false)
+    getTweetList.refetch()
+  }
+
+  async function globalTweetData(){
+    await AsyncStorage.removeItem("followedTweet")
+    setFollowedTweet(false)    
+    getTweetList.refetch()
+  }
+  
+  async function followedTweetData(){
+    await AsyncStorage.setItem("followedTweet","true")
+    setFollowedTweet(true)
+    getTweetList.refetch()
+  }
 
   useEffect(() => {
+    
     if(getTweetList.isSuccess){
-      // console.log(getTweetList.data.tweetList);
       setTweetList(getTweetList.data.tweetList)
     }
 
-  },[getTweetList.isSuccess,getTweetList.isFetching])
+  },[getTweetList.isSuccess,getTweetList.isFetching,getTweetList.data])
+
+  useEffect(() => {
+    getUserTweetListControl()
+  },[])
 
   return (
-    <View style={styles.container} >
-    {/* <ScrollView  > */}
-   
+    <View style={styles.container} >   
 
       <View style={styles.selectContainerStyle} >
-        <TouchableOpacity style={styles.selectStyle} >
+        <TouchableOpacity onPress={globalTweetData} style={[styles.selectStyle,!followedTweet && styles.selectedStyle ]} >
           <Text style={styles.selectTextStyle} >Global</Text>
         </TouchableOpacity>
         
-        <TouchableOpacity style={[styles.selectStyle,styles.selectedStyle]} >
+        <TouchableOpacity onPress={followedTweetData} style={[styles.selectStyle,followedTweet && styles.selectedStyle]} >
           <Text style={styles.selectTextStyle} >Takip Edilenler</Text>
         </TouchableOpacity>
 
       </View>
-      {/* <ScrollView style={styles.tweetContainer} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} > */}
-        {tweetList.length > 0 && 
+
+        {tweetList.length > 0 ? 
         
         <FlatList
           data={tweetList}
@@ -66,13 +87,10 @@ export default function HomeScreen() {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           } 
-          />
-        
-        
+          />:<Text style={styles.infoStyle} >Gönderi Bulunamadı</Text>
         }  
         
         
-      {/* </ScrollView> */}
       <View style={styles.floatActionButton} >
 
         <FloatingAction
@@ -86,7 +104,7 @@ export default function HomeScreen() {
         />
 
       </View>
-    {/* </ScrollView> */}
+
     </View>
   )
 }
@@ -127,5 +145,9 @@ const styles = StyleSheet.create({
     position:"absolute",
     bottom:0,
     right:0
+  },
+  infoStyle:{
+    textAlign:"center",
+    fontSize:24
   }
 })

@@ -92,12 +92,17 @@ const contactList = async (req,res) => {
     // kullanıcının kendini takip ediyor olarak gösterilmemeli.
     try{
         const userId = req.params.id
-        // console.log("USER IDIDI:",userId);
+        console.log("USER IDIDI:",userId);
         
         const data = await UserContactModel.findOne({userId:userId})
-        // console.log("Contact list:",data);
+        console.log("Contact list:",data);
+
+        if(data){
+            res.status(201).json({message:"succes",succes:true,followed:data?.followed?.length,follower:data?.follower?.length})
+        }else{
+            res.status(201).json({message:"succes",succes:true,followed:0,follower:0})
+        }
         
-        res.status(201).json({message:"succes",succes:true,followed:data?.followed?.length,follower:data?.follower?.length})
     }catch(err){
         console.log("Takipçi ve takip edilen listesi çekilirken bir hata ile karşılaşıldı.",err)
         res.status(404).json({message:err,succes:false})
@@ -325,7 +330,7 @@ const notificationFollowReject = async(req,res) => {
 const notificationShowed = async(req,res) => {
     try{
         const id = req.headers.id 
-        await UserNotificationModel.findOneAndUpdate({userId:id},{isShowed:true})
+        await UserNotificationModel.updateMany({userId:id},{isShowed:true})
         res.status(201).json({succes:true})
     }catch(err){
         console.log("Kullanıcı bildirimleri okundu olarak işaretlenirken bir hata ile karşılaşıldı.",err);

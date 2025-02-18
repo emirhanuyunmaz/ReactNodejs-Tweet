@@ -1,6 +1,5 @@
 import { Image, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
-import { Camera } from 'lucide-react-native'
 import { useAddTweetMutation } from '../store/userApi/userApiSlicer'
 import { useNavigation } from '@react-navigation/native'
 import * as ImagePicker from "expo-image-picker"

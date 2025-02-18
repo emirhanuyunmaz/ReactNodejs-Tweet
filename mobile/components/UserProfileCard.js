@@ -2,16 +2,18 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { useNavigation } from '@react-navigation/native'
 
-export default function UserProfileCard() {
+export default function UserProfileCard({_id,image,name,surname}) {
+    const baseUrl = process.env.BASE_URL
+
       const navigation = useNavigation()
       
       function messageScreen(){
-            navigation.navigate("Message")
+            navigation.navigate("UserProfile",{_id:_id})
       }
   return (
     <TouchableOpacity onPress={messageScreen} style={styles.container}>
-        <Image style={styles.profileImageStyle} source={{uri:"https://randomuser.me/api/portraits/men/78.jpg"}} />
-        <Text style={styles.userNameStyle}>USER NAME</Text>
+        <Image style={styles.profileImageStyle} source={{uri:`${baseUrl}/${image}`}} />
+        <Text style={styles.userNameStyle}>{name} {surname}</Text>
     </TouchableOpacity>
   )
 }

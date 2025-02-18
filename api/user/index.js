@@ -10,7 +10,6 @@ const {UserContactModel} = require("../contact/model")
 const uuid = require("uuid")
 const { default: axios } = require("axios")
 const SignUpModel = require("../singnup/model")
-const { default: mongoose } = require("mongoose")
 
 
 // Kullanıcı Profil resmini güncelleme işlemi .
@@ -21,7 +20,6 @@ const upl = async (req,res) => {
     try{
         // console.log("İMAGE:",req.body.image);
         // console.log("Kullanıcı id bilgisi::",req.headers.id);
-        
         
         const id = req.headers.id
         const user = await SignUpModel.findById(id)
@@ -49,6 +47,8 @@ const getUserProfile = async (req,res) => {
 
     try{
         const id = req.headers.id
+        // console.log("Kullanıcı bilgisi:",req.headers);
+        
         // Populate işlemi çalışmıyor.
         const userProfile = await signupModel.findOne({_id:id})
 
@@ -531,11 +531,74 @@ const userTweetProfile = async(req,res) => {
     try{
         const searchText = req.headers.text
         const tweetUserId = req.params.id
-        const tweetData = await TweetModel.find({userId:tweetUserId,text:{ $regex: `${searchText}`, $options: 'i' } }).populate("userId","name surname image").sort({createdAt:"desc"}).exec()
+        // const tweetData = await TweetModel.find({userId:tweetUserId,text:{ $regex: `${searchText}`, $options: 'i' } }).populate("userId","name surname image").sort({createdAt:"desc"}).exec()
+
+        const tweetLikeListData = await TweetLikeListModel.findOne({userId:tweetUserId})
+        const userLike = tweetLikeListData ? tweetLikeListData.tweetList : []
+
+        const tweet_user_id = new ObjectId(tweetUserId)
+
+        // ***************** //
+        const tweetData = await TweetModel.aggregate([
+            {
+                $lookup: {
+                from: 'signups', // SignUp koleksiyon adı
+                localField: 'userId', // Tweet modelindeki userId
+                foreignField: '_id', // SignUp modelindeki _id
+                as: 'userId', // Kullanıcı bilgilerini getir
+                },
+                
+            },
+            {
+                $unwind: '$userId', // userId dizisini aç
+            },
+            {
+                $match :{ 
+                    
+                    $and :[ 
+                        {"userId._id": {$in:[tweet_user_id]}},
+                        {"text" : new RegExp('^' + searchText, "i")}
+                    
+                    ]
+                    
+                }
+            },
+            {$project: {
+                _id: 1, // Tweet ID
+                text: 1, // Tweet içeriği
+                tag: 1,
+                userTag: 1,
+                isImage: 1,
+                likes: 1,
+                comments:1,
+                createdAt: 1,
+                'userId._id': 1, 
+                'userId.name': 1, 
+                'userId.surname': 1,
+                'userId.email': 1,
+                'userId.image': 1,
+                'userId.tag': 1,
+                'userId.profilePrivate': 1,
+                userIsFollow: {
+                    $cond: {
+                        if: { $in: ['$_id', userLike] }, // Eğer tweet'in _id'si `userLike` içinde varsa
+                        then: true,
+                        else: false
+                    }
+                }
+            }  
+        }
+        ])
+
+        // ***************** //
+
         const userId = req.headers.id
         const userProfile = userId == tweetUserId
         console.log("Kullanıcı profili mi ? = ",userProfile);
         
+        console.log("TWEET_DATA:",tweetData);
+        
+
         res.status(201).json({message:"Succes",succes:true,data:tweetData,userProfile:userProfile,isUser:true})
 
     }catch(err) {
