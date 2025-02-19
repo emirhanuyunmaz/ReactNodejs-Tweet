@@ -232,7 +232,7 @@ const getTweetList = async (req,res) => {
             
             const tweetLikeListData = await TweetLikeListModel.findOne({userId:userId})
             const userLike = tweetLikeListData ? tweetLikeListData.tweetList : []
-            console.log("BEĞENİ LİST::",userLike);
+            // console.log("BEĞENİ LİST::",userLike);
             let liste = [] //Kullanıcı gönderi gösterme listesi.
             liste.push(contactData?.followed)
             liste.push(userId)
@@ -295,6 +295,7 @@ const getTweetList = async (req,res) => {
                 { $sort: { createdAt: -1 } }, // En yeni tweetler önce gelir
               ]);
             // console.log(data);
+            console.log("Kullanıcı tweet listesi çekildi.");
             
             res.status(200).json({tweetList:data})
         }
@@ -868,7 +869,7 @@ const taskImageUpdate = async (req,res) => {
     
     try{
         const taskId = req.body.taskId
-        console.log("RESİM VAR MI:",req.body.image);
+        // console.log("RESİM VAR MI:",req.body.image);
         if(req.body.image){
             const updateImageName =  uuid.v4()
 
@@ -877,15 +878,15 @@ const taskImageUpdate = async (req,res) => {
             const task = await TaskModel.findById(taskId)
             
             const imageName = task.text.split("image/").pop()
-            fs.rmSync(__dirname+"/.."+`/uploads/${imageName}`)
+            fs.rmSync(__dirname+"/.."+`${imageName}`)
 
 
-            const filePath = `/uploads/${updateImageName}.png`
+            const filePath = __dirname + `/../uploads/${updateImageName}.png`
             fs.writeFile(filePath ,image , {encoding: 'base64'}, function(err) {
                 console.log(`File created ${updateImageName+".png"} `);
             });
 
-            await TaskModel.findByIdAndUpdate(taskId,{text:process.env.IMAGE_BASE_URL+updateImageName+".png"})
+            await TaskModel.findByIdAndUpdate(taskId,{text:"/uploads/"+updateImageName+".png"})
             res.status(201).json({succes:true,message:"succes"})
         }else{
             res.status(401)

@@ -1,8 +1,9 @@
 import { Image, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
-import { useAddTweetMutation } from '../store/userApi/userApiSlicer'
+import { useAddTaskMutation, useAddTweetMutation } from '../store/userApi/userApiSlicer'
 import { useNavigation } from '@react-navigation/native'
 import * as ImagePicker from "expo-image-picker"
+import Toast from 'react-native-toast-message'
 
 export default function AddTweetScreen() {
 
@@ -13,11 +14,26 @@ export default function AddTweetScreen() {
   const [isImage,setIsImage] = useState(false)
 
   const [addTweet,resAddTweet] = useAddTweetMutation()
+  const [addTask,resAddTask] = useAddTaskMutation()
+  
+  async function UserAddTask(){
+    await addTask({userTag:userTag,text:text,isImage:isImage}).unwrap()
+    .then(() => {
+      Toast.show({
+        type: 'success',
+        text1: 'Taslak Olarak Kaydedildi',
+      });
+      navigation.goBack()
+    })
+  }
 
-  async function UserAddTweet(){
-    
+  async function UserAddTweet(){  
     await addTweet({userTag:userTag,text:text,isImage:isImage}).unwrap()
     .then(() => {
+      Toast.show({
+        type: 'success',
+        text1: 'Gönderi Başarıyla Paylaşıldı',
+      });
       navigation.goBack()
     })
   }
@@ -72,7 +88,7 @@ export default function AddTweetScreen() {
           <Text style={styles.buttonTextStyle} >Gönderi Paylaş</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.buttonStyle} >
+        <TouchableOpacity onPress={UserAddTask} style={styles.buttonStyle} >
           <Text style={styles.buttonTextStyle} >Taslak Olarak Kaydet</Text>
         </TouchableOpacity>
       
@@ -122,6 +138,6 @@ const styles = StyleSheet.create({
     alignItems:"center",
     justifyContent:"center",
     borderRadius:10,
-    resizeMode:"stretch"  
+    resizeMode:"stretch"
   },
 })

@@ -1,15 +1,17 @@
 import { FlatList, Image, RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import TweetCard from '../components/TweetCard'
-import { useRoute } from '@react-navigation/native'
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'
 import { useGetUserShortProfileQuery, useUserTweetProfileQuery } from '../store/userApi/userApiSlicer'
 import { useContactListQuery } from '../store/contactApi/contactApiSlicer'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
+import { Settings, Upload } from 'lucide-react-native'
 
 export default function UserProfileScreen() {
 
   const baseUrl = process.env.BASE_URL
 
+  const navigation = useNavigation()
   const route = useRoute()
   const id = route.params?._id
 
@@ -29,16 +31,31 @@ export default function UserProfileScreen() {
   const [tweetList,setTweetList] = useState([])
   const [isUserProfile,setIsUserProfile] = useState(false)
 
-  const onRefresh = React.useCallback(async () => {
-    setRefreshing(true);
+  function UserSettingScreen(){
+    navigation.navigate("Settings")
+  }
 
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    setTweetList([])
     await userShortProfile.refetch()
     await getContactList.refetch()
-    await userTweetProfile.refetch(data)
-
+    const data = await userTweetProfile.refetch()
+    setTweetList(data.data.data)
     setRefreshing(false)
   }, []);
 
+
+    useFocusEffect(
+      useCallback(() => {
+        // Do something when the screen is focused
+        onRefresh()
+        return () => {
+          // Do something when the screen is unfocused
+          // Useful for cleanup functions
+        };
+      }, [])
+    );
 
   useEffect(() => {
     if(userShortProfile.isSuccess){
@@ -58,7 +75,8 @@ export default function UserProfileScreen() {
           id:id,
           text:searchText
       }
-      console.log(userTweetProfile.data);
+      // console.log(userTweetProfile.data);
+
       setTweetList(userTweetProfile.data.data)
       setIsUserProfile(userTweetProfile.data.userProfile)
     }
@@ -93,8 +111,8 @@ export default function UserProfileScreen() {
                   <Text style={styles.buttonTextStyle} >Mesaj at</Text>
                 </TouchableOpacity>
               </View>: <View>
-                <TouchableOpacity style={styles.buttonStyle} >
-                  <Text style={styles.buttonTextStyle} >Profili Düzenle</Text>
+                <TouchableOpacity onPress={UserSettingScreen} style={styles.buttonStyle} >
+                  <Text style={styles.buttonTextStyle} ><Settings size={32} color={"black"} /></Text>
                 </TouchableOpacity>
               </View> }
 
@@ -129,12 +147,12 @@ const styles = StyleSheet.create({
   profileContainerStyle:{
     backgroundColor:"#BFDBFF",
     paddingVertical:10,
-    paddingHorizontal:24,
+    paddingHorizontal:32,
     alignItems:"center",
     justifyContent:"space-between",
     flexDirection:"row",
     gap:10,
-    marginBottom:10
+    marginBottom:10,
   },
   imageStyle:{
     width:128,

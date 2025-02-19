@@ -26,6 +26,7 @@ import TagTweetListScreen from './layouts/TagTweetListScreen';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoadingComponent from './components/LoadingComponent';
+import Toast from 'react-native-toast-message';
 
 const Stack = createNativeStackNavigator();
 
@@ -91,6 +92,7 @@ function LoggedIn(){
       </Stack.Navigator>
     </NavigationContainer>
     </MenuProvider>
+    <Toast/>
   </Provider>
 }
 
@@ -103,9 +105,19 @@ function NotLoggedIn(){
             <Stack.Screen options={{headerShown:false}} name="Login" component={LoginScreen} />
             <Stack.Screen options={{headerShown:false}}  name="Signup" component={SignupScreen} />
             <Stack.Screen options={{headerShown:false}}  name="Tab" component={TabNavigate} />
-
+            
+            <Stack.Screen name="SingleTweet" component={SingleTweetScreen} />
+            <Stack.Screen name="Tasks" component={TaskListScreen} />
+            <Stack.Screen name="AddTweet" component={AddTweetScreen} />
+            <Stack.Screen name="Settings" component={SettingsScreen} />
+            <Stack.Screen name="TaskUpdate" component={TaskUpdateScreen} />
+            <Stack.Screen name="Message" component={MessageScreen} />
+            <Stack.Screen name="UserProfile" component={UserProfileScreen} />
+            <Stack.Screen name="Comment" component={CommentScreen} />
+            <Stack.Screen name="TagTweetList" component={TagTweetListScreen} />
           </Stack.Navigator>
         </NavigationContainer>
+        <Toast/>
         </Provider>);
 }
 

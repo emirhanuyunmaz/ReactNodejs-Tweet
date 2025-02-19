@@ -10,7 +10,7 @@ export const userApiSlice = createApi({
         baseUrl: baseUrl,
         prepareHeaders:async (headers) => {
             const access_token = await AsyncStorage.getItem("access_token")
-            console.log("ASDSSS:",access_token);
+            // console.log("ASDSSS:",access_token);
             
             headers.append("token",access_token)
             return headers

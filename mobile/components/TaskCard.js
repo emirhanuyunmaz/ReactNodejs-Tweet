@@ -2,10 +2,16 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import { Menu, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
+import { useDeleteTaskMutation } from '../store/userApi/userApiSlicer';
+import Toast from 'react-native-toast-message';
 
-export default function TaskCard() {
+export default function TaskCard({userTag,text,isImage,_id}) {
+
+  const baseUrl = process.env.BASE_URL
 
   const navigation = useNavigation()
+
+  const [deleteTask,resDeleteTask] = useDeleteTaskMutation()
 
   const [menuController , setMenuController] = useState()
 
@@ -15,7 +21,21 @@ export default function TaskCard() {
   }
 
   function taskUploadScreen(){
-    navigation.navigate("TaskUpdate")
+    navigation.navigate("TaskUpdate",{_id:_id})
+  }
+
+  async function DeleteTaskOnClick(){
+    const body = {
+      taskId:_id
+    }
+    
+    await deleteTask(body).unwrap()
+    .then(() => {
+      Toast.show({
+        type: 'success',
+        text1: 'Task silindi',
+      });
+    })
   }
 
   return (
@@ -23,29 +43,35 @@ export default function TaskCard() {
       <Menu style={styles.menuContainer} ref={c => setMenuController(c)}>
             <MenuTrigger  />
             <MenuOptions  >
-                <TouchableOpacity style={styles.menuItemStyle} >
+                <TouchableOpacity onPress={DeleteTaskOnClick} style={styles.menuItemStyle} >
                   <Text style={styles.menuItemText} >Sil</Text>
                 </TouchableOpacity>
           </MenuOptions>
            
         </Menu>
-      <Text style={styles.titleTextStyle} >Task Title</Text>
-      {/* <Text style={styles.descriptionStyle} >Lorem ipsum dolor sit amet, consectetur adipisicing elit. Esse, ratione. Lorem ipsum dolor sit amet consectetur adipisicing elit. Obcaecati commodi libero hic atque? Perferendis nos</Text> */}
-      <Image style={styles.taskImageStyle} source={{uri:"https://randomuser.me/api/portraits/men/78.jpg"}} />
+      <Text style={styles.titleTextStyle} >{userTag}</Text>
+      
+      {
+        isImage ? <Image style={styles.taskImageStyle} source={{uri:`${baseUrl}${text}`}} /> : <Text style={styles.descriptionStyle} >{text}</Text>
+      }
+      
+      
     </TouchableOpacity>
   )
 }
 
 const styles = StyleSheet.create({
   container:{
-    width:"49%",
+    width:"45%",
     backgroundColor:"#BFDBFF",
     minHeight:256,
     maxHeight:320,
     borderRadius:10,
     paddingHorizontal:10,
     paddingVertical:10,
-    overflow:"hidden"
+    overflow:"hidden",
+    marginHorizontal:10,
+    marginVertical:10
   },
   titleTextStyle:{
     fontWeight:"bold",

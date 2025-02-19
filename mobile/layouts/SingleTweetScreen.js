@@ -1,4 +1,4 @@
-import {  RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import {  FlatList, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import TweetCard from '../components/TweetCard'
 import ClassificationTagList from '../components/ClassificationTagList'
@@ -25,6 +25,7 @@ export default function SingleTweetScreen() {
   const navigation = useNavigation()
   const id = route.params?._id // Gelen veriyi yakalama işlemi.
   
+  const [loading,setLoading] = useState(false)
   const [tweetData,setTweetData] = useState(null)
   const [commnets,setComments] = useState([])
   const [tagList,setTagList] = useState([])
@@ -58,54 +59,61 @@ export default function SingleTweetScreen() {
   useEffect(() => {
     if(getCommentList.isSuccess){
       setComments(getCommentList.data.data)
-      console.log(getCommentList.data.data);
+      // console.log(getCommentList.data.data);
       
       setTagList(getCommentList.data.commentTagList)
     }
   },[getCommentList.isSuccess,getCommentList.isFetching])
+  
 
   return (
-    <SafeAreaProvider style={{flex:1}} >
-      <SafeAreaView style={{flex:1}} >
-      <ScrollView contentContainerStyle={styles.scrollView}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} >
-        <View style={styles.container} >
-          <View>
-            <ClassificationTagList tagList={tagList} />
-          </View>
+    <View style={styles.container} >
+          {/* <ScrollView > */}
           
-          {tweetData != null && <TweetCard {...tweetData} />}
-
-          <Text style={styles.commentTitleStyle} >Yorumlar</Text>
-          <View>
-            {commnets.length != 0 && 
+          {/* </ScrollView> */}
+          <View style={{flex:1 , height:"100%"}} >
+            <FlatList 
+              ListHeaderComponent={<View><View>
+                <ClassificationTagList tagList={tagList} />
+              </View>
+              
+              {tweetData != null && <TweetCard {...tweetData} />}
+    
+                <Text style={styles.commentTitleStyle} >Yorumlar</Text></View>}
+              contentContainerStyle={{ flexGrow: 1 }}
+              style={{flexGrow:1}} 
+              data={commnets}
+              renderItem={({item}) => <CommentCard {...item} />}
+              keyExtractor={item => item._id}
+              refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} 
+            />
+            
+            {/* {commnets.length != 0 && 
               commnets.map((item) => <CommentCard key={item._id} {...item} />)
-            }
+            } */}
             
             
           </View>
 
 
+          <FloatingAction
+              actions={actions}
+              onPressItem={name => {
+                if( name == "fab_add_comment"){
+                  // console.log("ADD");
+                  commentScreen()
+                }
+              }}
+          />
         </View>
 
-        <FloatingAction
-            actions={actions}
-            onPressItem={name => {
-              if( name == "fab_add_comment"){
-                // console.log("ADD");
-                commentScreen()
-              }
-            }}
-        />
-      </ScrollView>
-      </SafeAreaView>
-    </SafeAreaProvider>
   )
 }
 
 const styles = StyleSheet.create({
   container:{
-    marginTop:10
+    marginTop:10,
+    flex:1
   },
   scrollView:{
     flex:1

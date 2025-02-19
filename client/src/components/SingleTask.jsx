@@ -18,9 +18,7 @@ export default function SingleTask({task}){
         await deleteTask(body)
     }
 
-    async function shareOnClick(){
-        // console.log(task);
-        
+    async function shareOnClick(){        
         await taskToTweet(task)
     }
 
