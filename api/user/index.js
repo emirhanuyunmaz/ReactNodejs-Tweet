@@ -532,6 +532,8 @@ const userTweetProfile = async(req,res) => {
     try{
         const searchText = req.headers.text
         const tweetUserId = req.params.id
+        console.log("JULLANICI ID BUL:",tweetUserId);
+        
         // const tweetData = await TweetModel.find({userId:tweetUserId,text:{ $regex: `${searchText}`, $options: 'i' } }).populate("userId","name surname image").sort({createdAt:"desc"}).exec()
 
         const tweetLikeListData = await TweetLikeListModel.findOne({userId:tweetUserId})

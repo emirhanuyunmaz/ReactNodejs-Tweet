@@ -135,7 +135,7 @@ export default function Message(){
                 {/* Mesajlaşılan kullanıcı kart tasarımı  */}
                 <div className="w-full flex flex-col gap-3">
                     {userMessageList?.map((user) => <a href={`/message/${user._id}`} key={user._id} className="bg-blue-300 mx-5 rounded-xl cursor-pointer flex flex-col md:flex-row items-center hover:bg-blue-400 hover:text-white duration-300 ">
-                        <img src={`${user.image}`} className="w-16 h-16 my-1 mx-3 rounded-full" alt="" />
+                        <img src={`http://localhost:3000/${user.image}`} className="w-16 h-16 my-1 mx-3 rounded-full" alt="" />
                         <p>{user.name} {user.surname}</p>
                     </a>)}
                 </div>
@@ -145,7 +145,7 @@ export default function Message(){
             {/* Mesajlaşma kısmı */}
             {id != undefined ? <div className="w-3/4 h-[full] ">
                 <div className="flex items-center gap-3 bg-blue-400 p-2">
-                    <img src={`${userProfile?.image}`} className="w-16 h-16 rounded-full" alt="" />
+                    <img src={`http://localhost:3000/${userProfile?.image}`} className="w-16 h-16 rounded-full" alt="" />
                     <p className="text-xl">{userProfile?.name} {userProfile?.surname} </p>
                 </div>    
 

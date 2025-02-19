@@ -1,7 +1,7 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Heart, MessageCircle } from 'lucide-react-native'
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native'
 import { useTweetLikeMutation, useUserTweetDislikeMutation } from '../store/userApi/userApiSlicer';
 
 export default function TweetCard({_id,text,comments,createdAt,userTag,tag,likes,userId,isImage,userIsFollow}) {
@@ -20,7 +20,7 @@ export default function TweetCard({_id,text,comments,createdAt,userTag,tag,likes
 
   // Kullanıcı profiline gönderme işlemi.
   function UserProfileOnClick(){
-    
+    navigation.navigate("UserProfile",{_id:userId._id})
   }
 
   // Tweet Beğenme işlemi

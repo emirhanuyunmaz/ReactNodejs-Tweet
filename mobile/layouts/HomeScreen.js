@@ -6,7 +6,6 @@ import { Plus } from 'lucide-react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useGetTweetListQuery } from '../store/userApi/userApiSlicer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import LoadingComponent from '../components/LoadingComponent';
 
 const actions = [
   {

@@ -85,7 +85,7 @@ function LoggedIn(){
         <Stack.Screen name="AddTweet" component={AddTweetScreen} />
         <Stack.Screen name="Settings" component={SettingsScreen} />
         <Stack.Screen name="TaskUpdate" component={TaskUpdateScreen} />
-        <Stack.Screen name="Message" component={MessageScreen} />
+        <Stack.Screen options={{headerShown:false}} name="Message" component={MessageScreen} />
         <Stack.Screen name="UserProfile" component={UserProfileScreen} />
         <Stack.Screen name="Comment" component={CommentScreen} />
         <Stack.Screen name="TagTweetList" component={TagTweetListScreen} />
@@ -111,7 +111,7 @@ function NotLoggedIn(){
             <Stack.Screen name="AddTweet" component={AddTweetScreen} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="TaskUpdate" component={TaskUpdateScreen} />
-            <Stack.Screen name="Message" component={MessageScreen} />
+            <Stack.Screen options={{headerShown:false}} name="Message" component={MessageScreen} />
             <Stack.Screen name="UserProfile" component={UserProfileScreen} />
             <Stack.Screen name="Comment" component={CommentScreen} />
             <Stack.Screen name="TagTweetList" component={TagTweetListScreen} />

@@ -1,11 +1,10 @@
-import { FlatList, Image, RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { FlatList, Image, RefreshControl, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 import TweetCard from '../components/TweetCard'
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'
 import { useGetUserShortProfileQuery, useUserTweetProfileQuery } from '../store/userApi/userApiSlicer'
 import { useContactListQuery } from '../store/contactApi/contactApiSlicer'
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
-import { Settings, Upload } from 'lucide-react-native'
+import { Settings } from 'lucide-react-native'
 
 export default function UserProfileScreen() {
 
@@ -14,7 +13,7 @@ export default function UserProfileScreen() {
   const navigation = useNavigation()
   const route = useRoute()
   const id = route.params?._id
-
+  
   const [searchText,setSearchText] = useState("")
   let data = {
     id:id,
@@ -59,6 +58,8 @@ export default function UserProfileScreen() {
 
   useEffect(() => {
     if(userShortProfile.isSuccess){
+      // console.log("AAUSER:",userShortProfile.data);
+      
       setUserProfilData(userShortProfile.data.data)
     }
   },[userShortProfile.isSuccess,userShortProfile.isFetching])
@@ -75,7 +76,7 @@ export default function UserProfileScreen() {
           id:id,
           text:searchText
       }
-      // console.log(userTweetProfile.data);
+      // console.log("::AADDD::",userTweetProfile.data);
 
       setTweetList(userTweetProfile.data.data)
       setIsUserProfile(userTweetProfile.data.userProfile)
@@ -86,54 +87,55 @@ export default function UserProfileScreen() {
   return (
     <View style={styles.container} >
 
-            <View style={styles.profileContainerStyle} >
-              <Image style={styles.imageStyle} source={{uri:`${baseUrl}/${userProfileData?.image}`}} />
-              
-              <View>
-                <Text style={styles.userNameTextStyle} >{userProfileData?.name} {userProfileData?.surname}</Text>
-                <Text>{userProfileData?.description}</Text>
-                
-                <TouchableOpacity style={styles.followButtonStyle} >
-                  <Text style={styles.followButtonTextStyle} >{contactListData?.follower} Takipçi</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.followButtonStyle} >
-                  <Text style={styles.followButtonTextStyle} >{contactListData?.followed} Takip</Text>
-                </TouchableOpacity>
-
-              </View>
-
-              {!isUserProfile ? <View>
-                <TouchableOpacity style={styles.buttonStyle} >
-                  <Text style={styles.buttonTextStyle} >İstek At</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.buttonStyle} >
-                  <Text style={styles.buttonTextStyle} >Mesaj at</Text>
-                </TouchableOpacity>
-              </View>: <View>
-                <TouchableOpacity onPress={UserSettingScreen} style={styles.buttonStyle} >
-                  <Text style={styles.buttonTextStyle} ><Settings size={32} color={"black"} /></Text>
-                </TouchableOpacity>
-              </View> }
-
-            </View>
-            
-            <View style={styles.inputContainer} >
-              <TextInput value={searchText} onChangeText={(e) => setSearchText(e)} style={styles.inputStyle} placeholder='Ara' />
-            </View>
-            <View style={{flex:1}} >
               <FlatList
-                data={tweetList}
-                style={{flex:1}}
-                contentContainerStyle={{ paddingBottom: 20 }}
+                ListHeaderComponent={
+                  <View>
+                    <View style={styles.profileContainerStyle} >
+                      <Image style={styles.imageStyle} source={{uri:`${baseUrl}/${userProfileData?.image}`}} />
+                      
+                      <View>
+                        <Text style={styles.userNameTextStyle} >{userProfileData?.name} {userProfileData?.surname}</Text>
+                        <Text>{userProfileData?.description}</Text>
+                        
+                        <TouchableOpacity style={styles.followButtonStyle} >
+                          <Text style={styles.followButtonTextStyle} >{contactListData?.follower} Takipçi</Text>
+                        </TouchableOpacity>
+      
+                        <TouchableOpacity style={styles.followButtonStyle} >
+                          <Text style={styles.followButtonTextStyle} >{contactListData?.followed} Takip</Text>
+                        </TouchableOpacity>
+      
+                      </View>
+      
+                      {!isUserProfile ? <View>
+                        <TouchableOpacity style={styles.buttonStyle} >
+                          <Text style={styles.buttonTextStyle} >İstek At</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonStyle} >
+                          <Text style={styles.buttonTextStyle} >Mesaj at</Text>
+                        </TouchableOpacity>
+                      </View>: <View>
+                        <TouchableOpacity onPress={UserSettingScreen} style={styles.buttonStyle} >
+                          <Text style={styles.buttonTextStyle} ><Settings size={32} color={"black"} /></Text>
+                        </TouchableOpacity>
+                      </View> }
+      
+                    </View>
+                    
+                    <View style={styles.inputContainer} >
+                      <TextInput value={searchText} onChangeText={(e) => setSearchText(e)} style={styles.inputStyle} placeholder='Ara' />
+                    </View>
+                  </View>}
+                  data={tweetList}
+                  style={{flex:1}}
+                  contentContainerStyle={{ paddingBottom: 20 }}
 
-                renderItem={({item}) => <TweetCard {...item} />}
-                keyExtractor={item => item._id}
-                refreshControl={
-                  <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                } 
+                  renderItem={({item}) => <TweetCard {...item} />}
+                  keyExtractor={item => item._id}
+                  refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                  } 
                 />
-            </View> 
     </View>
 
   )

@@ -1,8 +1,23 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
-import UserProfileCard from '../components/UserProfileCard'
+import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native'
+import React, { useCallback, useState } from 'react'
+import MessageUserProfileCard from '../components/MessageUserProfileCard'
+import { useGetUserMessageListQuery } from '../store/messageApi/messageApiSlicer'
 
 export default function UserListScreen() {
+  
+  const getUserList = useGetUserMessageListQuery()
+  
+  console.log(getUserList.data?.data);
+  const [refreshing, setRefreshing] = useState(false);
+  
+
+    const onRefresh = useCallback(async () => {
+      setRefreshing(true);
+      
+      await getUserList.refetch()
+
+      setRefreshing(false)
+    }, []);
 
   return (
     <View style={styles.container}>
@@ -11,7 +26,15 @@ export default function UserListScreen() {
         </View>
 
         <View style={styles.userContainer} >
-          <UserProfileCard/>
+          <FlatList
+            style={{flex:1}}
+            data={getUserList.data?.data}
+            renderItem={({item}) => <MessageUserProfileCard {...item} />}
+            keyExtractor={item => item._id}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} 
+            
+          />
+          
         </View>
     </View>
   )
@@ -20,7 +43,7 @@ export default function UserListScreen() {
 const styles = StyleSheet.create({
   container:{
     marginTop:24,
-    // marginHorizontal:10
+    flex:1
   },
   titleContainer:{
     backgroundColor:"#BFDBFF",
@@ -35,6 +58,7 @@ const styles = StyleSheet.create({
     fontWeight:"bold"
   },  
   userContainer:{
+    flex:1,
     marginHorizontal:10
   }
 })
