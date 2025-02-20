@@ -4,7 +4,6 @@ import {  ArrowLeft, ImageUp, SendHorizontal } from 'lucide-react-native'
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'
 import { useGetUserShortProfileQuery } from '../store/userApi/userApiSlicer'
 import { useGetUserAllMessageQuery } from '../store/messageApi/messageApiSlicer'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import { messageContext } from '../context/message/messageContext'
 import * as ImagePicker from "expo-image-picker"
 
@@ -82,12 +81,12 @@ export default function MessageScreen() {
     useFocusEffect(
       useCallback( () => {
         message_context.connectSocket(id)
-        // Do something when the screen is focused
+        
+        
         onRefresh()
         
         return () => {
-          // Do something when the screen is unfocused
-          // Useful for cleanup functions
+          message_context.DisconnectSocket()
         };
       }, [])
     );
@@ -125,7 +124,6 @@ export default function MessageScreen() {
         </TouchableOpacity>
 
       </View>
-
 
       <View style={styles.messageContainerStyle}>
         

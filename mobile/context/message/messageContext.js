@@ -1,7 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, useEffect, useState } from "react";
 import {io} from "socket.io-client"
-import { useGetUserAllMessageQuery } from "../../store/messageApi/messageApiSlicer";
 
 const messageContext = createContext()
 
@@ -11,14 +10,14 @@ function MessageProvider({children}){
     
     const [socket,setSocket] = useState(null)
     const [messageList,setMessageList] = useState([])
-
+    let s
     const connectSocket = async (id) => {
         const token = await AsyncStorage.getItem("access_token")
         // const id = await AsyncStorage.getItem("message_user_id")
         // console.log("CONNECTED MESSAGE SOCKET CONTEXT:",id);
         
 
-        let s = io(baseUrl+"/", {query:{token:token,userId:id}, transports: ['websocket'], reconnection: true });;
+        s = io(baseUrl+"/", {query:{token:token,userId:id}, transports: ['websocket'], reconnection: true });;
         setSocket(s)
         
         // Alıcıya mesaj geldiğinde dinle
@@ -52,7 +51,12 @@ function MessageProvider({children}){
 
     }
 
-    
+    function DisconnectSocket(){
+        
+        if(s !== null){
+            s.disconnect();
+        }
+    }    
 
     // useEffect(() => {  
         
@@ -66,7 +70,7 @@ function MessageProvider({children}){
     //   },[])
 
 
-    return (<messageContext.Provider value={{SendMessage,messageList,setMessageList,connectSocket,SendImageMessage}} >
+    return (<messageContext.Provider value={{SendMessage,messageList,setMessageList,connectSocket,SendImageMessage,DisconnectSocket}} >
         {children}
     </messageContext.Provider>)
 }
