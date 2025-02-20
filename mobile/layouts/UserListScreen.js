@@ -7,7 +7,7 @@ export default function UserListScreen() {
   
   const getUserList = useGetUserMessageListQuery()
   
-  console.log(getUserList.data?.data);
+  // console.log(getUserList.data?.data);
   const [refreshing, setRefreshing] = useState(false);
   
 

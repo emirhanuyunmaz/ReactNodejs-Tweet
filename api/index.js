@@ -55,24 +55,25 @@ async function main(){
             socket.on('sendMessage' ,async (messageData) => {
                 try{
                     const decoded = jwt.decode(messageData.token,process.env.TOKEN_SECRET)            
-                    
+                    let newMessage ;
                     if(!messageData.isImage){
                         // Kullanıcı mesaj gönderdiği zaman sunucunun mesajı kaydetme ve kullnıcılara göndermesi işlemi.
                         
-                        const newMessage = new MessageModel({message:messageData.text,senderUserId:decoded.id,recipientUserId:messageData.getUserId,isImage:messageData.isImage})
+                        newMessage = new MessageModel({message:messageData.text,senderUserId:decoded.id,recipientUserId:messageData.getUserId,isImage:messageData.isImage})
                         await newMessage.save()
-                        io.to(socket.recipientId).emit("receiveMessage",newMessage)
+                        // io.to(socket.recipientId).emit("receiveMessage",newMessage)
                     }else{
                         const imageName = uuid.v4()
-                        const filePath = __dirname + `/uploads/${imageName}.png`
+                        const filePath = `uploads/${imageName}.png`
                         
-                        fs.writeFile(filePath , messageData.text.split(";base64,").pop(), {encoding: 'base64'}, function(err) {
+                        fs.writeFile( __dirname + "/" + filePath , messageData.text.split(";base64,").pop(), {encoding: 'base64'}, function(err) {
                             console.log('File created');
                         });
-                        const newMessage = new MessageModel({message:process.env.IMAGE_BASE_URL+imageName+".png",senderUserId:decoded.id,recipientUserId:messageData.getUserId,isImage:messageData.isImage})
+                        newMessage = new MessageModel({message:filePath,senderUserId:decoded.id,recipientUserId:messageData.getUserId,isImage:messageData.isImage})
                         await newMessage.save()
-                        io.to(socket.recipientId).emit("receiveMessage",newMessage)
+                        // io.to(socket.recipientId).emit("receiveMessage",newMessage)
                     }
+                    io.to(socket.recipientId).emit("receiveMessage",newMessage)
                 }catch(err){
                     console.log("Bir hata socket io:",err);
                 }

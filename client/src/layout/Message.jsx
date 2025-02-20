@@ -159,14 +159,14 @@ export default function Message(){
                         {/* Gelen Mesaj */}
                         {message.senderUserId == id &&<div  className="border-2 rounded-r-xl rounded-t-xl px-6 py-2 me-auto">
                             {message.isImage == false && <p>{  message.message}</p>}
-                            {message.isImage == true && <img src={`${message.message}`} className="w-32 h-32" />}
+                            {message.isImage == true && <img src={`http://localhost:3000/${message.message}`} className="w-32 h-32" />}
                             <p className="text-[10px] text-end">{formatDate(message.createAt)}</p>
                         </div>}
 
                         {/* Giden Mesaj */}
                         { message.recipientUserId == id &&<div  className="flex flex-col border-2 rounded-l-xl rounded-t-xl px-6 py-2 ms-auto">
                             {message.isImage == false && <p>{message.message}</p>}
-                            {message.isImage == true && <img src={`${message.message}`} className="w-32 h-32" />}
+                            {message.isImage == true && <img src={`http://localhost:3000/${message.message}`} className="w-32 h-32" />}
                             <p className="text-[10px]">{formatDate(message.createAt)}</p>
                         </div>}
                         

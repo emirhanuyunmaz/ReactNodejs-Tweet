@@ -27,6 +27,7 @@ import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoadingComponent from './components/LoadingComponent';
 import Toast from 'react-native-toast-message';
+import { MessageProvider } from './context/message/messageContext';
 
 const Stack = createNativeStackNavigator();
 
@@ -70,6 +71,7 @@ function TabNavigate(){
 
 function LoggedIn(){
   return <Provider store={store}>
+    <MessageProvider>
   <MenuProvider>
   <StatusBar
     animated={true}
@@ -92,12 +94,14 @@ function LoggedIn(){
       </Stack.Navigator>
     </NavigationContainer>
     </MenuProvider>
+    </MessageProvider>
     <Toast/>
   </Provider>
 }
 
 function NotLoggedIn(){
   return (<Provider store={store}>
+        <MessageProvider>
         <NavigationContainer>
             <Stack.Navigator screenOptions={{contentStyle:{
               backgroundColor:"#fff"
@@ -117,7 +121,9 @@ function NotLoggedIn(){
             <Stack.Screen name="TagTweetList" component={TagTweetListScreen} />
           </Stack.Navigator>
         </NavigationContainer>
+        </MessageProvider>
         <Toast/>
+        
         </Provider>);
 }
 
