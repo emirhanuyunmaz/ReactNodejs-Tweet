@@ -1,16 +1,17 @@
 import { FlatList, Image, KeyboardAvoidingView, RefreshControl, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext,  useEffect,  useState } from 'react'
 import {  ArrowLeft, ImageUp, SendHorizontal } from 'lucide-react-native'
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'
 import { useGetUserShortProfileQuery } from '../store/userApi/userApiSlicer'
 import { useGetUserAllMessageQuery } from '../store/messageApi/messageApiSlicer'
-import { messageContext } from '../context/message/messageContext'
 import * as ImagePicker from "expo-image-picker"
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import {io} from "socket.io-client"
 
 export default function MessageScreen() {
   const baseUrl = process.env.BASE_URL
 
-  const message_context = useContext(messageContext)
+  // const user_context = useContext(context)
   const route = useRoute()
   const navigaiton = useNavigation()
   
@@ -20,18 +21,37 @@ export default function MessageScreen() {
 
   const [text,setText] = useState("")
   const [refreshing, setRefreshing] = useState(false);
+  const [messageList,setMessageList] = useState([])
+  const [socket,setSocket] = useState(null)
 
-    const onRefresh = useCallback(async () => {
-      setRefreshing(true);
+  const connectSocket = async () => {
+    const token = await AsyncStorage.getItem("access_token")
+    // const id = await AsyncStorage.getItem("message_user_id")
+    // console.log("CONNECTED MESSAGE SOCKET CONTEXT:",id);
+    
+    
+    s = io(baseUrl+"/", {query:{token:token,userId:id}, transports: ['websocket'], reconnection: true });;
+    setSocket(s)
+    
+    // Alıcıya mesaj geldiğinde dinle
+    s.on('receiveMessage', (newMessage) => {
+        // console.log("NEW MESSAGE::",newMessage);
+        setMessageList((prevMessages) => [...prevMessages, newMessage]);
       
-      
-      const newData = await getAllMessage.refetch()
-      // message_context.setMessageList([])
-      message_context.setMessageList(newData.data?.data)
-      
-      setRefreshing(false)
-      
-    }, []);
+    });
+}
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    
+    
+    const newData = await getAllMessage.refetch()
+    // user_context.setMessageList([])
+    setMessageList(newData.data?.data)
+    
+    setRefreshing(false)
+    
+  }, []);
   
   async function AddImage(){
       let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -52,12 +72,28 @@ export default function MessageScreen() {
       if(res.canceled){
           console.log("CANCELL",res.assets[0]);  
       }else{
-        // setText("data:image/png;base64,"+)
-        await message_context.SendImageMessage(res.assets[0].base64,id)
-        // console.log("res.assets[0].base64:::",res.assets[0]);
-        const data =await getAllMessage.refetch()
-        message_context.setMessageList([])
-        message_context.setMessageList(data.data.data)
+        // console.log("data:image/png;base64,"+res.assets[0].base64)
+        if(socket != null){
+          try{
+            const token = await AsyncStorage.getItem("access_token")
+
+            const image ="data:image/png;base64,"+res.assets[0].base64
+            // console.log(res.assets[0].uri);
+            
+            socket.emit('sendMessage', {text:image,token:token,getUserId:id,isImage:true})
+  
+            // console.log("res.assets[0].base64:::",res.assets[0]);
+            const data = await getAllMessage.refetch()
+            setMessageList(data.data?.data)
+            
+          }catch(err){
+            console.log("ERRR:",err);
+            
+          }
+        }else{
+          console.log("NOT SOCKET::");
+          
+        }
       }
   
     }
@@ -69,45 +105,52 @@ export default function MessageScreen() {
   function GoToUserProfileOnClick(){
     navigaiton.navigate("UserProfile",{_id:id})
   } 
-  
-  async function SendOnClick(){
-    await message_context.SendMessage(text,id)
-    const data =await getAllMessage.refetch()
-    // message_context.setMessageList([])
-    message_context.setMessageList(data.data.data)
-    setText("")
-  }
 
+
+  async function SendMessage(){
+      
+    if(socket != null){
+      const token = await AsyncStorage.getItem("access_token")
+        // Sunucuya mesaj gönderme olayı
+      try{
+        // console.log("MESAJ GİTTİ:",token);
+        socket.emit('sendMessage', {text:text,token:token ,getUserId:id,isImage:false})
+        setText("")
+        const data = await getAllMessage.refetch()
+        setMessageList(data.data.data)
+
+      }catch(err){
+        console.log("EEEE::",err);
+        // Toast message:
+      }
+    }else{
+      console.log("NOTSOCKET:::::");
+    }
+  }
     useFocusEffect(
       useCallback( () => {
-        message_context.connectSocket(id)
-        
+        // user_context.connectSocket(id)
+        connectSocket()
         
         onRefresh()
         
         return () => {
-          message_context.DisconnectSocket()
+          if(socket != null){
+            socket.disconnect()
+
+          }
         };
       }, [])
     );
 
-  // useEffect(() => {
-  //   // UserIdStorageSaved()
-    
+    useEffect(() => {
+      if(getAllMessage.isSuccess){
+          // console.log(getAllMessage.data);
+          setMessageList(getAllMessage.data.data)
+          
+      }
+    },[getAllMessage.isSuccess,getAllMessage.isFetching,getAllMessage.isError,id])
 
-    
-  // },[])
-  // console.log(getAllMessage.data?.data)
-  
-  // useEffect(() => {
-
-  //   if(getAllMessage.isSuccess){
-  //     console.log("HHH:",getAllMessage.data?.data);
-      
-  //     message_context.setMessageList(getAllMessage.data?.data)
-  //   }
-
-  // },[])
 
   return (
     <KeyboardAvoidingView style={styles.container}>
@@ -129,7 +172,7 @@ export default function MessageScreen() {
         
         <FlatList
           style={{flex:1}}
-          data={message_context.messageList}
+          data={messageList}
           renderItem={({item}) => <View>
                     {/* Sended Message */}
                     {item.senderUserId == id && <View style={styles.sendMessage} >
@@ -158,7 +201,7 @@ export default function MessageScreen() {
       
       <View style={styles.inputGroupStyle} >
         <TextInput value={text} onChangeText={(e) => setText(e)} style={styles.inputStyle} placeholder='Mesaj' />
-        <TouchableOpacity onPress={SendOnClick} style={styles.buttonStyle} >
+        <TouchableOpacity onPress={SendMessage} style={styles.buttonStyle} >
           <SendHorizontal color={"white"} />
         </TouchableOpacity>
 

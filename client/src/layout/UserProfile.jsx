@@ -10,7 +10,7 @@ import { userContext } from "../context/userContext";
 export default function UserProfile(){
     const params = useParams()
     // Kullanıcı id bilgisine göre safada gönderilerin görüntülenmesi işlemi.
-    // console.log(params.id);
+
     const [isUserProfile,setIsUserProfile] = useState(false)
     const [tweetList,setTweetList] = useState([])
     const [isProfile,setIsProfile] = useState(false)
@@ -24,7 +24,6 @@ export default function UserProfile(){
         id:params.id,
         text:searchText
     }
-    console.log(params.id);
     
     const userTweetProfile = useUserTweetProfileQuery(data)
     const userShortProfile = useGetUserShortProfileQuery(params.id)
@@ -56,7 +55,7 @@ export default function UserProfile(){
         // location.reload()
     }
 
-    // Kullanıcı takip isteği atma işlemi.
+    // Kullanıcı takip isteği çekme işlemi.
     async function UserUnfollowSocketOnClick(){
         console.log("TAKİP Geri Çekme İSTEĞİ");
         await context.userUnfollowSocket(params.id,"unfollow")

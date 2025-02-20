@@ -212,7 +212,9 @@ const getTweetList = async (req,res) => {
     
     try{    
         const followedData = req.headers.is_followed_data
-        const userId = req.headers.id            
+        const userId = req.headers.id     
+
+               
         if(followedData == "true"){
             const contactData = await UserContactModel.findOne({userId:userId})
             // Populate ile sadece yazılan verilerin getirilmesine olanak sağlandı . 
@@ -233,11 +235,12 @@ const getTweetList = async (req,res) => {
             const tweetLikeListData = await TweetLikeListModel.findOne({userId:userId})
             const userLike = tweetLikeListData ? tweetLikeListData.tweetList : []
             // console.log("BEĞENİ LİST::",userLike);
-            let liste = [] //Kullanıcı gönderi gösterme listesi.
-            liste.push(contactData?.followed)
+            let liste =contactData?.followed ? contactData?.followed : [] //Kullanıcı gönderi gösterme listesi.
+            
+            // liste.push()
             liste.push(userId)
             // contactData?.followed?.push(userId)
-            console.log(liste);
+            console.log("LİST:::",liste);
             // contactData.followed.push(userId)
             const data = await TweetModel.aggregate([
                 // 1. `userId` ile `SignUp` bilgilerini birleştir

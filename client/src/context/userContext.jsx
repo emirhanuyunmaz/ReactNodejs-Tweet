@@ -9,6 +9,7 @@ function UserContextProvider({children}){
 
     let token = Cookies.get("accessToken")
     let refreshToken = Cookies.get("refreshToken")
+    
     function logout(){
         Cookies.remove('accessToken')
         Cookies.remove('refreshToken')
@@ -31,7 +32,7 @@ function UserContextProvider({children}){
             const token = Cookies.get("accessToken")
             // Sunucuya bildirim gönderme olayı
             try{
-            socket.emit('notification', {tweet:tweet,token:token,process})
+                socket.emit('notification', {tweet:tweet,token:token,process})
             
             }catch(err){
                 console.log("EEEE::",err);

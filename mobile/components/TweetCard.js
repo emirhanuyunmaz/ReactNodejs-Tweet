@@ -1,12 +1,15 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Heart, MessageCircle } from 'lucide-react-native'
 import { useNavigation } from '@react-navigation/native'
 import { useTweetLikeMutation, useUserTweetDislikeMutation } from '../store/userApi/userApiSlicer';
+import { context } from '../context/context';
 
 export default function TweetCard({_id,text,comments,createdAt,userTag,tag,likes,userId,isImage,userIsFollow}) {
   const baseUrl = process.env.BASE_URL
   const navigation = useNavigation()
+  const user_context = useContext(context)
+
 
   const [tweetDislike,responseTweetDislike] = useUserTweetDislikeMutation()
   const [userLikeTweet,responseLikeTweet] = useTweetLikeMutation()
@@ -29,6 +32,8 @@ export default function TweetCard({_id,text,comments,createdAt,userTag,tag,likes
     setIsFollow(true)
     setLikesLength(likesLength+1)
     await userLikeTweet({tweetId:_id})
+    const tweet = {_id,text,comments,createdAt,userTag,tag,likes,userId,isImage,userIsFollow}
+    user_context.tweetLikeSocket(tweet,"like")
   }
 
   // Tweet beğeni çekme işlemi
@@ -37,6 +42,8 @@ export default function TweetCard({_id,text,comments,createdAt,userTag,tag,likes
     setIsFollow(false)
     setLikesLength(likesLength-1)
     await tweetDislike({tweetId:_id})
+    const tweet = {_id,text,comments,createdAt,userTag,tag,likes,userId,isImage,userIsFollow}
+    user_context.tweetLikeSocket(tweet,"unlike")
   }
   useEffect(() => {
 

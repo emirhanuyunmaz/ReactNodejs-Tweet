@@ -44,7 +44,7 @@ export default function SingleTweet(){
     async function addComment(){
         const body = {tweetId:id,text:text}
         await addTweetComment(body)
-        context.tweetCommentSocket(tweet,"tweetComment")
+        await context.tweetCommentSocket(tweet,"tweetComment")
         setText("")
     }
 

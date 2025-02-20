@@ -54,9 +54,10 @@ async function main(){
             // Mesaj Gönderme Ve Alma İşlemi
             socket.on('sendMessage' ,async (messageData) => {
                 try{
+                    console.log("MESSAGE:",messageData);
+                    
                     const decoded = jwt.decode(messageData.token,process.env.TOKEN_SECRET)            
                     let newMessage ;
-                    console.log("MESSAJ GELMIS:",socket.user.id);
                     
                     if(!messageData.isImage){
                         // Kullanıcı mesaj gönderdiği zaman sunucunun mesajı kaydetme ve kullnıcılara göndermesi işlemi.
@@ -65,6 +66,8 @@ async function main(){
                         await newMessage.save()
                         io.to(socket.recipientId).emit("receiveMessage",newMessage)
                     }else{
+                        console.log("messageData.isImage::",messageData.isImage);
+                        
                         const imageName = uuid.v4()
                         const filePath = `uploads/${imageName}.png`
                         

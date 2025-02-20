@@ -1,26 +1,37 @@
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useNavigation, useRoute } from '@react-navigation/native'
-import { useUserTweetAddCommentMutation } from '../store/userApi/userApiSlicer'
+import { useGetSingleTweetQuery, useUserTweetAddCommentMutation } from '../store/userApi/userApiSlicer'
+import { context } from '../context/context'
 
 export default function CommentScreen() {
-
+  const user_context = useContext(context)
   const navigation = useNavigation()
   const route = useRoute()
   const id = route.params?._id
+  
   console.log("ADSA:",id);
-
+  
   const [text , setText] = useState("")
-
+  
+  const getSingleTweet = useGetSingleTweetQuery(id)
   const [addCommetTweet,resAddCommentTweet] = useUserTweetAddCommentMutation()
 
 
 
   async function AddComment(){
-    await addCommetTweet({tweetId:id,text:text}).unwrap()
-    .then(() => {
-      navigation.goBack(null)
-    })
+    try{
+      // console.log("GİRİŞ");
+      
+      await addCommetTweet({tweetId:id,text:text})
+      user_context.tweetCommentSocket(getSingleTweet.data?.data,"tweetComment")
+      navigation.goBack()
+      // console.log("Çıkış");
+      
+    }catch(err){
+      console.log("HATA VARRR:",err);
+      
+    }
   }
   
   return (
