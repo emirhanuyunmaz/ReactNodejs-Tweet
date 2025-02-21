@@ -86,6 +86,7 @@ export default function UserProfile(){
             userId:params.id
         }
         await contactUserUnfollow(body)
+        window.location.reload()
     }
 
     // Takipçi listesi çekilmesi işlemi.

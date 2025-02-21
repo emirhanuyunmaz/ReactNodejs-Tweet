@@ -3,7 +3,7 @@ import React, { useCallback, useContext, useEffect, useState } from 'react'
 import TweetCard from '../components/TweetCard'
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'
 import { useGetUserShortProfileQuery, useUserTweetProfileQuery } from '../store/userApi/userApiSlicer'
-import { useContactListQuery, useIsFollowUserQuery, useUserIsFollowRequestSentQuery } from '../store/contactApi/contactApiSlicer'
+import { useContactListQuery, useIsFollowUserQuery, useUnfollowUserMutation, useUserIsFollowRequestSentQuery } from '../store/contactApi/contactApiSlicer'
 import { Settings } from 'lucide-react-native'
 import { context } from '../context/context'
 
@@ -26,6 +26,8 @@ export default function UserProfileScreen() {
   const userTweetProfile = useUserTweetProfileQuery(data)
   const userIsFollow = useIsFollowUserQuery(id)
   const isFollowRequestSent = useUserIsFollowRequestSentQuery(id)
+  const [contactUserUnfollow,responseContactUnfollow] = useUnfollowUserMutation()
+
 
   const [userProfileData,setUserProfilData] = useState(null)
   const [contactListData,setContactListData] = useState(null)
@@ -70,7 +72,21 @@ export default function UserProfileScreen() {
 
         // location.reload()
     }
-
+    
+    async function UserUnfollowOnClick(){
+      // console.log("Takipten çıkma işlemi.");
+      
+      try{
+        const body={
+          userId:id
+        }
+        await contactUserUnfollow(body)
+        await onRefresh()
+      }catch(Err){
+        console.log("EEERR::",Err);
+        
+      }
+    }
 
     useFocusEffect(
       useCallback(() => {
@@ -121,7 +137,7 @@ export default function UserProfileScreen() {
 
   useEffect(() => {
 
-    if(userShortProfile.data?.data.profilePrivate && userIsFollow.data?.data && !userIsFollow.data?.data){
+    if(userShortProfile.data?.data.profilePrivate &&  !userIsFollow.data?.data){
       console.log("Gönderileri gizle");
       setSecretData(true)
     }else{
@@ -132,6 +148,9 @@ export default function UserProfileScreen() {
   },[userIsFollow,userShortProfile])
   
   useEffect(() => {
+    console.log("USER FOLLOW :",userIsFollow.data?.data?.profilePrivate);
+    console.log("USER PRİVATE :",userShortProfile.data);
+    
     if(userShortProfile.data?.data.profilePrivate == true && userIsFollow.data?.data == false ){
       console.log("::GİZLİ::");
       setSecretData(true)
@@ -143,7 +162,7 @@ export default function UserProfileScreen() {
   return (
     <View style={styles.container} >
 
-              { secretData ?
+              { !isUserProfile && secretData ?
                   <View>
                   <View style={styles.profileContainerStyle} >
                     <Image style={styles.imageStyle} source={{uri:`${baseUrl}/${userProfileData?.image}`}} />
@@ -152,7 +171,7 @@ export default function UserProfileScreen() {
                       <Text style={styles.userNameTextStyle} >{userProfileData?.name} {userProfileData?.surname}</Text>
                       <Text>{userProfileData?.description}</Text>
                       
-                      <TouchableOpacity style={styles.followButtonStyle} >
+                      <TouchableOpacity onPress={() => {console.log("TAKİPÇİ")}} style={styles.followButtonStyle} >
                         <Text style={styles.followButtonTextStyle} >{contactListData?.follower} Takipçi</Text>
                       </TouchableOpacity>
 
@@ -232,7 +251,7 @@ export default function UserProfileScreen() {
                       {!isUserProfile ? <View>
 
                         { userIsFollow.data?.data ? 
-                          <TouchableOpacity style={styles.buttonStyle} >
+                          <TouchableOpacity onPress={UserUnfollowOnClick}  style={styles.buttonStyle} >
                             <Text style={styles.buttonTextStyle} >Takipten Çık</Text>
                           </TouchableOpacity>
                             :

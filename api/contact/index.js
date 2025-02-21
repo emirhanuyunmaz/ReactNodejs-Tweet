@@ -78,6 +78,10 @@ const userConnectionUnfollow = async (req,res) => {
         await UserContactModel.findOneAndUpdate({userId:userId},{$pull : {followed:followedUserId}})
         await UserContactModel.findOneAndUpdate({userId:followedUserId},{$pull : {follower:userId}})
         
+        await UserNotificationModel.findOneAndDelete({userId:followedUserId,
+            transactionUser:userId,
+            process:"follow",
+            })
         res.status(201).json({message:"Succes",succes:true})
     }catch(err){
         console.log("Kullanıcı takibi bırakırken bri hata ile karşılaşıldı .",err);

@@ -83,8 +83,11 @@ export default function MessageScreen() {
             socket.emit('sendMessage', {text:image,token:token,getUserId:id,isImage:true})
   
             // console.log("res.assets[0].base64:::",res.assets[0]);
+            console.log("BAŞLANGIÇ");
             const data = await getAllMessage.refetch()
             setMessageList(data.data?.data)
+            console.log(data.data?.data)
+            console.log("SON");
             
           }catch(err){
             console.log("ERRR:",err);
