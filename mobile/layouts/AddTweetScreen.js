@@ -60,9 +60,7 @@ export default function AddTweetScreen() {
       setIsImage(true)
       setText("data:image/png;base64,"+res.assets[0].base64)
       // console.log("res.assets[0].base64:::",res.assets[0]);
-      
     }
-
   }
 
   return (

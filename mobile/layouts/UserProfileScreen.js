@@ -3,7 +3,7 @@ import React, { useCallback, useContext, useEffect, useState } from 'react'
 import TweetCard from '../components/TweetCard'
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'
 import { useGetUserShortProfileQuery, useUserTweetProfileQuery } from '../store/userApi/userApiSlicer'
-import { useContactListQuery, useIsFollowUserQuery, useUnfollowUserMutation, useUserIsFollowRequestSentQuery } from '../store/contactApi/contactApiSlicer'
+import { useContactListQuery, useFollowUserMutation, useIsFollowUserQuery, useUnfollowUserMutation, useUserIsFollowRequestSentQuery } from '../store/contactApi/contactApiSlicer'
 import { Settings } from 'lucide-react-native'
 import { context } from '../context/context'
 
@@ -27,6 +27,7 @@ export default function UserProfileScreen() {
   const userIsFollow = useIsFollowUserQuery(id)
   const isFollowRequestSent = useUserIsFollowRequestSentQuery(id)
   const [contactUserUnfollow,responseContactUnfollow] = useUnfollowUserMutation()
+  const [contactUserFollow,responseContactFollow] = useFollowUserMutation()
 
 
   const [userProfileData,setUserProfilData] = useState(null)
@@ -73,6 +74,7 @@ export default function UserProfileScreen() {
         // location.reload()
     }
     
+    // Kullanıcı Takipten çıkma işlemi
     async function UserUnfollowOnClick(){
       // console.log("Takipten çıkma işlemi.");
       
@@ -84,8 +86,15 @@ export default function UserProfileScreen() {
         await onRefresh()
       }catch(Err){
         console.log("EEERR::",Err);
-        
       }
+    }
+
+      // Takip etme işlemi için fonk.
+      async function UserFollowOnClick(){
+        const body={
+            userId:id
+        }
+        await contactUserFollow(body)
     }
 
     useFocusEffect(
@@ -262,7 +271,7 @@ export default function UserProfileScreen() {
                                 <Text style={styles.buttonTextStyle} >Takip İsteğ At</Text>
                               </TouchableOpacity>
                                : 
-                              <TouchableOpacity style={styles.buttonStyle} >
+                              <TouchableOpacity onPress={UserFollowOnClick} style={styles.buttonStyle} >
                                 <Text style={styles.buttonTextStyle} >Takip Et</Text>
                               </TouchableOpacity>
                               

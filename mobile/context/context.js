@@ -9,13 +9,18 @@ function ContextProvider({children}){
 
     const [socket,setSocket] = useState(null)
     const [messageList,setMessageList] = useState([])
+    const [notificationLength,setNotificationLength] = useState(0)
     let s
     const connectSocket = async () => {
         const token = await AsyncStorage.getItem("access_token")
         
         s = io(baseUrl+"/", {query:{token:token}, transports: ['websocket'], reconnection: true });;
         setSocket(s)
-
+        
+        s.on('notification', (notification) => {   
+            console.log("NOTIF::",notification);
+            setNotificationLength(notification.notificationLength)
+        });
     }
 
   async function tweetLikeSocket(tweet,process){
@@ -128,7 +133,7 @@ function ContextProvider({children}){
       },[])
 
 
-    return (<context.Provider value={{tweetLikeSocket,tweetUnlikeSocket,tweetCommentSocket,userFollowSocket,userUnfollowSocket}} >
+    return (<context.Provider value={{tweetLikeSocket,tweetUnlikeSocket,tweetCommentSocket,userFollowSocket,userUnfollowSocket,notificationLength,setNotificationLength}} >
         {children}
     </context.Provider>)
 }

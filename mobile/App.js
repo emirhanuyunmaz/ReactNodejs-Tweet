@@ -23,11 +23,11 @@ import AddTweetScreen from './layouts/AddTweetScreen';
 import TaskUpdateScreen from './layouts/TaskUpdateScreen';
 import CommentScreen from './layouts/CommentScreen';
 import TagTweetListScreen from './layouts/TagTweetListScreen';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoadingComponent from './components/LoadingComponent';
 import Toast from 'react-native-toast-message';
-import { ContextProvider } from './context/context';
+import { context, ContextProvider } from './context/context';
 
 const Stack = createNativeStackNavigator();
 
@@ -35,6 +35,25 @@ const Tab = createBottomTabNavigator();
 
 
 function TabNavigate(){
+    const user_context = useContext(context)
+    // const [socket ,setSocket] = useState(null)
+
+    // const connectSocket = async () => {
+    //   const token = await AsyncStorage.getItem("access_token")
+    //   let s = io(`${baseUrl}`, {query:{token:token}, transports: ['websocket'], reconnection: true });;
+    //   setSocket(s)
+    //   // Alıcıya mesaj geldiğinde dinle
+    //   s.on('notification', (notification) => {   
+    //       console.log("NOTIF::",notification);
+    //       user_context.setNotificationLength(notification.notificationLength)
+    //   });
+    // }
+  
+  
+    // useEffect(() => {
+    //   connectSocket()
+    // },[])
+
   return (<Tab.Navigator screenOptions={{
     sceneStyle:{
       backgroundColor:"#fff"
@@ -59,7 +78,7 @@ function TabNavigate(){
     <Tab.Screen name="Notification" component={NotificationScreen} options={{
       headerShown:false,
       tabBarLabel:"Bildirim",
-      tabBarIcon:() => <View style={styles.notificationStyle} ><Bell color={"black"} size={32} /><Text>10</Text></View>
+      tabBarIcon:() => <View style={styles.notificationStyle} ><Bell color={"black"} size={32} /><Text>{user_context.notificationLength}</Text></View>
     }} />
     <Tab.Screen name="Profile" component={ProfileScreen} options={{
       headerShown:false,
@@ -70,6 +89,9 @@ function TabNavigate(){
 }
 
 function LoggedIn(){
+
+  
+
   return <Provider store={store}>
     <ContextProvider>
   <MenuProvider>

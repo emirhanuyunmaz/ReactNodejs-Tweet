@@ -1,19 +1,99 @@
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, ScrollView } from 'react-native'
-import React from 'react'
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, ScrollView, Image } from 'react-native'
+import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { Camera } from 'lucide-react-native';
+import { z } from 'zod';
+import {Controller , useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as ImagePicker from "expo-image-picker"
+import axios from 'axios';
+import Toast from 'react-native-toast-message';
+
+const schema = z.object({
+  name: z.string().min(2, { message: "Name must be at least 2 characters long" }),
+  surname: z.string().min(2, { message: "Surname must be at least 2 characters long" }),
+  email: z.string().min(2, { message: "Email must be at least 2 characters long" }),
+  password: z.string().min(2,{message : "Password min 3"}),
+  passwordAgain: z.string().min(2,{message : "Password Again min 3"}),
+  description: z.string().min(2,{message : "Description min 3"}),
+}).superRefine(({ passwordAgain, password }, ctx) => {
+  if (passwordAgain !== password) {
+    ctx.addIssue({
+      code: "custom",
+      message: "The passwords did not match",
+      path: ['passwordAgain']
+    });
+  }
+});
 
 export default function SignupScreen() {
+  const baseUrl = process.env.BASE_URL
+// console.log("BAseURL:",baseUrl);
 
   const navigation = useNavigation() 
 
+  const [image,setImage] = useState(null)
+
   function loginPage(){
-    navigation.reset({
-      index: 0,
-      routes: [{name: 'Login'}],
-    });
+    navigation.goBack();
   }
 
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
+  });
+
+  const onSubmit = async (data) => {
+    const newData= {
+      ...data,
+      image:image
+    }
+    try{
+      // console.log(newData);
+      const res =await axios.post(`${baseUrl}/signup`,newData)
+      // console.log(res)
+
+      if(res.status === 201){
+        Toast.show({
+                type: 'success',
+                text1: 'Kullanıcı Kayıt Oldu',
+        });
+        navigation.goBack()
+    }
+    }catch(err){
+      console.log("HATA:",err);
+      
+    }
+  };
+
+
+    async function AddImage(){
+      let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      
+      if (permissionResult.granted === false) {
+          alert('Fotoğraf galerisine erişim izni verilmedi!');
+          return;
+      }
+  
+      let res = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes:ImagePicker.MediaTypeOptions.Images,
+        // allowsEditing:true,
+        // aspect:[1,1],
+        quality:1,
+        base64:true
+      })
+  
+      if(res.canceled){
+          console.log("CANCELL",res.assets[0]);  
+      }else{
+        setImage("data:image/png;base64,"+res.assets[0].base64)
+        // setText("data:image/png;base64,"+res.assets[0].base64)
+        // console.log("res.assets[0].base64:::",res.assets[0]);
+      }
+    }
 
 
   return (
@@ -21,48 +101,128 @@ export default function SignupScreen() {
       <KeyboardAvoidingView style={styles.container} >
         <Text style={styles.titleStyle} >Signup</Text>
 
-        <TouchableOpacity style={styles.imageContainerStyle} >
-          <Text><Camera width={32} color={"black"} /></Text>
+        <TouchableOpacity onPress={AddImage} style={styles.imageContainerStyle} >
+          {image == null && <Text><Camera width={32} color={"black"} /></Text>}
+          {image != null && <Image style={styles.imageStyle} source={{uri:image}}  />}
         </TouchableOpacity>
 
         <View style={styles.inputContainer} >
           <View>
             <Text style={styles.labelStyle} >Ad</Text>
-            <TextInput style={styles.inputStyle} placeholder='Ad' />
+            <Controller
+              control={control}
+              name="name"
+              
+              render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                  style={[styles.inputStyle,errors.name && styles.errorBorderStyle]}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  placeholder="Ad"
+              />
+              )}
+            />
+            {errors.name && <Text style={styles.errorMessageStyle} >{errors.name.message}</Text>}
           </View>
 
           <View>
             <Text style={styles.labelStyle} >Soyad</Text>
-            <TextInput style={styles.inputStyle} placeholder='Soyad' />
+            <Controller
+              control={control}
+              name="surname"
+              
+              render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                  style={[styles.inputStyle,errors.surname && styles.errorBorderStyle]}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  placeholder="Soyad"
+              />
+              )}
+            />
+            {errors.surname && <Text style={styles.errorMessageStyle} >{errors.surname.message}</Text>}
           </View>
 
           <View>
             <Text style={styles.labelStyle} >Email</Text>
-            <TextInput style={styles.inputStyle} placeholder='Email' />
+            <Controller
+              control={control}
+              name="email"
+              
+              render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                  style={[styles.inputStyle,errors.email && styles.errorBorderStyle]}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  placeholder="Email"
+              />
+              )}
+            />
+            {errors.email && <Text style={styles.errorMessageStyle} >{errors.email.message}</Text>}
           </View>
 
           <View>
             <Text style={styles.labelStyle} >Password</Text>
-            <TextInput style={styles.inputStyle} placeholder='Password' />
+            <Controller
+              control={control}
+              name="password"
+              
+              render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                  style={[styles.inputStyle,errors.password && styles.errorBorderStyle]}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  placeholder="Password"
+              />
+              )}
+            />
+            {errors.password && <Text style={styles.errorMessageStyle} >{errors.password.message}</Text>}
           </View>
           
           <View>
             <Text style={styles.labelStyle} >Password Tekrar </Text>
-            <TextInput style={styles.inputStyle} placeholder='Password Tekrar' />
+            <Controller
+              control={control}
+              name="passwordAgain"
+              
+              render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                  style={[styles.inputStyle,errors.passwordAgain && styles.errorBorderStyle]}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  placeholder="Password"
+              />
+              )}
+            />
+            {errors.passwordAgain && <Text style={styles.errorMessageStyle} >{errors.passwordAgain.message}</Text>}
           </View>
           
           <View>
             <Text style={styles.labelStyle} >Açıklma </Text>
-            <TextInput
-                placeholder='Açıklama'
-                style={styles.descriptionStyle}
-                multiline={true}
-                numberOfLines={10}
+            <Controller
+              control={control}
+              name="description"
+              
+              render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                  style={[styles.inputStyle,errors.description && styles.errorBorderStyle]}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  placeholder="Açıklama"
               />
+              )}
+            />
+            {errors.description && <Text style={styles.errorMessageStyle} >{errors.description.message}</Text>}
           </View>
 
           <View>
-            <TouchableOpacity style={styles.buttonStyle} >
+            <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.buttonStyle} >
               <Text style={styles.buttonTextStyle} >Kayıt Ol</Text>
             </TouchableOpacity>
           </View>
@@ -100,6 +260,11 @@ const styles = StyleSheet.create({
     borderRadius:10,
     marginBottom:10
   },
+  imageStyle:{
+    width:128,
+    height:128,
+    borderRadius:10  
+  },
   inputContainer:{
     gap:10
   },
@@ -114,6 +279,13 @@ const styles = StyleSheet.create({
     borderColor:"gray",
     borderWidth:2,
     borderRadius:10
+  },
+  errorMessageStyle:{
+    fontSize:12,
+    color:"red"
+  },
+  errorBorderStyle:{
+    borderColor:"red"
   },
   descriptionStyle:{
     height:64,
