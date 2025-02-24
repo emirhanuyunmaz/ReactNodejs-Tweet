@@ -26,7 +26,8 @@ const styles = StyleSheet.create({
         gap:8,
         paddingVertical:10,
         paddingHorizontal:10,
-        borderRadius:10
+        borderRadius:10,
+        marginVertical:3
     },
     profileImageStyle:{
         width:64,

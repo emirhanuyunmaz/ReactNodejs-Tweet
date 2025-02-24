@@ -28,6 +28,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoadingComponent from './components/LoadingComponent';
 import Toast from 'react-native-toast-message';
 import { context, ContextProvider } from './context/context';
+import UserFollowerListScreen from './layouts/UserFollowerListScreen';
+import UserFollowedListScreen from './layouts/UserFollowedListScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -90,8 +92,6 @@ function TabNavigate(){
 
 function LoggedIn(){
 
-  
-
   return <Provider store={store}>
     <ContextProvider>
   <MenuProvider>
@@ -113,6 +113,8 @@ function LoggedIn(){
         <Stack.Screen name="UserProfile" component={UserProfileScreen} />
         <Stack.Screen name="Comment" component={CommentScreen} />
         <Stack.Screen name="TagTweetList" component={TagTweetListScreen} />
+        <Stack.Screen name="UserFollowerList" component={UserFollowerListScreen} />
+        <Stack.Screen name="UserFollowedList" component={UserFollowedListScreen} />
       </Stack.Navigator>
     </NavigationContainer>
     </MenuProvider>
@@ -141,6 +143,8 @@ function NotLoggedIn(){
             <Stack.Screen name="UserProfile" component={UserProfileScreen} />
             <Stack.Screen name="Comment" component={CommentScreen} />
             <Stack.Screen name="TagTweetList" component={TagTweetListScreen} />
+            <Stack.Screen name="UserFollowerList" component={UserFollowerListScreen} />
+            <Stack.Screen name="UserFollowedList" component={UserFollowedListScreen} />
           </Stack.Navigator>
         </NavigationContainer>
         </ContextProvider>

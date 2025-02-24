@@ -10,11 +10,12 @@ export default function MessageUserProfileCard({_id,image,name,surname}) {
       function messageScreen(){
             navigation.navigate("Message",{_id:_id})
       }
-  return (
-    <TouchableOpacity onPress={messageScreen} style={styles.container}>
-        <Image style={styles.profileImageStyle} source={{uri:`${baseUrl}/${image}`}} />
-        <Text style={styles.userNameStyle}>{name} {surname}</Text>
-    </TouchableOpacity>
+  
+      return (
+        <TouchableOpacity onPress={messageScreen} style={styles.container}>
+            <Image style={styles.profileImageStyle} source={{uri:`${baseUrl}/${image}`}} />
+            <Text style={styles.userNameStyle}>{name} {surname}</Text>
+        </TouchableOpacity>
   )
 }
 

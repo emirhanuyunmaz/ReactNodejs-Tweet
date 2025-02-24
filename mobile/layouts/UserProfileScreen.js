@@ -43,6 +43,18 @@ export default function UserProfileScreen() {
     navigation.navigate("Settings")
   }
 
+  function UserMessage(){
+    navigation.navigate("Message",{_id:id})
+  }
+
+  function GoTo_UserFollowerListScreen(){
+    navigation.navigate("UserFollowerList",{_id:id})
+  }
+  
+  function GoTo_UserFollowedListScreen(){
+    navigation.navigate("UserFollowedList",{_id:id})
+  }
+
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     // setTweetList([])
@@ -180,11 +192,11 @@ export default function UserProfileScreen() {
                       <Text style={styles.userNameTextStyle} >{userProfileData?.name} {userProfileData?.surname}</Text>
                       <Text>{userProfileData?.description}</Text>
                       
-                      <TouchableOpacity onPress={() => {console.log("TAKİPÇİ")}} style={styles.followButtonStyle} >
+                      <TouchableOpacity onPress={GoTo_UserFollowerListScreen} style={styles.followButtonStyle} >
                         <Text style={styles.followButtonTextStyle} >{contactListData?.follower} Takipçi</Text>
                       </TouchableOpacity>
 
-                      <TouchableOpacity style={styles.followButtonStyle} >
+                      <TouchableOpacity onPress={GoTo_UserFollowedListScreen} style={styles.followButtonStyle} >
                         <Text style={styles.followButtonTextStyle} >{contactListData?.followed} Takip</Text>
                       </TouchableOpacity>
 
@@ -220,7 +232,7 @@ export default function UserProfileScreen() {
                             }
                         </View>
                       }
-                      <TouchableOpacity style={styles.buttonStyle} >
+                      <TouchableOpacity onPress={UserMessage} style={styles.buttonStyle} >
                         <Text style={styles.buttonTextStyle} >Mesaj at</Text>
                       </TouchableOpacity>
                     </View>: <View>
@@ -247,11 +259,11 @@ export default function UserProfileScreen() {
                         <Text style={styles.userNameTextStyle} >{userProfileData?.name} {userProfileData?.surname}</Text>
                         <Text>{userProfileData?.description}</Text>
                         
-                        <TouchableOpacity style={styles.followButtonStyle} >
+                        <TouchableOpacity onPress={GoTo_UserFollowerListScreen} style={styles.followButtonStyle} >
                           <Text style={styles.followButtonTextStyle} >{contactListData?.follower} Takipçi</Text>
                         </TouchableOpacity>
       
-                        <TouchableOpacity style={styles.followButtonStyle} >
+                        <TouchableOpacity onPress={GoTo_UserFollowedListScreen} style={styles.followButtonStyle} >
                           <Text style={styles.followButtonTextStyle} >{contactListData?.followed} Takip</Text>
                         </TouchableOpacity>
       
@@ -278,7 +290,7 @@ export default function UserProfileScreen() {
                               }
                           </View>
                         }
-                        <TouchableOpacity style={styles.buttonStyle} >
+                        <TouchableOpacity onPress={UserMessage} style={styles.buttonStyle} >
                           <Text style={styles.buttonTextStyle} >Mesaj at</Text>
                         </TouchableOpacity>
                       </View>: <View>

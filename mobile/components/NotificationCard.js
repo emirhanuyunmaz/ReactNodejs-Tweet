@@ -3,16 +3,16 @@ import React from 'react'
 import { Check, X } from 'lucide-react-native';
 import { useNotificationFollowAcceptMutation, useNotificationFollowRejectMutation } from '../store/contactApi/contactApiSlicer';
 
-export default function NotificationCard({transactionUser,process,followProcess}) {
+export default function NotificationCard({transactionUser,process,followProcess,refetch}) {
   // const baseUrl = process.env.BASE_URL
   const [notificationFollowAccept,resNotificationFollowAccept] = useNotificationFollowAcceptMutation()
   const [notificationFollowReject,resNotificationFollowReject] = useNotificationFollowRejectMutation()
 
 
-  console.log("::CARD::");
-  console.log(transactionUser);
-  console.log(process);
-  console.log(followProcess);
+  // console.log("::CARD::");
+  // console.log(transactionUser);
+  // console.log(process);
+  // console.log(followProcess);
   // console.log(`http://192.168.1.22:3000/${transactionUser.image}`);
   
   async function FollowAcceptOnClick(){
@@ -20,7 +20,7 @@ export default function NotificationCard({transactionUser,process,followProcess}
         userId:transactionUser._id
     }
     await notificationFollowAccept(body)
-    // getAllNotification.refetch()
+    await refetch()
   }
 
   
@@ -29,7 +29,7 @@ export default function NotificationCard({transactionUser,process,followProcess}
         userId:transactionUser._id
     }
     await notificationFollowReject(body)
-    getAllNotification.refetch()
+    await refetch()
   }
 
   return (

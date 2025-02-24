@@ -11,7 +11,7 @@ export default function NotificationScreen() {
   const user_context = useContext(context)
   
   const [socket,setSocket] = useState(null)
-  const [data,setDate] = useState([])
+  const [data,setData] = useState([])
   const [refreshing, setRefreshing] = useState(false);
   
   // const [notificationLength,setNotificationLength] = useState(0)
@@ -59,10 +59,10 @@ export default function NotificationScreen() {
   useEffect(() => {
 
     if(getAllNotification.isSuccess){
-      console.log("BİLDİRİMLER:",);
-      console.log(getAllNotification.data);
-      setDate(getAllNotification.data.data);
-      
+      // console.log("BİLDİRİMLER:",);
+      // console.log(getAllNotification.data);
+      setData(getAllNotification.data.data);
+     
     }
 
   },[getAllNotification.isSuccess,getAllNotification.isFetching])
@@ -76,9 +76,12 @@ export default function NotificationScreen() {
       <View style={styles.titleContainer} >
         <Text style={styles.titleStyle} >Bildirimler</Text>
       </View>
-        {data.length != 0 ? <FlatList
+        {data.length != 0 ? 
+        <FlatList
+          style={{flex:1}}
+          // inverted={true}
           data={data}
-          renderItem={({item}) => <NotificationCard {...item}/>}
+          renderItem={({item}) => <NotificationCard {...item} refetch={onRefresh} />}
           keyExtractor={item => item._id}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -91,8 +94,8 @@ export default function NotificationScreen() {
 
 const styles = StyleSheet.create({
   container:{
-    marginTop:24 
-
+    marginTop:24, 
+    flex:1
   },
   titleContainer:{
     backgroundColor:"#BFDBFF",
