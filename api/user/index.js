@@ -463,12 +463,18 @@ const singleTweet = async (req,res) => {
     try{
         const tweetId = req.params.id
         const userId = req.headers.id
+        console.log("**********************************************************************")
         console.log("PARAMS IDIDIDI:",userId)
         let tweet_id = new ObjectId(tweetId);
         // const tweetData = await TweetModel.findById(tweetId).populate("userId","name surname image")
 
         const tweetLikeListData = await TweetLikeListModel.findOne({userId:userId})
         const userLike = tweetLikeListData ? tweetLikeListData.tweetList : []
+        
+        const contactData = await UserContactModel.findOne({userId:userId})
+        let liste =contactData?.followed ? contactData?.followed : [] //Kullanıcı gönderi gösterme listesi.
+
+
 
         const tweetData = await TweetModel.aggregate([
             {
@@ -486,8 +492,11 @@ const singleTweet = async (req,res) => {
             {
                 $match :{ 
                     
-                    $and :[ {_id: {$in:[tweet_id]}} ]
-                    
+                    $and :[ {_id: {$in:[tweet_id]}} ],
+                    $or: [
+                        { 'userId.profilePrivate': false }, 
+                        { "userId._id": { $in: liste } },
+                    ],
                 }
             },
             {$project: {
@@ -519,7 +528,7 @@ const singleTweet = async (req,res) => {
         
         console.log("L:",tweetData);
         
-        res.status(201).json({succes:true,message:"Succes",data:tweetData[0]})
+        res.status(201).json({succes:true,message:"Succes",data:tweetData[0] ?? null })
 
     } catch(err) {
         console.log("Bir tweet çekilirken hata ile karşılaşıldı :",err);
@@ -564,7 +573,6 @@ const userTweetProfile = async(req,res) => {
                     $and :[ 
                         {"userId._id": {$in:[tweet_user_id]}},
                         {"text" : new RegExp('^' + searchText, "i")}
-                    
                     ]
                     
                 }
@@ -688,8 +696,79 @@ const getSingleUserTag = async (req,res) => {
     // console.log("Etikete ait gönderileri çekme işlemi.");
     try{
         const userTag = req.params.tag
+        const userId = req.headers.id
         const tweetData = await TweetModel.find({userTag:userTag}).populate("userId","name surname image")
         
+        // ************************************************
+        const contactData = await UserContactModel.findOne({userId:userId})
+            
+        const tweetLikeListData = await TweetLikeListModel.findOne({userId:userId})
+        const userLike = tweetLikeListData ? tweetLikeListData.tweetList : []
+        // console.log("BEĞENİ LİST::",userLike);
+        let liste =contactData?.followed ? contactData?.followed : [] //Kullanıcı gönderi gösterme listesi.
+        
+        // liste.push()
+        liste.push(userId)
+        // contactData?.followed?.push(userId)
+        console.log("LİST:::",liste);
+        // contactData.followed.push(userId)
+        const data = await TweetModel.aggregate([
+            // 1. `userId` ile `SignUp` bilgilerini birleştir
+            {
+              $lookup: {
+                from: 'signups', // SignUp koleksiyon adı
+                localField: 'userId', // Tweet modelindeki userId
+                foreignField: '_id', // SignUp modelindeki _id
+                as: 'userId', // Kullanıcı bilgilerini getir
+              },
+            },
+            {
+              $unwind: '$userId', // userId dizisini aç
+            },
+      
+            {
+              $match: {
+                $or: [
+                    { 'userId.profilePrivate': false }, 
+                    { "userId._id": { $in: liste } },
+                ],
+                $and :[ 
+                    { userTag: userTag }, 
+                ]
+              },
+            },
+      
+            // 3. İstenen alanları seç
+            {
+                $project: {
+                    _id: 1, // Tweet ID
+                    text: 1, // Tweet içeriği
+                    tag: 1,
+                    userTag: 1,
+                    isImage: 1,
+                    likes: 1,
+                    comments:1,
+                    createdAt: 1,
+                    'userId._id': 1, 
+                    'userId.name': 1, 
+                    'userId.surname': 1,
+                    'userId.email': 1,
+                    'userId.image': 1,
+                    'userId.tag': 1,
+                    'userId.profilePrivate': 1,
+                    userIsFollow: {
+                        $cond: {
+                            if: { $in: ['$_id', userLike] }, // Eğer tweet'in _id'si `userLike` içinde varsa
+                            then: true,
+                            else: false
+                        }
+                    }
+                }
+            },
+            { $sort: { createdAt: -1 } }, // En yeni tweetler önce gelir
+          ]);
+        //*************************************************
+
         //Buradaki işlem sayesinde "tag" a göre gruplandırma ve içerisindeki verileri sayma işlemi yaptık.
         const emotionTagData = await TweetModel.aggregate([
             { "$match": { "userTag": userTag } },
@@ -700,7 +779,7 @@ const getSingleUserTag = async (req,res) => {
                 }
             }
         ])
-        res.status(201).json({message:"succes",succes:true,data:tweetData,tagData:emotionTagData})
+        res.status(201).json({message:"succes",succes:true,data:data,tagData:emotionTagData})
     }catch(err){
         console.log("Etikete ait gönderiler çekilirken bir hata ile karşılaşıldı.",err);
         

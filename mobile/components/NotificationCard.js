@@ -2,8 +2,10 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { Check, X } from 'lucide-react-native';
 import { useNotificationFollowAcceptMutation, useNotificationFollowRejectMutation } from '../store/contactApi/contactApiSlicer';
+import { useNavigation } from '@react-navigation/native';
 
-export default function NotificationCard({transactionUser,process,followProcess,refetch}) {
+export default function NotificationCard({postId,transactionUser,process,followProcess,refetch}) {
+  const navigation = useNavigation()
   // const baseUrl = process.env.BASE_URL
   const [notificationFollowAccept,resNotificationFollowAccept] = useNotificationFollowAcceptMutation()
   const [notificationFollowReject,resNotificationFollowReject] = useNotificationFollowRejectMutation()
@@ -14,6 +16,11 @@ export default function NotificationCard({transactionUser,process,followProcess,
   // console.log(process);
   // console.log(followProcess);
   // console.log(`http://192.168.1.22:3000/${transactionUser.image}`);
+
+  function GoTo_SingleTweet(){
+    navigation.navigate("SingleTweet",{_id:postId})
+
+  }
   
   async function FollowAcceptOnClick(){
     const body ={
@@ -33,7 +40,7 @@ export default function NotificationCard({transactionUser,process,followProcess,
   }
 
   return (
-    <View style={styles.container} >
+    <TouchableOpacity onPress={GoTo_SingleTweet} style={styles.container} >
       <Image style={styles.imageStyle} source={{uri:`http://192.168.1.22:3000/${transactionUser.image}`}} />
       <View>
         <Text style={styles.userNameStyle} >{transactionUser.name} {transactionUser.surname}</Text>
@@ -72,7 +79,7 @@ export default function NotificationCard({transactionUser,process,followProcess,
         
         {process == "like" && <Text style={styles.infoStyle}> Gönderinizi beğendi</Text>}
       </View>
-    </View>
+    </TouchableOpacity>
   )
 }
 

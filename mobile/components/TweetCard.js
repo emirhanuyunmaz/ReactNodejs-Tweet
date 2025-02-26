@@ -58,6 +58,7 @@ export default function TweetCard({_id,text,comments,createdAt,userTag,tag,likes
           <View>
             <Text style={styles.userNameStyle} >{userId.name} {userId.surname}</Text>
             <Text  >12/12/2025</Text>
+            <Text style={styles.tagStyle} >#{userTag}</Text>
           </View>
         </TouchableOpacity>
         <Text style={styles.tagStyle}>{tag.toUpperCase()}</Text>

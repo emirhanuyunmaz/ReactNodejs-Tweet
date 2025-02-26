@@ -27,7 +27,7 @@ const authControl = async(req,res,next) => {
                     //Refresh token kontrol edilecek.
                     console.log("Token Süresi geçmiş");
                 }else{
-                    console.log("DECODED TOKEN:",decodedToken);
+                    // console.log("DECODED TOKEN:",decodedToken);
                     req.headers.id = decodedToken.id
                 }
             })

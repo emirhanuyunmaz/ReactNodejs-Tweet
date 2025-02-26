@@ -4,8 +4,8 @@ import { useNavigation } from '@react-navigation/native'
 
 export default function TagList({userTagList}) {
   const navigation = useNavigation() 
-  function tagListScreen(){
-    navigation.navigate("TagTweetList")
+  function tagListScreen(tag){
+    navigation.navigate("TagTweetList",{tag:tag})
   }
 
   return (
@@ -13,7 +13,7 @@ export default function TagList({userTagList}) {
       <Text style={styles.titleStyle} >Etiketler</Text>
       
       <View style={styles.tagContainer} >
-        {userTagList?.length > 0 && userTagList.map((item) => <TouchableOpacity key={item._id} onPress={tagListScreen} >
+        {userTagList?.length > 0 && userTagList.map((item) => <TouchableOpacity key={item._id} onPress={() => tagListScreen(item._id)} >
           <View style={styles.tagItemContainer} >
             <Text style={styles.tagTextStyle} >#{item?._id} </Text>
             <Text>{item?.count}</Text>

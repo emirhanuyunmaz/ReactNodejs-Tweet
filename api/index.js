@@ -24,7 +24,7 @@ async function main(){
         io.use((socket, next) => {
             const token = socket.handshake.query.token;
             const userId = socket.handshake.query.userId
-            console.log("LDLDLDLLDLDLL");
+            // console.log("LDLDLDLLDLDLL");
             
             if (token) {
               jwt.verify(token, process.env.TOKEN_SECRET, (err, decoded) => {

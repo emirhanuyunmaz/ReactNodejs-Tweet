@@ -78,7 +78,7 @@ export default function SingleTweet(){
 
     },[userTweetLikeList.isFetching,userTweetLikeList.isSuccess])
             
-    return(<div className="flex flex-col mx-5 md:flex-row mt-10">
+    return(tweet == null ? <div className="text-center font-bold text-xl" >Kullanıcı Profilini Gizlemiş</div> : <div className="flex flex-col mx-5 md:flex-row mt-10">
                  
             <div className="md:w-3/4 flex flex-col">
                 {  tweet.userId && userTweetLike  && <TweetCard tweet={tweet} userTweetLike={userTweetLike} /> } 
