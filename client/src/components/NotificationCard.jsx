@@ -47,9 +47,9 @@ export default function NotificationCard({setControl,notificationLength}){
                     }
                     
                     {
-                        data.length>0 && data.map((item) => item.process == "like" ? <li key={item._id} className="flex items-center gap-2 hover:bg-blue-400 px-6 py-1 rounded-xl hover:shadow-xl duration-300">
+                        data.length > 0 && data.map((item) => item.process == "like" ? <li key={item._id} className="flex items-center gap-2 hover:bg-blue-400 px-6 py-1 rounded-xl hover:shadow-xl duration-300">
                             <a href={`/tweet/${item.postId}`} className="flex items-center gap-3">
-                                <img src={item.transactionUser.image} className="w-12 rounded-full" alt="" />
+                                <img src={`http://localhost:3000/${item.transactionUser.image}`} className="w-12 rounded-full" alt="" />
                                 <div className="flex flex-col">
                                     <p className="font-semibold">{item.transactionUser.name} {item.transactionUser.surname}</p>
                                     <p>Tweetinizi beğendi</p>
@@ -57,15 +57,25 @@ export default function NotificationCard({setControl,notificationLength}){
                             </a>
                     </li> : item.process == "tweetComment" ? <li key={item._id} className="flex items-center gap-2 hover:bg-blue-400 px-6 py-1 rounded-xl hover:shadow-xl duration-300">
                             <a href={`/tweet/${item.postId}`} className="flex items-center gap-3">
-                                <img src={item.transactionUser.image} className="w-12 rounded-full" alt="" />
+                                <img src={`http://localhost:3000/${item.transactionUser.image}`} className="w-12 rounded-full" alt="" />
                                 <div className="flex flex-col">
                                     <p className="font-semibold">{item.transactionUser.name} {item.transactionUser.surname}</p>
                                     <p>Tweetinize Yorum yaptı</p>
                                 </div>
                             </a>
-                    </li>:<li key={item._id} className="flex items-center gap-2 hover:bg-blue-400 px-6 py-1 rounded-xl hover:shadow-xl duration-300">
+                    </li>:
+                     item.process == "directFollow" ? <li key={item._id} className="flex items-center gap-2 hover:bg-blue-400 px-6 py-1 rounded-xl hover:shadow-xl duration-300">
+                     <a href={`/tweet/${item.postId}`} className="flex items-center gap-3">
+                     <img src={`http://localhost:3000/${item.transactionUser.image}`} className="w-12 rounded-full" alt="" />
+                     <div className="flex flex-col">
+                             <p className="font-semibold">{item.transactionUser.name} {item.transactionUser.surname}</p>
+                             <p>Sizi takip etti</p>
+                         </div>
+                     </a>
+                    </li>:
+                    <li key={item._id} className="flex items-center gap-2 hover:bg-blue-400 px-6 py-1 rounded-xl hover:shadow-xl duration-300">
                         
-                        <img src={item.transactionUser.image} className="w-12 rounded-full" alt="" />
+                        <img src={`http://localhost:3000/${item.transactionUser.image}`} className="w-12 rounded-full" alt="" />
                         <div className="flex flex-col">
                             <a href={`/user/${item.transactionUser._id}`} className="flex gap-1 hover:underline">
                                 <p className="font-semibold">{item.transactionUser.name} {item.transactionUser.surname}</p>

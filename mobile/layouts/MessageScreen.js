@@ -1,5 +1,5 @@
 import { FlatList, Image, KeyboardAvoidingView, RefreshControl, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React, { useCallback, useContext,  useEffect,  useState } from 'react'
+import React, { useCallback, useContext,  useEffect,  useRef,  useState } from 'react'
 import {  ArrowLeft, ImageUp, SendHorizontal } from 'lucide-react-native'
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'
 import { useGetUserShortProfileQuery } from '../store/userApi/userApiSlicer'
@@ -10,7 +10,7 @@ import {io} from "socket.io-client"
 
 export default function MessageScreen() {
   const baseUrl = process.env.BASE_URL
-
+  const FlatListRef = useRef()
   // const user_context = useContext(context)
   const route = useRoute()
   const navigaiton = useNavigation()
@@ -174,6 +174,8 @@ export default function MessageScreen() {
       <View style={styles.messageContainerStyle}>
         
         <FlatList
+          ref={FlatListRef} 
+          onContentSizeChange={() => FlatListRef.current.scrollToEnd()}
           style={{flex:1}}
           data={messageList}
           renderItem={({item}) => <View>
@@ -195,6 +197,7 @@ export default function MessageScreen() {
                   </View>}
           </View>}
           keyExtractor={item => item._id}
+          // onLayout={() => ref.current.scrollToEnd({animated: true})}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           } 

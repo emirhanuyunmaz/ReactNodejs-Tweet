@@ -104,6 +104,19 @@ async function main(){
                         io.to(notification.userId).emit("notification",{notificationLength:notificationLength.length})
                     }
 
+                    // Takip etme işlemi.
+                    if(notification.process=="directFollow" && (socket.user.id != notification.userId)  ){
+                        console.log("Takip etme İŞLEMİ:::::",notification);
+                        const newNotification = new UserNotificationModel({
+                            userId:notification.userId,
+                            process:notification.process,
+                            transactionUser:socket.user.id
+                        })
+                        await newNotification.save()
+                        const notificationLength = await UserNotificationModel.find({userId:notification.userId,isShowed:false})
+                        io.to(notification.userId).emit("notification",{notificationLength:notificationLength.length})
+                    }
+
                     // Takip isteğini geri çekme işlemi.
                     if(notification.process=="unfollow" && (socket.user.id != notification.userId)  ){
                         console.log("Takip isteği Çekme İŞLEMİ:::::",notification);

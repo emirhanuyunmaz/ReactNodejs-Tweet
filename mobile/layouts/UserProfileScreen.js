@@ -103,10 +103,18 @@ export default function UserProfileScreen() {
 
       // Takip etme işlemi için fonk.
       async function UserFollowOnClick(){
-        const body={
+        
+        try{
+          const body={
             userId:id
+          }
+          await contactUserFollow(body)
+          console.log("::ASDDSA::");
+          await user_context.userDirectFollowSocket(id,"directFollow")
+        }catch(err){
+          console.log("ERR:",err);
+          
         }
-        await contactUserFollow(body)
     }
 
     useFocusEffect(

@@ -18,7 +18,11 @@ export default function NotificationCard({postId,transactionUser,process,followP
   // console.log(`http://192.168.1.22:3000/${transactionUser.image}`);
 
   function GoTo_SingleTweet(){
-    navigation.navigate("SingleTweet",{_id:postId})
+    if(process=="tweetComment" || process=="like"){
+      navigation.navigate("SingleTweet",{_id:postId})
+    }else{
+      navigation.navigate("UserProfile",{_id:transactionUser._id})
+    }
 
   }
   
@@ -71,11 +75,18 @@ export default function NotificationCard({postId,transactionUser,process,followP
         </View>
         }
         {
+          process == "directFollow" &&
+          <View>
+              <Text style={styles.infoStyle} >Sizi takip etti</Text>
+          </View>
+        }
+        {
          process == "tweetComment" &&
         <View>
             <Text style={styles.infoStyle} >Gönderinize yorum yaptı</Text>
         </View>
         }
+        
         
         {process == "like" && <Text style={styles.infoStyle}> Gönderinizi beğendi</Text>}
       </View>

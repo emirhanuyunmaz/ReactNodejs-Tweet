@@ -65,11 +65,7 @@ export default function UserProfile(){
     }
 
     function getShortProfile(){
-        // console.log("SSSS:AAA::A",userShortProfile.data.data.profilePrivate);
-        // setProfilePrivate(userShortProfile.data.data.profilePrivate)
-        // setProfilePrivate(userProfile.data.data.profilePrivate)
         setUserProfile(userShortProfile.data.data)
-        // console.log("User Profile:",userShortProfile.data.data);
     }
 
     // Takip etme işlemi için fonk.
@@ -78,6 +74,7 @@ export default function UserProfile(){
             userId:params.id
         }
         await contactUserFollow(body)
+        await context.userDirectFollowSocket(params.id,"directFollow")
     }
 
     // Takipten çıkma işlemi

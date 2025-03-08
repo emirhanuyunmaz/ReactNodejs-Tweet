@@ -95,6 +95,26 @@ function ContextProvider({children}){
             console.log("NOTSOCKET:::::");
         }
     }
+        // Kullaıcı takip etme işlemi.
+      async function userDirectFollowSocket(userId,process){
+        console.log("AA::NOT SO");
+        
+        if(socket !== null){            
+            console.log("TAKİP ETME İŞLEMİ");
+            
+          const token = await AsyncStorage.getItem("access_token")
+            // Sunucuya bildirim gönderme olayı
+            try{
+            socket.emit('notification', {userId:userId,token:token,process})
+            
+            }catch(err){
+                console.log("EEEE::",err);
+            // Toast message:
+            }
+        }else{
+            console.log("NOTSOCKET:::::");
+        }
+    }
 
         // Kullaıcı takip isteğini geri çekme işlemi.
     async function userUnfollowSocket(userId,process){
@@ -133,7 +153,7 @@ function ContextProvider({children}){
       },[])
 
 
-    return (<context.Provider value={{tweetLikeSocket,tweetUnlikeSocket,tweetCommentSocket,userFollowSocket,userUnfollowSocket,notificationLength,setNotificationLength}} >
+    return (<context.Provider value={{tweetLikeSocket,tweetUnlikeSocket,tweetCommentSocket,userFollowSocket,userUnfollowSocket,notificationLength,setNotificationLength,userDirectFollowSocket}} >
         {children}
     </context.Provider>)
 }
