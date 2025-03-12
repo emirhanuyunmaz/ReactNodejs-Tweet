@@ -17,7 +17,50 @@ nltk.download("stopwords")
 import tensorflow as tf
 tf.config.list_physical_devices('CPU')
 from keras._tf_keras.keras.preprocessing.image import img_to_array,load_img 
+from io import BytesIO
+print("BB")
+import cv2
+print("AA")
 
+def process_image_face_detect(image_data):
+    try:
+        # Base64 verisini çözerek resmi al
+        img_data = base64.b64decode(image_data)
+        img = Image.open(BytesIO(img_data)).convert("L") 
+
+        # Resmi numpy array formatına çevir (OpenCV formatı)
+        img = np.array(img)
+        
+        # OpenCV, BGR formatını kullanır, bu yüzden RGB'ye dönüştürüyoruz
+        # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+        # Yüz tespiti için OpenCV CascadeClassifier kullan
+        face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        
+        # gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+        
+        faces = face_cascade.detectMultiScale(img, scaleFactor=1.1, minNeighbors=5)
+        
+        # Yüz bulunursa, ilk yüzü alıp kırp
+        if len(faces) > 0:
+            (x, y, w, h) = faces[0]
+            face_img = img[y:y+h, x:x+w]  # Yüz kısmını kırp
+
+            # Adım 2: Yüzü gri tonlamaya dönüştür
+            face_img_pil = Image.fromarray(face_img).convert("L")  # Gri tonlama
+            face_img_pil = face_img_pil.resize((48, 48))  # Boyutlandır
+
+            # Numpy array'e çevir ve normalize et
+            face_img_array = img_to_array(face_img_pil)
+            face_img_array /= 255.0  # Normalize et
+            face_img_array = face_img_array.reshape(1, 48, 48, 1)  # Model için uygun şekle dönüştür
+
+            return face_img_array
+        else:
+            return None  # Yüz bulunmazsa None döndür
+
+    except Exception as e:
+        raise ValueError(f"Image processing failed: {e}")   
 
 # Görseli ön işleme fonksiyonu
 def preprocess_image(image_data):
@@ -83,10 +126,13 @@ def predict_image():
             return jsonify({'error': 'No image data provided'}), 400
 
         # Base64 string'i byte verisine çevir
-        image_data = base64.b64decode(data)
+        # image_data = base64.b64decode(data)
+        image_data = process_image_face_detect(data)
         # Görseli işle ve tahmini al
-        processed_image = preprocess_image(image_data)
-        predictions = image_classification.predict(processed_image)
+        # print("SA")
+        # processed_image = preprocess_image(image_data)
+        # print("AS")
+        predictions = image_classification.predict(image_data)
         # print("::::SSSSSSSS:::",predictions.tolist())
         predicted_class = int(np.argmax(predictions))
         class_name = ["korku","kızgın","mutlu","surpriz","üzgün"]

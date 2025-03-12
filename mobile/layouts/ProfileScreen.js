@@ -4,6 +4,7 @@ import { ClipboardList, LogOut, Settings } from 'lucide-react-native'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import { useGetUserProfileQuery, useGetUserShortProfileQuery } from '../store/userApi/userApiSlicer'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export default function ProfileScreen() {
   
@@ -26,6 +27,12 @@ export default function ProfileScreen() {
   
   function userTasksScreen(){
     navigation.navigate("Tasks")
+  }
+
+  async function logoutOnPress(){
+    const data = await AsyncStorage.removeItem("access_token")
+    navigation.navigate("Login")
+
   }
 
   const onRefresh = React.useCallback(async () => {
@@ -72,7 +79,7 @@ export default function ProfileScreen() {
             <Text style={styles.buttonTextStyle} >Taslaklar</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.buttonStyle} >
+          <TouchableOpacity onPress={logoutOnPress} style={styles.buttonStyle} >
             <LogOut size={26} color={"black"}  />
             <Text style={styles.buttonTextStyle} >Çıkış Yap</Text>
           </TouchableOpacity>

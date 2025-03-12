@@ -65,7 +65,7 @@ export default function NotificationCard({setControl,notificationLength}){
                             </a>
                     </li>:
                      item.process == "directFollow" ? <li key={item._id} className="flex items-center gap-2 hover:bg-blue-400 px-6 py-1 rounded-xl hover:shadow-xl duration-300">
-                     <a href={`/tweet/${item.postId}`} className="flex items-center gap-3">
+                     <a href={`/user/${item.transactionUser._id}`} className="flex items-center gap-3">
                      <img src={`http://localhost:3000/${item.transactionUser.image}`} className="w-12 rounded-full" alt="" />
                      <div className="flex flex-col">
                              <p className="font-semibold">{item.transactionUser.name} {item.transactionUser.surname}</p>

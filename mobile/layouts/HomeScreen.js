@@ -87,28 +87,28 @@ export default function HomeScreen() {
   return (
     <View style={styles.container} >   
 
-      <View style={styles.selectContainerStyle} >
-        <TouchableOpacity onPress={globalTweetData} style={[styles.selectStyle,!followedTweet && styles.selectedStyle ]} >
-          <Text style={styles.selectTextStyle} >Global</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity onPress={followedTweetData} style={[styles.selectStyle,followedTweet && styles.selectedStyle]} >
-          <Text style={styles.selectTextStyle} >Takip Edilenler</Text>
-        </TouchableOpacity>
-
-      </View>
+      
         {
           loading ?  <Text style={{textAlign:"center" ,fontSize:16,fontWeight:"500",marginTop:16}} >Yükleniyor...</Text> :
-          tweetList.length > 0 ? 
             
             <FlatList
+            ListHeaderComponent={<View style={styles.selectContainerStyle} >
+            <TouchableOpacity onPress={globalTweetData} style={[styles.selectStyle,!followedTweet && styles.selectedStyle ]} >
+              <Text style={styles.selectTextStyle} >Global</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity onPress={followedTweetData} style={[styles.selectStyle,followedTweet && styles.selectedStyle]} >
+              <Text style={styles.selectTextStyle} >Takip Edilenler</Text>
+            </TouchableOpacity>
+          </View>}
+            ListEmptyComponent={<Text style={styles.infoStyle} >Gönderi Bulunamadı</Text>}
             data={tweetList}
             renderItem={({item}) => <TweetCard {...item} />}
             keyExtractor={item => item._id}
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             } 
-            />:<Text style={styles.infoStyle} >Gönderi Bulunamadı</Text>
+            />
             
         
         }

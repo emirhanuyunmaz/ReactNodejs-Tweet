@@ -126,6 +126,8 @@ function LoggedIn(){
 function NotLoggedIn(){
   return (<Provider store={store}>
         <ContextProvider>
+        <MenuProvider>
+        
         <NavigationContainer>
             <Stack.Navigator screenOptions={{contentStyle:{
               backgroundColor:"#fff"
@@ -147,6 +149,7 @@ function NotLoggedIn(){
             <Stack.Screen name="UserFollowedList" component={UserFollowedListScreen} />
           </Stack.Navigator>
         </NavigationContainer>
+        </MenuProvider>
         </ContextProvider>
         <Toast/>
         
