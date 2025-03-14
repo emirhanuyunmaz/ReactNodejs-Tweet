@@ -21,12 +21,12 @@ export default function Navbar(){
     async function notificationOnClick(){
         if(notificationControl){
             setNotificationControl(false)
-            document.body.style.overflow = "auto"
+            // document.body.style.overflow = "auto"
         }else{
             setNotificationControl(true)
             await notificationShowed()
             getUserNotificationLength.refetch()
-            document.body.style.overflow = "hidden"
+            // document.body.style.overflow = "hidden"
         }
     }
 

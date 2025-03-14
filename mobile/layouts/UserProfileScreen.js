@@ -71,9 +71,14 @@ export default function UserProfileScreen() {
 
       // Kullanıcı takip isteği atma işlemi.
       async function UserFollowSocketOnClick(){
-        console.log("TAKİP İSTEĞİ");
-        await user_context.userFollowSocket(id,"follow")
-        isFollowRequestSent.refetch()
+        try{
+          console.log("TAKİP İSTEĞİ");
+          await user_context.userFollowSocket(id,"follow")
+          isFollowRequestSent.refetch()
+        }catch(err){
+          console.log("ERR:",err);
+          
+        }
         // location.reload()
     }
 
@@ -287,7 +292,7 @@ export default function UserProfileScreen() {
                             <View>
                           {  
                           userShortProfile.data?.data.profilePrivate ? 
-                              <TouchableOpacity style={styles.buttonStyle} >
+                              <TouchableOpacity onPress={UserFollowSocketOnClick} style={styles.buttonStyle} >
                                 <Text style={styles.buttonTextStyle} >Takip İsteğ At</Text>
                               </TouchableOpacity>
                                : 

@@ -38,23 +38,7 @@ const Tab = createBottomTabNavigator();
 
 function TabNavigate(){
     const user_context = useContext(context)
-    // const [socket ,setSocket] = useState(null)
 
-    // const connectSocket = async () => {
-    //   const token = await AsyncStorage.getItem("access_token")
-    //   let s = io(`${baseUrl}`, {query:{token:token}, transports: ['websocket'], reconnection: true });;
-    //   setSocket(s)
-    //   // Alıcıya mesaj geldiğinde dinle
-    //   s.on('notification', (notification) => {   
-    //       console.log("NOTIF::",notification);
-    //       user_context.setNotificationLength(notification.notificationLength)
-    //   });
-    // }
-  
-  
-    // useEffect(() => {
-    //   connectSocket()
-    // },[])
 
   return (<Tab.Navigator screenOptions={{
     sceneStyle:{
@@ -115,6 +99,8 @@ function LoggedIn(){
         <Stack.Screen name="TagTweetList" component={TagTweetListScreen} />
         <Stack.Screen name="UserFollowerList" component={UserFollowerListScreen} />
         <Stack.Screen name="UserFollowedList" component={UserFollowedListScreen} />
+        <Stack.Screen options={{headerShown:false}} name="Login" component={LoginScreen} />
+        <Stack.Screen options={{headerShown:false}}  name="Signup" component={SignupScreen} />
       </Stack.Navigator>
     </NavigationContainer>
     </MenuProvider>

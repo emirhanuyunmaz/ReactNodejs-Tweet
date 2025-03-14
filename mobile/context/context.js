@@ -16,6 +16,7 @@ function ContextProvider({children}){
         
         s = io(baseUrl+"/", {query:{token:token}, transports: ['websocket'], reconnection: true });;
         setSocket(s)
+        console.log("BAğlantı")
         
         s.on('notification', (notification) => {   
             console.log("NOTIF::",notification);
@@ -97,7 +98,7 @@ function ContextProvider({children}){
     }
         // Kullaıcı takip etme işlemi.
       async function userDirectFollowSocket(userId,process){
-        console.log("AA::NOT SO");
+        // console.log("AA::NOT SO");
         
         if(socket !== null){            
             console.log("TAKİP ETME İŞLEMİ");

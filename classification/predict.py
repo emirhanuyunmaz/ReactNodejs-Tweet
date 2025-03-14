@@ -71,8 +71,8 @@ def process_image_face_detect(image_data):
 
         return face_img_array
     else:
-        print("BBB:")
-        return img  # Yüz bulunmazsa None döndür
+        # print("BBB:")
+        return preprocess_image(image_data)  # Yüz bulunmazsa None döndür
 
     # except Exception as e:
         # print("LLL")

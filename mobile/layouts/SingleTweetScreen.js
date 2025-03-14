@@ -53,6 +53,8 @@ export default function SingleTweetScreen() {
   useEffect(() => {
     if(getSingleTweet.isSuccess){       
       setTweetData(getSingleTweet.data.data)
+      console.log("TWD:",getSingleTweet.data);
+      
     }
   },[getSingleTweet.isSuccess,getSingleTweet.isFetching])
 

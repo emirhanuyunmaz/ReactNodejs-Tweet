@@ -218,15 +218,17 @@ const getTweetList = async (req,res) => {
         if(followedData == "true"){
             const contactData = await UserContactModel.findOne({userId:userId})
             // Populate ile sadece yazılan verilerin getirilmesine olanak sağlandı . 
-            console.log("AA:",contactData);
-                       
+            
             if(contactData){
                 contactData.followed.push(userId)
+                console.log("AA:",contactData.followed);
                 const dataList = await TweetModel.find({userId:{$in:contactData.followed}}).populate("userId","name surname image tag profilePrivate").sort({createdAt:"desc"}).exec()
                 // console.log(dataList);
                 res.status(200).json({tweetList:dataList})
             }else{
-                res.status(200).json({tweetList:[]})
+                const dataList = await TweetModel.find({userId:userId}).populate("userId","name surname image tag profilePrivate").sort({createdAt:"desc"}).exec()
+
+                res.status(200).json({tweetList:dataList})
             }
 
         }else{
@@ -473,7 +475,7 @@ const singleTweet = async (req,res) => {
         
         const contactData = await UserContactModel.findOne({userId:userId})
         let liste =contactData?.followed ? contactData?.followed : [] //Kullanıcı gönderi gösterme listesi.
-
+        liste.push(userId)
 
 
         const tweetData = await TweetModel.aggregate([

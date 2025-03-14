@@ -41,7 +41,7 @@ export default function NotificationCard({setControl,notificationLength}){
         <div className=" relative flex z-50">
             <div className={`absolute bg-blue-300 w-72 text-black px-1 mt-8 ms-[-200px] py-2 rounded-xl z-10`}>
                 {/* Son 5 bildirim ve bildirimleri tamamı için bir sayfa. */}
-                <ul className="flex flex-col gap-2">
+                <ul className="flex flex-col gap-2 max-h-96 overflow-y-auto">
                     {
                         data.length == 0 && <p>Herhangi bir bildiriminiz bulumamaktadır.</p>
                     }

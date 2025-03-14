@@ -30,7 +30,7 @@ export default function ProfileScreen() {
   }
 
   async function logoutOnPress(){
-    const data = await AsyncStorage.removeItem("access_token")
+    await AsyncStorage.clear()
     navigation.navigate("Login")
 
   }
@@ -46,7 +46,7 @@ export default function ProfileScreen() {
   useEffect(() => {
 
     if(getUserProfile.isSuccess){
-      console.log("::AAADDDD:");
+      // console.log("::AAADDDD:");
       setUserData(getUserProfile.data)
       console.log(getUserProfile.data);
     }

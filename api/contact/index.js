@@ -209,7 +209,7 @@ const userFollowedList = async(req,res) => {
 const getAllNotification = async(req,res) => {
     try{
         const id = req.headers.id
-        const data = await UserNotificationModel.find({userId:id}).populate("transactionUser","name surname image").sort({createAt:"desc"}).exec()
+        const data = await UserNotificationModel.find({userId:id}).populate("transactionUser","name surname image").sort({createAt:-1}).exec()
         console.log("Bildirim verisi:",data);
         
         res.status(200).json({succes:true,data:data})
