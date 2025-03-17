@@ -1,11 +1,12 @@
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useContext } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from 'zod';
 import { Controller, useForm } from 'react-hook-form';
 import { useUserLoginMutation } from '../store/userApi/userApiSlicer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { context } from '../context/context';
 
 const schema = z.object({
   email: z.string().min(2, { message: "Email must be at least 2 characters long" }),
@@ -14,7 +15,7 @@ const schema = z.object({
 
 
 export default function LoginScreen() {
-
+  const user_contex = useContext(context)
   const [login,resLogin] = useUserLoginMutation()
   const navigation = useNavigation()
 
@@ -28,12 +29,11 @@ export default function LoginScreen() {
 
   const onSubmit = async (data) => {
     console.log(data);
-    await login(data).unwrap().then(async (res) => {
-        console.log("RESSR:",res);
-        await AsyncStorage.setItem("access_token",res.accessToken)
-        await AsyncStorage.getItem("access_token")
-        navigation.navigate("Tab")
-    })
+    const res = await login(data)
+    console.log("RESSR:",res);
+    // await AsyncStorage.setItem("access_token",res.data.accessToken)
+    await user_contex.tokenSave(res.data.accessToken)
+    navigation.navigate("Tab")
 };
 
   function signupPage(){

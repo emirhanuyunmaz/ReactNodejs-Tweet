@@ -1,14 +1,15 @@
 import { Image, RefreshControl, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { ClipboardList, LogOut, Settings } from 'lucide-react-native'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import { useGetUserProfileQuery, useGetUserShortProfileQuery } from '../store/userApi/userApiSlicer'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { context } from '../context/context'
 
 export default function ProfileScreen() {
   
-
+  const user_context = useContext(context)
   const baseUrl = process.env.BASE_URL
   const getUserProfile = useGetUserProfileQuery()
   // const getUserShortProfile = useGetUserShortProfileQuery()
@@ -30,7 +31,7 @@ export default function ProfileScreen() {
   }
 
   async function logoutOnPress(){
-    await AsyncStorage.clear()
+    await user_context.tokenClear()
     navigation.navigate("Login")
 
   }

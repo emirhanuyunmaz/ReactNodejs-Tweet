@@ -38,7 +38,8 @@ const Tab = createBottomTabNavigator();
 
 function TabNavigate(){
     const user_context = useContext(context)
-
+    console.log("Bildirim Sayısı :",user_context.notificationLength);
+    
 
   return (<Tab.Navigator screenOptions={{
     sceneStyle:{
@@ -110,36 +111,37 @@ function LoggedIn(){
 }
 
 function NotLoggedIn(){
-  return (<Provider store={store}>
-        <ContextProvider>
-        <MenuProvider>
-        
-        <NavigationContainer>
-            <Stack.Navigator screenOptions={{contentStyle:{
-              backgroundColor:"#fff"
-            }}} >
-            <Stack.Screen options={{headerShown:false}} name="Login" component={LoginScreen} />
-            <Stack.Screen options={{headerShown:false}}  name="Signup" component={SignupScreen} />
-            <Stack.Screen options={{headerShown:false}}  name="Tab" component={TabNavigate} />
-            
-            <Stack.Screen name="SingleTweet" component={SingleTweetScreen} />
-            <Stack.Screen name="Tasks" component={TaskListScreen} />
-            <Stack.Screen name="AddTweet" component={AddTweetScreen} />
-            <Stack.Screen name="Settings" component={SettingsScreen} />
-            <Stack.Screen name="TaskUpdate" component={TaskUpdateScreen} />
-            <Stack.Screen options={{headerShown:false}} name="Message" component={MessageScreen} />
-            <Stack.Screen name="UserProfile" component={UserProfileScreen} />
-            <Stack.Screen name="Comment" component={CommentScreen} />
-            <Stack.Screen name="TagTweetList" component={TagTweetListScreen} />
-            <Stack.Screen name="UserFollowerList" component={UserFollowerListScreen} />
-            <Stack.Screen name="UserFollowedList" component={UserFollowedListScreen} />
-          </Stack.Navigator>
-        </NavigationContainer>
-        </MenuProvider>
-        </ContextProvider>
-        <Toast/>
-        
-        </Provider>);
+  return <Provider store={store}>
+  <ContextProvider>
+<MenuProvider>
+<StatusBar
+  animated={true}
+  backgroundColor="#BFDBFF"
+/>
+<NavigationContainer>
+    <Stack.Navigator screenOptions={{contentStyle:{
+      backgroundColor:"#fff"
+    }}} >
+      <Stack.Screen options={{headerShown:false}} name="Login" component={LoginScreen} />
+      <Stack.Screen options={{headerShown:false}}  name="Signup" component={SignupScreen} />
+      <Stack.Screen options={{headerShown:false}}  name="Tab" component={TabNavigate} />
+      <Stack.Screen name="SingleTweet" component={SingleTweetScreen} />
+      <Stack.Screen name="Tasks" component={TaskListScreen} />
+      <Stack.Screen name="AddTweet" component={AddTweetScreen} />
+      <Stack.Screen name="Settings" component={SettingsScreen} />
+      <Stack.Screen name="TaskUpdate" component={TaskUpdateScreen} />
+      <Stack.Screen options={{headerShown:false}} name="Message" component={MessageScreen} />
+      <Stack.Screen name="UserProfile" component={UserProfileScreen} />
+      <Stack.Screen name="Comment" component={CommentScreen} />
+      <Stack.Screen name="TagTweetList" component={TagTweetListScreen} />
+      <Stack.Screen name="UserFollowerList" component={UserFollowerListScreen} />
+      <Stack.Screen name="UserFollowedList" component={UserFollowedListScreen} />
+    </Stack.Navigator>
+  </NavigationContainer>
+  </MenuProvider>
+  </ContextProvider>
+  <Toast/>
+</Provider>
 }
 
 export default function App() {

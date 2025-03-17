@@ -217,19 +217,77 @@ const getTweetList = async (req,res) => {
                
         if(followedData == "true"){
             const contactData = await UserContactModel.findOne({userId:userId})
-            // Populate ile sadece yazılan verilerin getirilmesine olanak sağlandı . 
             
-            if(contactData){
-                contactData.followed.push(userId)
-                console.log("AA:",contactData.followed);
-                const dataList = await TweetModel.find({userId:{$in:contactData.followed}}).populate("userId","name surname image tag profilePrivate").sort({createdAt:"desc"}).exec()
-                // console.log(dataList);
-                res.status(200).json({tweetList:dataList})
-            }else{
-                const dataList = await TweetModel.find({userId:userId}).populate("userId","name surname image tag profilePrivate").sort({createdAt:"desc"}).exec()
+            const tweetLikeListData = await TweetLikeListModel.findOne({userId:userId})
+            const userLike = tweetLikeListData ? tweetLikeListData.tweetList : []
+            // console.log("BEĞENİ LİST::",userLike);
+            let liste =contactData?.followed ? contactData?.followed : [] //Kullanıcı gönderi gösterme listesi.
+            
+            // liste.push()
+            liste.push(userId)
 
-                res.status(200).json({tweetList:dataList})
-            }
+            // console.log("LİST:::",userLike);
+
+            
+            const data = await TweetModel.aggregate([
+                // 1. `userId` ile `SignUp` bilgilerini birleştir
+                {
+                  $lookup: {
+                    from: 'signups', // SignUp koleksiyon adı
+                    localField: 'userId', // Tweet modelindeki userId
+                    foreignField: '_id', // SignUp modelindeki _id
+                    as: 'userId', // Kullanıcı bilgilerini getir
+                  },
+                },
+                {
+                  $unwind: '$userId', // userId dizisini aç
+                },
+          
+                {
+                  $match: {
+                    $or: [
+                    //   { 'userId.profilePrivate': false }, 
+                      { "userId._id": { $in: liste } },
+                    ],
+                    // $and:[
+                    //     {_id : {$in : userLike}}
+                    // ]
+                  },
+                },
+          
+                // 3. İstenen alanları seç
+                {
+                    $project: {
+                        _id: 1, // Tweet ID
+                        text: 1, // Tweet içeriği
+                        tag: 1,
+                        userTag: 1,
+                        isImage: 1,
+                        likes: 1,
+                        comments:1,
+                        createdAt: 1,
+                        'userId._id': 1, 
+                        'userId.name': 1, 
+                        'userId.surname': 1,
+                        'userId.email': 1,
+                        'userId.image': 1,
+                        'userId.tag': 1,
+                        'userId.profilePrivate': 1,
+                        userIsFollow: {
+                            $cond: {
+                                if: { $in: ['$_id', userLike] }, // Eğer tweet'in _id'si `userLike` içinde varsa
+                                then: true,
+                                else: false
+                            }
+                        }
+                    }
+                },
+                { $sort: { createdAt: -1 } }, // En yeni tweetler önce gelir
+              ]);
+            // console.log(data);
+            console.log("Kullanıcı tweet listesi çekildi.");
+            
+            res.status(200).json({tweetList:data})
 
         }else{
             const contactData = await UserContactModel.findOne({userId:userId})
@@ -241,9 +299,10 @@ const getTweetList = async (req,res) => {
             
             // liste.push()
             liste.push(userId)
-            // contactData?.followed?.push(userId)
-            console.log("LİST:::",liste);
-            // contactData.followed.push(userId)
+
+            // console.log("LİST:::",userLike);
+
+            
             const data = await TweetModel.aggregate([
                 // 1. `userId` ile `SignUp` bilgilerini birleştir
                 {
@@ -546,13 +605,16 @@ const userTweetProfile = async(req,res) => {
     try{
         const searchText = req.headers.text
         const tweetUserId = req.params.id
+        const userId = req.headers.id     
+
         console.log("JULLANICI ID BUL:",tweetUserId);
         
         // const tweetData = await TweetModel.find({userId:tweetUserId,text:{ $regex: `${searchText}`, $options: 'i' } }).populate("userId","name surname image").sort({createdAt:"desc"}).exec()
 
-        const tweetLikeListData = await TweetLikeListModel.findOne({userId:tweetUserId})
+        const tweetLikeListData = await TweetLikeListModel.findOne({userId:userId})
         const userLike = tweetLikeListData ? tweetLikeListData.tweetList : []
-
+        console.log("USER LİKE:::",tweetLikeListData);
+        
         const tweet_user_id = new ObjectId(tweetUserId)
 
         // ***************** //
@@ -574,7 +636,7 @@ const userTweetProfile = async(req,res) => {
                     
                     $and :[ 
                         {"userId._id": {$in:[tweet_user_id]}},
-                        {"text" : new RegExp('^' + searchText, "i")}
+                        {"text" : {$regex: new RegExp(searchText), $options: 'i'} }
                     ]
                     
                 }
@@ -608,7 +670,7 @@ const userTweetProfile = async(req,res) => {
 
         // ***************** //
 
-        const userId = req.headers.id
+        // const userId = req.headers.id
         const userProfile = userId == tweetUserId
         console.log("Kullanıcı profili mi ? = ",userProfile);
         
