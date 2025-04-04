@@ -1,7 +1,7 @@
 import { Image, RefreshControl, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { ClipboardList, LogOut, Settings } from 'lucide-react-native'
-import { useNavigation, useRoute } from '@react-navigation/native'
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'
 import { useGetUserProfileQuery, useGetUserShortProfileQuery } from '../store/userApi/userApiSlicer'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -33,7 +33,6 @@ export default function ProfileScreen() {
   async function logoutOnPress(){
     await user_context.tokenClear()
     navigation.navigate("Login")
-
   }
 
   const onRefresh = React.useCallback(async () => {
@@ -53,6 +52,23 @@ export default function ProfileScreen() {
     }
 
   },[getUserProfile.isFetching,getUserProfile.isSuccess])
+
+    useFocusEffect(
+      useCallback( () => {
+        // user_context.connectSocket(id)
+        // connectSocket()
+        
+        onRefresh()
+        // notificationShowed()
+        // user_context.setNotificationLength(0)
+        return () => {
+          // if(socket != null){
+          //   // socket.disconnect()
+
+          // }
+        };
+      }, [])
+    );
 
   return (
     <SafeAreaProvider style={{flex:1}} >

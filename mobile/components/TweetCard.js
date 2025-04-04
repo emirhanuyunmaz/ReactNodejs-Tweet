@@ -6,7 +6,7 @@ import { useTweetLikeMutation, useUserTweetDislikeMutation } from '../store/user
 import { context } from '../context/context';
 
 export default function TweetCard({_id,text,comments,createdAt,userTag,tag,likes,userId,isImage,userIsFollow}) {
-  console.log(userIsFollow);
+  // console.log(userIsFollow);
   
   const baseUrl = process.env.BASE_URL
   const navigation = useNavigation()

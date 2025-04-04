@@ -13,8 +13,8 @@ function ContextProvider({children}){
     const [notificationLength,setNotificationLength] = useState(0)
     let s
     const connectSocket = async () => {
-        const t = await AsyncStorage.getItem("access_token")
-        setToken(t)
+        // const t = await AsyncStorage.getItem("access_token")
+        // setToken(t)
         s = io(baseUrl+"/", {query:{token:token}, transports: ['websocket'], reconnection: true });;
         setSocket(s)
         console.log("BAğlantı")
@@ -146,6 +146,7 @@ function ContextProvider({children}){
 
       async function tokenClear(){
         await AsyncStorage.clear()
+        setToken(null)
       }
 
     function DisconnectSocket(){
@@ -157,8 +158,9 @@ function ContextProvider({children}){
 
 
     useEffect(() => {  
-        
-        connectSocket();
+        if(token != null){
+          connectSocket();
+        }
         
         // Bağlantı kesilmeden önce Socket'i temizle
         return () => {
