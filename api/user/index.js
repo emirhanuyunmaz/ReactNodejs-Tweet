@@ -224,9 +224,9 @@ const getTweetList = async (req,res) => {
             let liste =contactData?.followed ? contactData?.followed : [] //Kullanıcı gönderi gösterme listesi.
             
             // liste.push()
-            liste.push(userId)
+            liste.push(new ObjectId(userId))
 
-            // console.log("LİST:::",userLike);
+            console.log("LİST:::",liste);
 
             
             const data = await TweetModel.aggregate([
@@ -298,8 +298,7 @@ const getTweetList = async (req,res) => {
             let liste =contactData?.followed ? contactData?.followed : [] //Kullanıcı gönderi gösterme listesi.
             
             // liste.push()
-            liste.push(userId)
-
+            liste.push(new ObjectId(userId))
             // console.log("LİST:::",userLike);
 
             
@@ -534,7 +533,7 @@ const singleTweet = async (req,res) => {
         
         const contactData = await UserContactModel.findOne({userId:userId})
         let liste =contactData?.followed ? contactData?.followed : [] //Kullanıcı gönderi gösterme listesi.
-        liste.push(userId)
+        liste.push(new ObjectId(userId))
 
 
         const tweetData = await TweetModel.aggregate([
@@ -761,20 +760,22 @@ const getSingleUserTag = async (req,res) => {
     try{
         const userTag = req.params.tag
         const userId = req.headers.id
+        // console.log("Kullanıcı ID BİLGİSİ::",userId);
+        
         const tweetData = await TweetModel.find({userTag:userTag}).populate("userId","name surname image")
         
         // ************************************************
         const contactData = await UserContactModel.findOne({userId:userId})
-            
+        
         const tweetLikeListData = await TweetLikeListModel.findOne({userId:userId})
         const userLike = tweetLikeListData ? tweetLikeListData.tweetList : []
         // console.log("BEĞENİ LİST::",userLike);
         let liste =contactData?.followed ? contactData?.followed : [] //Kullanıcı gönderi gösterme listesi.
         
         // liste.push()
-        liste.push(userId)
+        liste.push(new ObjectId(userId))
         // contactData?.followed?.push(userId)
-        console.log("LİST:::",liste);
+        // console.log("LİST:::",liste);
         // contactData.followed.push(userId)
         const data = await TweetModel.aggregate([
             // 1. `userId` ile `SignUp` bilgilerini birleştir
@@ -843,6 +844,7 @@ const getSingleUserTag = async (req,res) => {
                 }
             }
         ])
+        
         res.status(201).json({message:"succes",succes:true,data:data,tagData:emotionTagData})
     }catch(err){
         console.log("Etikete ait gönderiler çekilirken bir hata ile karşılaşıldı.",err);
