@@ -9,10 +9,13 @@ function ContextProvider({children}){
 
     const [token,setToken] = useState(null)  //Token bilgisinin kaydeden ve çıkış yapınca silen fonk.
     const [socket,setSocket] = useState(null)
-    const [messageList,setMessageList] = useState([])
     const [notificationLength,setNotificationLength] = useState(0)
     let s
     const connectSocket = async () => {
+      console.log(":SOCKET BAĞ:",token);
+      
+      if(token != null){
+        console.log(":SOCKET BAĞ: active");
         // const t = await AsyncStorage.getItem("access_token")
         // setToken(t)
         s = io(baseUrl+"/", {query:{token:token}, transports: ['websocket'], reconnection: true });;
@@ -23,6 +26,10 @@ function ContextProvider({children}){
             console.log("NOTIF::",notification);
             setNotificationLength(notification.notificationLength)
         });
+      }else{
+        const t = await AsyncStorage.getItem("access_token")
+        setToken(t)
+      }
     }
 
   async function tweetLikeSocket(tweet,process){
@@ -40,7 +47,7 @@ function ContextProvider({children}){
           // Toast message:
           }
       }else{
-          console.log("NOTSOCKET:::::");
+          console.log("NOTSOCKET:::::",socket);
       }
   }
 
@@ -58,7 +65,7 @@ function ContextProvider({children}){
           // Toast message:
           }
       }else{
-          console.log("NOTSOCKET:::::");
+          console.log("NOTSOCKET:::::",socket);
       }
   }
 
@@ -76,7 +83,7 @@ function ContextProvider({children}){
             // Toast message:
             }
         }else{
-            console.log("NOTSOCKET:::::");
+            console.log("NOTSOCKET:::::",socket);
         }
     }
 
@@ -97,7 +104,7 @@ function ContextProvider({children}){
             // Toast message:
             }
         }else{
-            console.log("NOTSOCKET:::::");
+            console.log("NOTSOCKET:::::",socket);
         }
     }
         // Kullaıcı takip etme işlemi.
@@ -117,7 +124,7 @@ function ContextProvider({children}){
             // Toast message:
             }
         }else{
-            console.log("NOTSOCKET:::::");
+            console.log("NOTSOCKET:::::",socket);
         }
     }
 
@@ -135,7 +142,7 @@ function ContextProvider({children}){
               // Toast message:
               }
           }else{
-              console.log("NOTSOCKET:::::");
+              console.log("NOTSOCKET:::::",socket);
           }
       }
 
@@ -159,6 +166,8 @@ function ContextProvider({children}){
 
     useEffect(() => {  
         if(token != null){
+          console.log("BAŞARILI SOCKET BAG...");
+          
           connectSocket();
         }
         
@@ -170,7 +179,7 @@ function ContextProvider({children}){
       },[token])
 
 
-    return (<context.Provider value={{tweetLikeSocket,tweetUnlikeSocket,tweetCommentSocket,userFollowSocket,userUnfollowSocket,notificationLength,setNotificationLength,userDirectFollowSocket,tokenSave,tokenClear}} >
+    return (<context.Provider value={{connectSocket,tweetLikeSocket,tweetUnlikeSocket,tweetCommentSocket,userFollowSocket,userUnfollowSocket,notificationLength,setNotificationLength,userDirectFollowSocket,tokenSave,tokenClear}} >
         {children}
     </context.Provider>)
 }

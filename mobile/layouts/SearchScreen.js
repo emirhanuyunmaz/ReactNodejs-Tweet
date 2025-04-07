@@ -1,5 +1,5 @@
-import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { RefreshControl, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
+import React, { useCallback, useEffect, useState } from 'react'
 import ClassificationTagList from '../components/ClassificationTagList'
 import TagList from '../components/TagList'
 import { useGetTagListQuery, useGetUserTagListQuery } from '../store/userApi/userApiSlicer'
@@ -12,10 +12,18 @@ export default function SearchScreen() {
   const [userTagList,setUserTagList] = useState([])
   const [searchText,setSearchText] = useState("")
   const [userList,setUserList] = useState([])
+  const [refreshing, setRefreshing] = useState(false);
 
   const getTagList = useGetTagListQuery()
   const getUserTagList = useGetUserTagListQuery() 
   const [searchUser,resSearchUser] = useSearchUserMutation()
+
+    const onRefresh = useCallback(async () => {
+      setRefreshing(true);
+      getTagList.refetch()
+      getUserTagList.refetch()
+      setRefreshing(false)
+    }, []);
 
   async function UserSearch(){
     await searchUser({searchText:searchText}).unwrap()
@@ -49,7 +57,7 @@ export default function SearchScreen() {
     <View style={styles.container}>
       <TextInput value={searchText} onChangeText={(e) => setSearchText(e)} style={styles.searchInputStyle} placeholder='Ara' />
       
-      <ScrollView style={styles.tagContainerStyle} >
+      <ScrollView style={styles.tagContainerStyle} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}  >
 
         {searchText == "" ? <View><View style={styles.classificationContainerStyle} >
           <ClassificationTagList tagList={tagList} />

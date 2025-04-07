@@ -39,6 +39,9 @@ const Tab = createBottomTabNavigator();
 function TabNavigate(){
     const user_context = useContext(context)
     console.log("Bildirim Sayısı :",user_context.notificationLength);
+    useEffect(() => {
+      user_context.connectSocket()
+    },[])
     
 
   return (<Tab.Navigator screenOptions={{
