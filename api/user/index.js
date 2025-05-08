@@ -212,7 +212,7 @@ const getTweetList = async (req,res) => {
     
     try{    
         const followedData = req.headers.is_followed_data
-        const userId = req.headers.id     
+        const userId = req.headers.id
 
                
         if(followedData == "true"){
@@ -414,6 +414,28 @@ const getUserLikeList =async (req,res) => {
     }
 }
 
+// ******************* TWEET LIKE POST ********************* //
+// Kullanıcı gönderi beğeni listesi .
+const getUserLikePostList = async (req,res) => {
+    try{
+        console.log("::AADDDDAA::Tweeet like list"); 
+        
+        const id = req.params.id
+        const text = req.headers.text
+
+        console.log("TTAADD:",id,text);
+        
+        const data = await TweetLikeListModel.findOne({userId:id}).populate({path:"tweetList",populate:{path:"userId",select:"_id name surname email image tag profilePrivate"}})
+        console.log("AADD:::",data);
+        
+        res.status(200).json({data:data.tweetList,succes:true})
+    }catch(err){
+        console.log("Kullanıcı tweet beğeni listesi çekilirken bir hata ile karşılaşıldı.");
+        res.status(400).json({message:err,succes:false})
+    }
+}
+
+
 // ***********************DİSLİKE İŞLEMİ********************* //
 //Beğenilen gönderide beğeni işlemini geri alma işlemi.
 const userTweetDislike = async (req,res) => {
@@ -612,7 +634,7 @@ const userTweetProfile = async(req,res) => {
 
         const tweetLikeListData = await TweetLikeListModel.findOne({userId:userId})
         const userLike = tweetLikeListData ? tweetLikeListData.tweetList : []
-        console.log("USER LİKE:::",tweetLikeListData);
+        // console.log("USER LİKE:::",tweetLikeListData);
         
         const tweet_user_id = new ObjectId(tweetUserId)
 
@@ -673,7 +695,7 @@ const userTweetProfile = async(req,res) => {
         const userProfile = userId == tweetUserId
         console.log("Kullanıcı profili mi ? = ",userProfile);
         
-        console.log("TWEET_DATA:",tweetData);
+        // console.log("TWEET_DATA:",tweetData);
         
 
         res.status(201).json({message:"Succes",succes:true,data:tweetData,userProfile:userProfile,isUser:true})
@@ -937,7 +959,7 @@ const deleteTask = async (req,res) => {
         
         if(isImage = "true"){
             const imageName = task.text.split("image/").pop()
-            fs.rmSync(__dirname+"/.."+`/uploads/${imageName}`)
+            fs.rmSync(__dirname+"/.."+`${imageName}`)
         }
         res.status(201).json({message:"succes",succes:true})
     }catch(err){
@@ -1068,6 +1090,7 @@ router.route("/tweetProfile/:id").get(authControl,userTweetProfile)
 router.route("/shortProfile/:id").get(authControl,userShortProfile)
 router.route("/likeTweet").post(authControl,likeTweet)
 router.route("/likeTweetList").get(authControl,getUserLikeList)
+router.route("/likeTweetPostList/:id").get(authControl,getUserLikePostList)
 router.route("/dislikeTweet").post(authControl,userTweetDislike)
 router.route("/addTask").post(authControl,addTask)
 router.route("/getSingleTask/:id").get(authControl,getSingleTask)

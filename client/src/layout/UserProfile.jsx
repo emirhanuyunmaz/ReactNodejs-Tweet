@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import {  useParams } from "react-router-dom"
-import { useGetUserShortProfileQuery,useUserTweetProfileQuery } from "../store/userApi/userApiSlicer";
+import { useGetTweetPostLikeListQuery, useGetUserShortProfileQuery,useUserTweetProfileQuery } from "../store/userApi/userApiSlicer";
 import TweetList from "../components/TweetList";
 import { useContactListQuery, useFollowUserMutation, useIsFollowUserQuery, useUnfollowUserMutation, useUserFollowedListQuery, useUserFollowerListQuery, useUserIsFollowRequestSentQuery } from "../store/contactApi/contactApiSlicer";
 import ContactDialog from "../components/ContactDialog";
@@ -20,12 +20,14 @@ export default function UserProfile(){
     const [contactUserList,setContactUserList] = useState([])  
     const [postIsShow,setPostIsShow] = useState(true)
     const [followRequest,setFollowRequest] = useState(false)
+    const [selectNumber,setSelectNumber] = useState(0)
     let data = {
         id:params.id,
         text:searchText
     }
     
     const userTweetProfile = useUserTweetProfileQuery(data)
+    const getTweetPostLikeList = useGetTweetPostLikeListQuery(data)
     const userShortProfile = useGetUserShortProfileQuery(params.id)
     const [contactUserFollow,responseContactFollow] = useFollowUserMutation()
     const [contactUserUnfollow,responseContactUnfollow] = useUnfollowUserMutation()
@@ -111,7 +113,7 @@ export default function UserProfile(){
 
 
     useEffect(() => {
-        if(userTweetProfile.isSuccess){
+        if(userTweetProfile.isSuccess && selectNumber == 0){
             data = {
                 id:params.id,
                 text:searchText
@@ -120,8 +122,16 @@ export default function UserProfile(){
             setTweetList(userTweetProfile.data.data)
             // console.log("SS:::SS",userTweetProfile.data.userProfile);
             setIsProfile(userTweetProfile.data.userProfile)
+        }else if(getTweetPostLikeList.isSuccess && selectNumber == 1){
+            data = {
+                id:params.id,
+                text:searchText
+            }
+            setTweetList(getTweetPostLikeList.data.data)
+            setIsProfile(userTweetProfile.data.userProfile)
+
         }
-    },[userTweetProfile.isFetching,userTweetProfile.isSuccess,searchText])
+    },[userTweetProfile.isFetching,userTweetProfile.isSuccess,getTweetPostLikeList.isFetching,getTweetPostLikeList.isSuccess,searchText,selectNumber])
 
     useEffect(() => {
         // console.log("getUserIsFollow?.data?.data:",getUserIsFollow?.data?.data);
@@ -148,7 +158,7 @@ export default function UserProfile(){
     return (<div className="md:w-3/4 md:mx-auto mt-10">
 
         {/* Kullanıcı profili için temel yapı */}
-        <div className="bg-blue-100  md:px-10 py-5 rounded-xl">
+        <div className="bg-blue-100  md:px-10 py-5 rounded-t-xl">
             <div className="flex gap-5" >
                 <img className="w-32 h-32 rounded-full" src={`http://localhost:3000/${userProfile.image}`} alt="" />
                 <div className="mt-5 flex flex-col gap-3">
@@ -177,9 +187,16 @@ export default function UserProfile(){
             </div>
         </div>
             {/* Tweet arama işlemi */}
-            {postIsShow ? <><div className="flex  justify-start items-center gap-3 ms-10 mt-3">
-                <input onChange={(e) => setSearchText(e.target.value)} value={searchText} className="w-1/2 outline-none px-4 py-2 border-2 border-black  rounded-xl" type="text" placeholder="Tweet Ara"/>
-                {/* <button onClick={(e) => searchTweetUser(e)} className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Ara</button> */}
+            {postIsShow ? <><div className="flex flex-col justify-start items-start gap-3 ">
+                <div className="flex gap-3 bg-blue-100 border-t-black border-t w-full p-3">
+                    <button onClick={() => setSelectNumber(0)} className={`${selectNumber == 0 && "border-b-2 border-b-black"}`} >Gönderiler</button>
+                    <button onClick={() => setSelectNumber(1)} className={`${selectNumber == 1 && "border-b-2 border-b-black"}`} >Beğeni</button>
+                    <button onClick={() => setSelectNumber(2)} className={`${selectNumber == 2 && "border-b-2 border-b-black"}`} >Yorum</button>
+                </div>
+                <div className="flex mx-10 w-full">
+                    <input onChange={(e) => setSearchText(e.target.value)} value={searchText} className="w-1/2 outline-none px-4 py-2 border-2 border-black  rounded-xl" type="text" placeholder="Tweet Ara"/>
+                </div>
+
             </div>
 
             {/* Tweet List */}

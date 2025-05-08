@@ -56,6 +56,8 @@ const userTasks = new Schema({
     isImage:Boolean,
 })
 
+// Tweet Comment list
+
 const TweetModel = mongoose.model("Tweet",userTweetSchema)
 
 const TweetLikeListModel = mongoose.model("TweetLikeList",userTweetLikeListSchema)

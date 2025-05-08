@@ -2,7 +2,7 @@ import { FlatList, Image, RefreshControl, StyleSheet, Text, TextInput, Touchable
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import TweetCard from '../components/TweetCard'
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'
-import { useGetUserShortProfileQuery, useUserTweetProfileQuery } from '../store/userApi/userApiSlicer'
+import { useGetTweetPostLikeListQuery, useGetUserShortProfileQuery, useUserTweetProfileQuery } from '../store/userApi/userApiSlicer'
 import { useContactListQuery, useFollowUserMutation, useIsFollowUserQuery, useUnfollowUserMutation, useUserIsFollowRequestSentQuery } from '../store/contactApi/contactApiSlicer'
 import { Settings } from 'lucide-react-native'
 import { context } from '../context/context'
@@ -16,6 +16,8 @@ export default function UserProfileScreen() {
   const id = route.params?._id
   
   const [searchText,setSearchText] = useState("")
+  const [selectNumber,setSelectNumber] = useState(0)
+
   let data = {
     id:id,
     text:searchText
@@ -28,7 +30,7 @@ export default function UserProfileScreen() {
   const isFollowRequestSent = useUserIsFollowRequestSentQuery(id)
   const [contactUserUnfollow,responseContactUnfollow] = useUnfollowUserMutation()
   const [contactUserFollow,responseContactFollow] = useFollowUserMutation()
-
+  const userTweetPostLikeList = useGetTweetPostLikeListQuery(data)
 
   const [userProfileData,setUserProfilData] = useState(null)
   const [contactListData,setContactListData] = useState(null)
@@ -58,16 +60,18 @@ export default function UserProfileScreen() {
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     // setTweetList([])
+    setSelectNumber(0)
     await userShortProfile.refetch()
     await getContactList.refetch()
     await userIsFollow.refetch()
     await isFollowRequestSent.refetch()
-    await userTweetProfile.refetch()
+    await userTweetProfile.refetch() //Gönderi listesi
+    await userTweetPostLikeList.refetch()
     // console.log("DATA::::",data.data);
         
     // setTweetList(data.data?.data)
     setRefreshing(false)
-  }, []);
+  }, [selectNumber]);
 
       // Kullanıcı takip isteği atma işlemi.
       async function UserFollowSocketOnClick(){
@@ -157,7 +161,7 @@ export default function UserProfileScreen() {
   },[getContactList.isSuccess,getContactList.isFetching])
 
   useEffect(() => {
-    if(userTweetProfile.isSuccess){
+    if(userTweetProfile.isSuccess && selectNumber == 0){
       data = {
           id:id,
           text:searchText
@@ -166,8 +170,17 @@ export default function UserProfileScreen() {
 
       setTweetList(userTweetProfile.data.data)
       setIsUserProfile(userTweetProfile.data.userProfile)
+    }else if( userTweetPostLikeList.isSuccess && selectNumber == 1){
+      data = {
+        id:id,
+        text:searchText
+      }
+      console.log("SADD:",userTweetPostLikeList.data.data);
+      
+      setTweetList(userTweetPostLikeList.data.data)
+      setIsUserProfile(userTweetProfile.data.userProfile)
     }
-  },[userTweetProfile.isSuccess,userTweetProfile.isFetching,searchText])
+  },[userTweetProfile.isSuccess,userTweetProfile.isFetching,searchText,selectNumber])
 
   useEffect(() => {
 
@@ -314,6 +327,18 @@ export default function UserProfileScreen() {
       
                     </View>
                     
+                    <View style={styles.selectContainer}>
+
+                      <TouchableOpacity onPress={() => setSelectNumber(0)} style={[selectNumber == 0 && styles.selectedButton]} >
+                        <Text>Gönderiler</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity onPress={() => setSelectNumber(1)} style={[selectNumber == 1 && styles.selectedButton]}>
+                        <Text>Beğeniler</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity style={[selectNumber == 2 && styles.selectedButton]} >
+                        <Text>Yorumlar</Text>
+                      </TouchableOpacity>
+                    </View>
                     <View style={styles.inputContainer} >
                       <TextInput value={searchText} onChangeText={(e) => setSearchText(e)} style={styles.inputStyle} placeholder='Ara' />
                     </View>
@@ -347,7 +372,9 @@ const styles = StyleSheet.create({
     justifyContent:"space-between",
     flexDirection:"row",
     gap:10,
-    marginBottom:10,
+    // marginBottom:10,
+    borderBottomColor:"black",
+    borderBottomWidth:1
   },
   imageStyle:{
     width:128,
@@ -392,6 +419,18 @@ const styles = StyleSheet.create({
     textAlign:"center",
     fontSize:24,
     fontWeight:"500"
+  },
+  selectContainer:{
+    flexDirection:"row",
+    backgroundColor:"#BFDBFF",
+    gap:20,
+    marginBottom:10,
+    padding:10
+  },
+  selectedButton:{
+    borderColor:"black",
+    borderBottomWidth:2
   }
+  
 
 })

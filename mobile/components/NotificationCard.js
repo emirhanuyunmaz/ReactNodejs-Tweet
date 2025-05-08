@@ -45,7 +45,7 @@ export default function NotificationCard({postId,transactionUser,process,followP
 
   return (
     <TouchableOpacity onPress={GoTo_SingleTweet} style={styles.container} >
-      <Image style={styles.imageStyle} source={{uri:`http://192.168.1.22:3000/${transactionUser.image}`}} />
+      <Image style={styles.imageStyle} source={{uri:`${process.env.BASE_URL}/${transactionUser.image}`}} />
       <View>
         <Text style={styles.userNameStyle} >{transactionUser.name} {transactionUser.surname}</Text>
         {

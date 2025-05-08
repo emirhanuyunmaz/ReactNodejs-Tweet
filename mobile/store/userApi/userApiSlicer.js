@@ -44,6 +44,16 @@ export const userApiSlice = createApi({
                 providesTags:["Tweet"]
             }),
 
+            getTweetPostLikeList:builder.query({
+                query(data) {
+                    return {
+                        url:`/user/likeTweetPostList/${data.id}`,
+                        headers:{text:data.text}
+                    }
+                },
+                providesTags:["Tweet"]
+            }),
+
             addTweet:builder.mutation({
                 query:(post)=> ({
                     url:"/user/addTweet",
@@ -229,11 +239,12 @@ export const userApiSlice = createApi({
                     body:body
                 }),
                 invalidatesTags:["Task"]
-            })
+            }),
+
 
 
         }
     },
 })
 
-export const {useGetDemoQuery,useUserLoginMutation,useGetTweetListQuery,useAddTweetMutation,useGetUserProfileQuery,useTweetLikeMutation,useGetUserTweetLikeListQuery,useUserTweetDislikeMutation,useGetSingleTweetQuery,useUserTweetAddCommentMutation, useTweetCommentListQuery,useUserTweetProfileQuery,useGetUserShortProfileQuery,useAddRetweetMutation,useUpdateUserProfileMutation,useGetTagListQuery,useGetUserTagListQuery,useGetSingleUserTagQuery,useAddTaskMutation,useGetTaskListQuery,useDeleteTaskMutation,useTaskToTweetMutation,useTaskUpdateMutation,useDeleteTweetMutation,useTaskImageUpdateMutation,useGetSingleTaskQuery} = userApiSlice
+export const {useGetDemoQuery,useUserLoginMutation,useGetTweetListQuery,useAddTweetMutation,useGetUserProfileQuery,useTweetLikeMutation,useGetUserTweetLikeListQuery,useUserTweetDislikeMutation,useGetSingleTweetQuery,useUserTweetAddCommentMutation, useTweetCommentListQuery,useUserTweetProfileQuery,useGetUserShortProfileQuery,useAddRetweetMutation,useUpdateUserProfileMutation,useGetTagListQuery,useGetUserTagListQuery,useGetSingleUserTagQuery,useAddTaskMutation,useGetTaskListQuery,useDeleteTaskMutation,useTaskToTweetMutation,useTaskUpdateMutation,useDeleteTweetMutation,useTaskImageUpdateMutation,useGetSingleTaskQuery , useGetTweetPostLikeListQuery} = userApiSlice

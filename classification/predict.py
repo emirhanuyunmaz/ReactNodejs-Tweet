@@ -67,7 +67,7 @@ def process_image_face_detect(image_data):
         # Numpy array'e çevir ve normalize et
         face_img_array = img_to_array(face_img_pil)
         face_img_array /= 255.0  # Normalize et
-        face_img_array = face_img_array.reshape(1, 48, 48, 1)  # Model için uygun şekle dönüştür
+        face_img_array = face_img_array.reshape(1, 48, 48, 1)  
 
         return face_img_array
     else:
