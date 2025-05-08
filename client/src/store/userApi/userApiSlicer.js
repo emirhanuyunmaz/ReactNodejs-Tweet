@@ -56,6 +56,16 @@ export const userApiSlice = createApi({
                 providesTags:["Tweet"]
             }),
 
+            commentTweetPostList:builder.query({
+                query(data) {
+                    return {
+                        url:`/user/commentTweetPostList/${data.id}`,
+                        headers:{text:data.text}
+                    }
+                },
+                providesTags:["Tweet"]
+            }),
+
             addTweet:builder.mutation({
                 query:(post)=> ({
                     url:"/user/addTweet",
@@ -248,4 +258,4 @@ export const userApiSlice = createApi({
     },
 })
 
-export const {useGetDemoQuery,useUserLoginMutation,useGetTweetListQuery,useAddTweetMutation,useGetUserProfileQuery,useTweetLikeMutation,useGetUserTweetLikeListQuery,useUserTweetDislikeMutation,useGetSingleTweetQuery,useUserTweetAddCommentMutation, useTweetCommentListQuery,useUserTweetProfileQuery,useGetUserShortProfileQuery,useAddRetweetMutation,useUpdateUserProfileMutation,useGetTagListQuery,useGetUserTagListQuery,useGetSingleUserTagQuery,useAddTaskMutation,useGetTaskListQuery,useDeleteTaskMutation,useTaskToTweetMutation,useTaskUpdateMutation,useDeleteTweetMutation,useTaskImageUpdateMutation,useGetSingleTaskQuery, useGetTweetPostLikeListQuery} = userApiSlice
+export const {useGetDemoQuery,useUserLoginMutation,useGetTweetListQuery,useAddTweetMutation,useGetUserProfileQuery,useTweetLikeMutation,useGetUserTweetLikeListQuery,useUserTweetDislikeMutation,useGetSingleTweetQuery,useUserTweetAddCommentMutation, useTweetCommentListQuery,useUserTweetProfileQuery,useGetUserShortProfileQuery,useAddRetweetMutation,useUpdateUserProfileMutation,useGetTagListQuery,useGetUserTagListQuery,useGetSingleUserTagQuery,useAddTaskMutation,useGetTaskListQuery,useDeleteTaskMutation,useTaskToTweetMutation,useTaskUpdateMutation,useDeleteTweetMutation,useTaskImageUpdateMutation,useGetSingleTaskQuery, useGetTweetPostLikeListQuery,useCommentTweetPostListQuery} = userApiSlice

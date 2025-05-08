@@ -1,10 +1,11 @@
 import { useContext, useEffect, useState } from "react";
 import {  useParams } from "react-router-dom"
-import { useGetTweetPostLikeListQuery, useGetUserShortProfileQuery,useUserTweetProfileQuery } from "../store/userApi/userApiSlicer";
+import { useCommentTweetPostListQuery, useGetTweetPostLikeListQuery, useGetUserShortProfileQuery,useUserTweetProfileQuery } from "../store/userApi/userApiSlicer";
 import TweetList from "../components/TweetList";
 import { useContactListQuery, useFollowUserMutation, useIsFollowUserQuery, useUnfollowUserMutation, useUserFollowedListQuery, useUserFollowerListQuery, useUserIsFollowRequestSentQuery } from "../store/contactApi/contactApiSlicer";
 import ContactDialog from "../components/ContactDialog";
 import { userContext } from "../context/userContext";
+import TweetCommentList from "../components/TweetCommentList";
 
 
 export default function UserProfile(){
@@ -13,6 +14,7 @@ export default function UserProfile(){
 
     const [isUserProfile,setIsUserProfile] = useState(false)
     const [tweetList,setTweetList] = useState([])
+    const [tweetCommentList,setTweetCommentList] = useState([])
     const [isProfile,setIsProfile] = useState(false)
     const [searchText,setSearchText] = useState("")
     const [userProfile,setUserProfile] = useState({})
@@ -28,6 +30,7 @@ export default function UserProfile(){
     
     const userTweetProfile = useUserTweetProfileQuery(data)
     const getTweetPostLikeList = useGetTweetPostLikeListQuery(data)
+    const getCommentTweetPostListQuery = useCommentTweetPostListQuery(data)
     const userShortProfile = useGetUserShortProfileQuery(params.id)
     const [contactUserFollow,responseContactFollow] = useFollowUserMutation()
     const [contactUserUnfollow,responseContactUnfollow] = useUnfollowUserMutation()
@@ -130,8 +133,17 @@ export default function UserProfile(){
             setTweetList(getTweetPostLikeList.data.data)
             setIsProfile(userTweetProfile.data.userProfile)
 
+        }else if(getCommentTweetPostListQuery.isSuccess && selectNumber == 2){
+            data = {
+                id:params.id,
+                text:searchText
+            }
+            setTweetCommentList(getCommentTweetPostListQuery.data.data)
+            // console.log("ASDSDA:",getCommentTweetPostListQuery.data.data);
+            
+            setIsProfile(userTweetProfile.data.userProfile)
         }
-    },[userTweetProfile.isFetching,userTweetProfile.isSuccess,getTweetPostLikeList.isFetching,getTweetPostLikeList.isSuccess,searchText,selectNumber])
+    },[userTweetProfile.isFetching,userTweetProfile.isSuccess,getTweetPostLikeList.isFetching,getTweetPostLikeList.isSuccess,searchText,getCommentTweetPostListQuery.isSuccess,getCommentTweetPostListQuery.isFetching,selectNumber])
 
     useEffect(() => {
         // console.log("getUserIsFollow?.data?.data:",getUserIsFollow?.data?.data);
@@ -201,7 +213,8 @@ export default function UserProfile(){
 
             {/* Tweet List */}
             <div className="flex px-5 md:px-10 flex-col w-full gap-5 mt-3 pb-5">
-                <TweetList tweetList={tweetList} isUserProfile={isUserProfile}  />
+                {selectNumber != 2 && <TweetList tweetList={tweetList} isUserProfile={isUserProfile}  />}
+                {selectNumber == 2 && <TweetCommentList tweetCommentList={tweetCommentList} />}
             </div>
             <ContactDialog setShowModal={setContactDialogControl} showModal={contactDialogControl} userList={contactUserList} /></> : <p className="text-center mt-10 text-xl font-bold">Profil Gizlidir</p>}
     </div>)

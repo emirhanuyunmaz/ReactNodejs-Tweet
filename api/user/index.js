@@ -10,6 +10,7 @@ const {UserContactModel} = require("../contact/model")
 const uuid = require("uuid")
 const { default: axios } = require("axios")
 const SignUpModel = require("../singnup/model")
+const { default: mongoose } = require("mongoose")
 
 
 // Kullanıcı Profil resmini güncelleme işlemi .
@@ -418,19 +419,142 @@ const getUserLikeList =async (req,res) => {
 // Kullanıcı gönderi beğeni listesi .
 const getUserLikePostList = async (req,res) => {
     try{
-        console.log("::AADDDDAA::Tweeet like list"); 
+        // console.log("::AADDDDAA::Tweeet like list"); 
         
         const id = req.params.id
         const text = req.headers.text
 
-        console.log("TTAADD:",id,text);
+        // console.log("TTAADD:TEXT:",text );
+        if(!text){
+            // console.log(":: ARAMA YAPILMAMIŞ :::",id);
+
+            const data = await TweetLikeListModel.aggregate([
+            // 1. Yalnızca bu kullanıcıya ait yorumları getir
+            // 2. userId → SignUp
+            {
+                $match: {
+                    "userId": new ObjectId(id)
+                }
+            },
+            {
+                $lookup: {
+                    from: "tweets", // the name of the collection for tweets
+                    localField: "tweetList", 
+                    foreignField: "_id", 
+                    as: "tweet"
+                }
+            },
+            { $unwind: "$tweet" },
+
+            {
+                $lookup: {
+                    from: "signups", // the collection name for the "SignUp" model
+                    localField: "tweet.userId", 
+                    foreignField: "_id", 
+                    as: "userId"
+                }
+            },
+            {
+                $unwind: "$userId"
+            },
+
+            // 4. Gerekli alanları seç
+            {
+                $project: {
+                text: 1,
+                tag: 1,
+                createAt: 1,
+                userId: {
+                    "_id": 1,
+                    "name": 1,
+                    "surname": 1,
+                    "image": 1,
+                    },
+                _id:"$tweet._id",
+                text:"$tweet.text",
+                tag:"$tweet.tag",
+                isImage:"$tweet.isImage",
+                likes:"$tweet.likes",
+                comments:"$tweet.comments",
+                userTag:"$tweet.userTag",
+                createdAt:"$tweet.createdAt",
+                userIsFollow: true
+                },
+            }
+            ])
+            // console.log("AADD:::",data);
+            res.status(200).json({data:data,succes:true})
+
+        }else{
+            const data = await TweetLikeListModel.aggregate([
+                // 1. Yalnızca bu kullanıcıya ait yorumları getir
+                // 2. userId → SignUp
+                {
+                    $match: {
+                        "userId": new ObjectId(id)
+                        
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "tweets", // the name of the collection for tweets
+                        localField: "tweetList", 
+                        foreignField: "_id", 
+                        as: "tweet"
+                    }
+                },
+                { $unwind: "$tweet" },
+
+                {
+                    $lookup: {
+                        from: "signups", // the collection name for the "SignUp" model
+                        localField: "tweet.userId", 
+                        foreignField: "_id", 
+                        as: "userId"
+                    }
+                },
+                {
+                    $unwind: "$userId"
+                },
+
+                {
+                    $match: {
+                      "tweet.text": { $regex: `${text}`, $options: "i" }
+                    }
+                },
+    
+                // 4. Gerekli alanları seç
+                {
+                    $project: {
+                    text: 1,
+                    tag: 1,
+                    createAt: 1,
+                    userId: {
+                        "_id": 1,
+                        "name": 1,
+                        "surname": 1,
+                        "image": 1,
+                        },
+                    _id:"$tweet._id",
+                    text:"$tweet.text",
+                    tag:"$tweet.tag",
+                    isImage:"$tweet.isImage",
+                    likes:"$tweet.likes",
+                    comments:"$tweet.comments",
+                    userTag:"$tweet.userTag",
+                    createdAt:"$tweet.createdAt",
+                    userIsFollow: true
+                    },
+                }
+                ])
+                
+            res.status(200).json({data:data,succes:true})
+
+        }
+        // { $regex: new RegExp(searchText), $options: 'i' },
         
-        const data = await TweetLikeListModel.findOne({userId:id}).populate({path:"tweetList",populate:{path:"userId",select:"_id name surname email image tag profilePrivate"}})
-        console.log("AADD:::",data);
-        
-        res.status(200).json({data:data.tweetList,succes:true})
     }catch(err){
-        console.log("Kullanıcı tweet beğeni listesi çekilirken bir hata ile karşılaşıldı.");
+        console.log("Kullanıcı tweet beğeni listesi çekilirken bir hata ile karşılaşıldı.",err);
         res.status(400).json({message:err,succes:false})
     }
 }
@@ -478,6 +602,7 @@ const commentTweet = async(req,res) => {
             })
 
             const newC = await newComment.save()
+            // await TweetModel.findByIdAndUpdate(tweetId, { $addToSet: { likes: userId } })
             
             const userNewTweetComment = new TweetCommentListModel({
                 userId:userId,
@@ -508,6 +633,109 @@ const commentTweet = async(req,res) => {
         res.status(404).json({message:err,succes:false})
     }
     res.status(201).json({message:"succes",succes:true})
+}
+
+// ***********************USER TWEET COMMENT LIST******************** //
+// Kullanıcıya ait yorum yapılan gönderi listesi.
+const getUserTweetCommentList = async (req,res) => {
+    try{
+        // console.log(":ASDDSA: Kullanici tweet yorum listesi..");
+        
+        const id = req.params.id
+        const text = req.headers.text ?? ""
+
+        const data = await TweetCommentModel.aggregate([
+            // 1. Yalnızca bu kullanıcıya ait yorumları getir
+            // 2. userId → SignUp
+            {
+                $match: {
+                    "userId": new ObjectId(id)
+                    
+                }
+            },
+            {
+                $lookup: {
+                    from: "tweets", // the name of the collection for tweets
+                    localField: "tweetId", 
+                    foreignField: "_id", 
+                    as: "tweet"
+                }
+            },
+            { $unwind: "$tweet" },
+
+            {
+                $lookup: {
+                    from: "signups", // the collection name for the "SignUp" model
+                    localField: "userId", 
+                    foreignField: "_id", 
+                    as: "userId"
+                }
+            },
+            {
+                $unwind: "$userId"
+            },
+            {
+                $lookup: {
+                    from: "signups", // the collection name for the "SignUp" model
+                    localField: "tweet.userId", 
+                    foreignField: "_id", 
+                    as: "tweetUser"
+                }
+            },
+            {
+                $unwind: "$tweetUser"
+            },
+
+            {
+                $match: {
+                    $or:[
+                        {"tweet.text": { $regex: `${text}`, $options: "i" }},
+                        {"text": { $regex: `${text}`, $options: "i" }}
+                    ]
+                }
+            },
+
+            // 4. Gerekli alanları seç
+            {
+                $project: {
+                text: 1,
+                tag: 1,
+                createAt: 1,
+                userId: {
+                    "_id": 1,
+                    "name": 1,
+                    "surname": 1,
+                    "image": 1,
+                },
+                tweet:{
+                    _id:"$tweet._id",
+                    text:"$tweet.text",
+                    tag:"$tweet.tag",
+                    isImage:"$tweet.isImage",
+                    likes:"$tweet.likes",
+                    comments:"$tweet.comments",
+                    userTag:"$tweet.userTag",
+                    createdAt:"$tweet.createdAt",
+                    userId:{
+                        _id:"$tweetUser._id",
+                        name:"$tweetUser.name",
+                        surname:"$tweetUser.surname",
+                        image:"$tweetUser.image",}
+                },
+                 
+                },
+            }
+            ])
+
+            // console.log("COMMENT:",data);
+            
+        
+
+        res.status(200).json({data:data}) 
+    }catch(err){
+        console.log("Kullanıcıya ait gönderi yorum listesi çekilirken bir hata ile karşılaşıldı.",err);
+        res.status(404).json({message:err,succes:false})
+    }
 }
 
 //******************************TWEET COMMENT LIST********************* */
@@ -1091,6 +1319,7 @@ router.route("/shortProfile/:id").get(authControl,userShortProfile)
 router.route("/likeTweet").post(authControl,likeTweet)
 router.route("/likeTweetList").get(authControl,getUserLikeList)
 router.route("/likeTweetPostList/:id").get(authControl,getUserLikePostList)
+router.route("/commentTweetPostList/:id").get(authControl,getUserTweetCommentList)
 router.route("/dislikeTweet").post(authControl,userTweetDislike)
 router.route("/addTask").post(authControl,addTask)
 router.route("/getSingleTask/:id").get(authControl,getSingleTask)

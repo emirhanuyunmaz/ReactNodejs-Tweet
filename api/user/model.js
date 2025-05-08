@@ -33,7 +33,10 @@ const userTweetSchema = new Schema({
 },{timestamps:true})
 
 const userTweetLikeListSchema = new Schema({
-    userId:String,
+    userId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"SignUp"
+    },
     tweetList:[{type:mongoose.Types.ObjectId , ref:"Tweet"}]
 })
 
