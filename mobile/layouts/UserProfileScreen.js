@@ -2,10 +2,11 @@ import { FlatList, Image, RefreshControl, StyleSheet, Text, TextInput, Touchable
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import TweetCard from '../components/TweetCard'
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'
-import { useGetTweetPostLikeListQuery, useGetUserShortProfileQuery, useUserTweetProfileQuery } from '../store/userApi/userApiSlicer'
+import { useCommentTweetPostListQuery, useGetTweetPostLikeListQuery, useGetUserShortProfileQuery, useUserTweetProfileQuery } from '../store/userApi/userApiSlicer'
 import { useContactListQuery, useFollowUserMutation, useIsFollowUserQuery, useUnfollowUserMutation, useUserIsFollowRequestSentQuery } from '../store/contactApi/contactApiSlicer'
 import { Settings } from 'lucide-react-native'
 import { context } from '../context/context'
+import TweetCommentList from '../components/TweetCommentList'
 
 export default function UserProfileScreen() {
 
@@ -23,19 +24,21 @@ export default function UserProfileScreen() {
     text:searchText
   }
 
+  const userTweetPostLikeList = useGetTweetPostLikeListQuery(data)
+  const userTweetProfile = useUserTweetProfileQuery(data)
+  const userCommentTweetList = useCommentTweetPostListQuery(data)
   const userShortProfile = useGetUserShortProfileQuery(id)
   const getContactList = useContactListQuery(id)
-  const userTweetProfile = useUserTweetProfileQuery(data)
   const userIsFollow = useIsFollowUserQuery(id)
   const isFollowRequestSent = useUserIsFollowRequestSentQuery(id)
   const [contactUserUnfollow,responseContactUnfollow] = useUnfollowUserMutation()
   const [contactUserFollow,responseContactFollow] = useFollowUserMutation()
-  const userTweetPostLikeList = useGetTweetPostLikeListQuery(data)
 
   const [userProfileData,setUserProfilData] = useState(null)
   const [contactListData,setContactListData] = useState(null)
   const [refreshing, setRefreshing] = useState(false);
   const [tweetList,setTweetList] = useState([])
+  const [tweetCommentList,setTweetCommentList] = useState([])
   const [isUserProfile,setIsUserProfile] = useState(false)
   const [secretData,setSecretData] = useState(false)
   // console.log("USER FFLL:",userIsFollow.data.data) // Kullanıcı takip ediyor mu ?
@@ -67,6 +70,7 @@ export default function UserProfileScreen() {
     await isFollowRequestSent.refetch()
     await userTweetProfile.refetch() //Gönderi listesi
     await userTweetPostLikeList.refetch()
+    await userCommentTweetList.refetch()
     // console.log("DATA::::",data.data);
         
     // setTweetList(data.data?.data)
@@ -179,8 +183,17 @@ export default function UserProfileScreen() {
       
       setTweetList(userTweetPostLikeList.data.data)
       setIsUserProfile(userTweetProfile.data.userProfile)
+    }else if(userCommentTweetList.isSuccess && selectNumber == 2){
+      data = {
+        id:id,
+        text:searchText
+      }
+      setTweetCommentList(userCommentTweetList.data.data)
+      setIsUserProfile(userTweetProfile.data.userProfile)
     }
-  },[userTweetProfile.isSuccess,userTweetProfile.isFetching,searchText,selectNumber])
+
+
+  },[userTweetProfile.isSuccess,userTweetProfile.isFetching,searchText,selectNumber,userCommentTweetList.isSuccess,userCommentTweetList.isFetching])
 
   useEffect(() => {
 
@@ -335,7 +348,7 @@ export default function UserProfileScreen() {
                       <TouchableOpacity onPress={() => setSelectNumber(1)} style={[selectNumber == 1 && styles.selectedButton]}>
                         <Text>Beğeniler</Text>
                       </TouchableOpacity>
-                      <TouchableOpacity style={[selectNumber == 2 && styles.selectedButton]} >
+                      <TouchableOpacity onPress={() => setSelectNumber(2)} style={[selectNumber == 2 && styles.selectedButton]} >
                         <Text>Yorumlar</Text>
                       </TouchableOpacity>
                     </View>
@@ -343,10 +356,11 @@ export default function UserProfileScreen() {
                       <TextInput value={searchText} onChangeText={(e) => setSearchText(e)} style={styles.inputStyle} placeholder='Ara' />
                     </View>
                   </View>}
-                    data={tweetList}
+                    data={selectNumber != 2 ? tweetList : tweetCommentList}
                     style={{flex:1}}
+                    ListEmptyComponent={<View style={{justifyContent:"center",alignItems:"center"}}><Text>Gönderi Bulunamadı</Text></View>}
                     contentContainerStyle={{ paddingBottom: 20 }}
-                    renderItem={({item}) => <TweetCard {...item} />}
+                    renderItem={({item}) => selectNumber != 2? <TweetCard {...item}  />:<TweetCommentList tweetCommentList={item} />}
                     keyExtractor={item => item._id}
                     refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
