@@ -1,12 +1,11 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Heart, MessageCircle } from 'lucide-react-native'
 import { useNavigation } from '@react-navigation/native'
 import { useTweetLikeMutation, useUserTweetDislikeMutation } from '../store/userApi/userApiSlicer';
 import { context } from '../context/context';
 
 export default function TweetCard({_id,text,comments,createdAt,userTag,tag,likes,userId,isImage,userIsFollow}) {
-  // console.log(userIsFollow);
   
   const baseUrl = process.env.BASE_URL
   const navigation = useNavigation()

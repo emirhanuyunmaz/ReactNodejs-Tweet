@@ -10,17 +10,12 @@ const {UserContactModel} = require("../contact/model")
 const uuid = require("uuid")
 const { default: axios } = require("axios")
 const SignUpModel = require("../singnup/model")
-const { default: mongoose } = require("mongoose")
 
 
 // Kullanıcı Profil resmini güncelleme işlemi .
 const upl = async (req,res) => {
-    console.log("Kullanıcı resim değiştirmek için istek attı.");
-    
     
     try{
-        // console.log("İMAGE:",req.body.image);
-        // console.log("Kullanıcı id bilgisi::",req.headers.id);
         
         const id = req.headers.id
         const user = await SignUpModel.findById(id)
@@ -28,7 +23,6 @@ const upl = async (req,res) => {
         const imageName = user.image.split("uploads/").pop()
         
         const filePath = `/uploads/${imageName}`
-        console.log("File Path:",filePath);
         let base64Image = req.body.image.split(';base64,').pop();
         
         fs.writeFile(__dirname + "/.." + filePath ,base64Image , {encoding: 'base64'}, function(err) {
@@ -48,13 +42,10 @@ const getUserProfile = async (req,res) => {
 
     try{
         const id = req.headers.id
-        // console.log("Kullanıcı bilgisi:",req.headers);
         
-        // Populate işlemi çalışmıyor.
         const userProfile = await signupModel.findOne({_id:id})
 
         if(userProfile){
-            // console.log("Aranan Kullanıcı:",userProfile);
             
             res.status(200).json(userProfile)
         }else{
@@ -72,13 +63,8 @@ const updateUserProfile = async (req,res) => {
     try{
         const id = req.headers.id
         const body = req.body
-        console.log("BODY::",req.body);
-        
-        console.log("Update User id:",id);
 
-        const user = await signupModel.findByIdAndUpdate(id,body)
-        console.log("ARANAN KULLANICI::",user);
-        
+        const user = await signupModel.findByIdAndUpdate(id,body)        
 
         res.status(201).json({message:"succes",succes:true})
 
@@ -94,8 +80,6 @@ const updateUserProfile = async (req,res) => {
 // *****************GET USER IMAGE***************** //
 //Kullanıcı Profil Resmini Çekme İşlemi
 const getUserImage = async(req,res) => {
-    // console.log("******************************");
-    // console.log("RESİM ÇEKME İŞLEMİ :",req.params);
     
     try{
         const name = req.params.name
@@ -120,21 +104,13 @@ const addTweet = async (req,res) => {
         const text = req.body.text
         const userTag = req.body.userTag
         const isImage = req.body.isImage
-        console.log("İmage: ",req.body);
-        // console.log("LLLL:",text);
-        
 
         if(text && !isImage){
-            // console.log("USER TAG:",userTag)
-            // console.log("TEXT:",text);
                         
             // Veriyi flask kullanarak oluşturlan bir api den çekme işlemi.
             const predictionResponse = await axios.post("http://127.0.0.1:5000/predict",{
                 text:text
-            })
-    
-            // console.log("GELEN VERİİ:::",predictionResponse.data.prediction);
-            
+            })            
             
             const newTweet = new TweetModel({
                 userId:id,
@@ -147,7 +123,6 @@ const addTweet = async (req,res) => {
             res.status(200).json({message:"Succes"})
         }
         else if(text && isImage){
-            console.log("Resim gelimiş");
 
             const imageName = uuid.v4()
             const filePath = `/uploads/${imageName}.png`
@@ -209,13 +184,11 @@ const deleteTweet = async (req,res) => {
 // ******************************GET TWEET LIST*************************** //
 //Tüm tweet listesini çekme işlemi. 
 const getTweetList = async (req,res) => {
-    // console.log("TWEETDATA:::",typeof(req.headers.is_followed_data));
     
     try{    
         const followedData = req.headers.is_followed_data
         const userId = req.headers.id
 
-               
         if(followedData == "true"){
             const contactData = await UserContactModel.findOne({userId:userId})
             
@@ -224,11 +197,7 @@ const getTweetList = async (req,res) => {
             // console.log("BEĞENİ LİST::",userLike);
             let liste =contactData?.followed ? contactData?.followed : [] //Kullanıcı gönderi gösterme listesi.
             
-            // liste.push()
             liste.push(new ObjectId(userId))
-
-            console.log("LİST:::",liste);
-
             
             const data = await TweetModel.aggregate([
                 // 1. `userId` ile `SignUp` bilgilerini birleştir
@@ -358,8 +327,6 @@ const getTweetList = async (req,res) => {
                 },
                 { $sort: { createdAt: -1 } }, // En yeni tweetler önce gelir
               ]);
-            // console.log(data);
-            console.log("Kullanıcı tweet listesi çekildi.");
             
             res.status(200).json({tweetList:data})
         }
@@ -419,21 +386,29 @@ const getUserLikeList =async (req,res) => {
 // Kullanıcı gönderi beğeni listesi .
 const getUserLikePostList = async (req,res) => {
     try{
-        // console.log("::AADDDDAA::Tweeet like list"); 
         
         const id = req.params.id
         const text = req.headers.text
+        const userId = req.headers.id
 
-        // console.log("TTAADD:TEXT:",text );
+        const contactData = await UserContactModel.findOne({userId:userId})
+        
+        const tweetLikeListData = await TweetLikeListModel.findOne({userId:userId})
+        const userLike = tweetLikeListData ? tweetLikeListData.tweetList : []
+        // console.log("BEĞENİ LİST::",userLike);
+        let liste =contactData?.followed ? contactData?.followed : [] //Kullanıcı gönderi gösterme listesi.
+        
+        liste.push(new ObjectId(userId))
+
         if(!text){
-            // console.log(":: ARAMA YAPILMAMIŞ :::",id);
 
             const data = await TweetLikeListModel.aggregate([
             // 1. Yalnızca bu kullanıcıya ait yorumları getir
             // 2. userId → SignUp
             {
                 $match: {
-                    "userId": new ObjectId(id)
+                    "userId": new ObjectId(id),
+                    
                 }
             },
             {
@@ -456,6 +431,15 @@ const getUserLikePostList = async (req,res) => {
             },
             {
                 $unwind: "$userId"
+            },
+
+            {
+                $match:{
+                    $or: [
+                      { 'userId.profilePrivate': false }, 
+                      { "userId._id": { $in: liste } },
+                    ],
+                }
             },
 
             // 4. Gerekli alanları seç
@@ -522,6 +506,15 @@ const getUserLikePostList = async (req,res) => {
                       "tweet.text": { $regex: `${text}`, $options: "i" }
                     }
                 },
+                
+                {
+                $match:{
+                    $or: [
+                      { 'userId.profilePrivate': false }, 
+                      { "userId._id": { $in: liste } },
+                    ],
+                }
+                },
     
                 // 4. Gerekli alanları seç
                 {
@@ -580,7 +573,6 @@ const userTweetDislike = async (req,res) => {
 // **********************COMMENT TWEET******************** //
 //Yorum ekleme ve bunların veritabanına kaydedilmesi işlemi.
 const commentTweet = async(req,res) => {
-    console.log("Yorum ekleme için istek atıldı.");
     
     try{
         const userId = req.headers.id
@@ -592,7 +584,6 @@ const commentTweet = async(req,res) => {
         const userCommentList = await TweetCommentListModel.findOne({userId:userId})        
                 
         if(!userCommentList){
-            console.log("Daha önce bir yorum yapmamış");
 
             const newComment = new TweetCommentModel({
                 text:text,
@@ -612,7 +603,7 @@ const commentTweet = async(req,res) => {
             await TweetModel.findByIdAndUpdate(tweetId,{$push : {comments:newC._id}})
             
         }else{
-            console.log("Daha önce bir yorum yapmış.");
+         
             const newComment = new TweetCommentModel({
                 text:text,
                 userId:userId,
@@ -640,9 +631,19 @@ const commentTweet = async(req,res) => {
 const getUserTweetCommentList = async (req,res) => {
     try{
         // console.log(":ASDDSA: Kullanici tweet yorum listesi..");
-        
+        const userId = req.headers.id
         const id = req.params.id
         const text = req.headers.text ?? ""
+        
+        // console.log("USER LIKE::",userLike);
+        const contactData = await UserContactModel.findOne({userId:userId})
+        
+        const tweetLikeListData = await TweetLikeListModel.findOne({userId:userId})
+        const userLike = tweetLikeListData ? tweetLikeListData.tweetList : []
+        // console.log("BEĞENİ LİST::",userLike);
+        let liste =contactData?.followed ? contactData?.followed : [] //Kullanıcı gönderi gösterme listesi.
+        
+        liste.push(new ObjectId(userId))
 
         const data = await TweetCommentModel.aggregate([
             // 1. Yalnızca bu kullanıcıya ait yorumları getir
@@ -695,6 +696,15 @@ const getUserTweetCommentList = async (req,res) => {
                 }
             },
 
+            {
+                $match:{
+                    $or: [
+                      { 'tweetUser.profilePrivate': false }, 
+                      { "tweetUser._id": { $in: liste } },
+                    ],
+                }
+            },
+            
             // 4. Gerekli alanları seç
             {
                 $project: {
@@ -720,16 +730,15 @@ const getUserTweetCommentList = async (req,res) => {
                         _id:"$tweetUser._id",
                         name:"$tweetUser.name",
                         surname:"$tweetUser.surname",
-                        image:"$tweetUser.image",}
+                        image:"$tweetUser.image",
+                    },
+                    userIsFollow: { $in: [id, "$tweet.likes"] }
+                   
                 },
                  
                 },
             }
             ])
-
-            // console.log("COMMENT:",data);
-            
-        
 
         res.status(200).json({data:data}) 
     }catch(err){
@@ -755,10 +764,7 @@ const getTweetCommentList = async (req,res) => {
                 }
             }
         ])
-        // const commentsLLL = await TweetCommentModel.find({tweetId:tweetId})
-        console.log("TWEET TAG::",commentTagList);
-        
-        
+                
         res.status(201).json({message:"Succes",succes:true,data:data.comments,commentTagList:commentTagList})
 
     }catch(err){
@@ -773,8 +779,7 @@ const singleTweet = async (req,res) => {
     try{
         const tweetId = req.params.id
         const userId = req.headers.id
-        console.log("**********************************************************************")
-        console.log("PARAMS IDIDIDI:",userId)
+        
         let tweet_id = new ObjectId(tweetId);
         // const tweetData = await TweetModel.findById(tweetId).populate("userId","name surname image")
 
@@ -835,9 +840,7 @@ const singleTweet = async (req,res) => {
             }  
         }
         ])
-        
-        console.log("L:",tweetData);
-        
+                
         res.status(201).json({succes:true,message:"Succes",data:tweetData[0] ?? null })
 
     } catch(err) {
@@ -1265,11 +1268,10 @@ const updateTask = async (req,res) => {
 }
 
 const taskImageUpdate = async (req,res) => {
-    console.log("Task resim güncelleme işlemi");
     
     try{
         const taskId = req.body.taskId
-        // console.log("RESİM VAR MI:",req.body.image);
+
         if(req.body.image){
             const updateImageName =  uuid.v4()
 

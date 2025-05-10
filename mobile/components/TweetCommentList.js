@@ -11,7 +11,7 @@ export default function TweetCommentList({tweetCommentList}) {
     <View>
       <TweetCard {...tweetCommentList.tweet} />
       <View style = {styles.tweetCommentContainer}>
-        <Text><CornerDownRight size={48} color={"black"}/></Text>
+        <Text><CornerDownRight size={32} color={"black"}/></Text>
         <View style={styles.tweetCommentCard} >
             <CommentCard createAt={tweetCommentList.createAt} tag={tweetCommentList.tag} text={tweetCommentList.text} userId={tweetCommentList.userId} />
         </View>
