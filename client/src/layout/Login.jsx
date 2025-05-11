@@ -1,4 +1,3 @@
-import axios from "axios"
 import { useEffect, useState } from "react"
 import {  useNavigate } from "react-router-dom"
 import Cookies from "js-cookie"
@@ -60,9 +59,10 @@ export default function Login(){
         <div className="flex flex-col mx-5 md:mx-0 w-full md:w-1/3 ">
             <h1 className="text-center text-2xl mb-5">Login</h1>
             <input value={email} onChange={(e) => setEmail(e.target.value)} className="outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="email" placeholder="Email"/>
-            <input value={password} onChange={(e) => setPassword(e.target.value)} className="outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="password" placeholder="Password" />
-            <button onClick={loginOnSubmit} className="bg-blue-500 py-2 rounded-xl text-white hover:bg-blue-600 duration-300 mb-5">Login</button>
-            <a className="w-full text-center text-blue-500 hover:text-blue-700 duration-300" href="/signUp">Sign Up</a>
+            <input value={password} onChange={(e) => setPassword(e.target.value)} className="outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="password" placeholder="Şifre" />
+            <a href="/resetPassword" className="mb-3 ms-3 text-blue-400 hover:text-blue-600 duration-300" >Şifemi Unuttum</a>
+            <button onClick={loginOnSubmit} className="bg-blue-500 py-2 rounded-xl text-white hover:bg-blue-600 duration-300 mb-5">Giriş Yap</button>
+            <a className="w-full text-center text-blue-500 hover:text-blue-700 duration-300" href="/signUp">Üye Ol</a>
         </div>
     </div>)
 }

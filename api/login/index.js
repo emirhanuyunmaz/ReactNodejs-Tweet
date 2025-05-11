@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router()
-const userSignUpModel = require("../singnup/model")
+const {SignUpModel} = require("../singnup/model")
 const jwt = require('jsonwebtoken')
 
 const createToken = (id) => {
@@ -16,7 +16,7 @@ const createRefreshToken = (id) => {
 const userLogin = async (req,res) => {
     
     try{
-        const user = await userSignUpModel.findOne({email : req.body.email , password : req.body.password})
+        const user = await SignUpModel.findOne({email : req.body.email , password : req.body.password})
         console.log("ARANAN KULLANICI :",user);
         if(user === null){
             res.status(404).json({"message":"Kullanıcı bulunamadı."})

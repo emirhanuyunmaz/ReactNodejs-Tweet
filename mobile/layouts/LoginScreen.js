@@ -46,7 +46,7 @@ export default function LoginScreen() {
   return (
     <View style={styles.container} >
       <View >
-        <Text style={styles.titleStyle} >Login</Text>
+        <Text style={styles.titleStyle} >Giriş Yap</Text>
       </View>
       <View style={styles.inputGroupStyle} >
         <View style={styles.inputContainer}>

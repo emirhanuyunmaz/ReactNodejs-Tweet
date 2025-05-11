@@ -2,7 +2,7 @@ const express = require("express")
 const router = express.Router()
 
 const {UserContactModel,UserNotificationModel} = require("./model")
-const SignUpModel = require("../singnup/model")
+const {SignUpModel} = require("../singnup/model")
 const authControl = require("../middleware/auth")
 /**
  * takip isteği atma işlemi kullanıcı profil kapalı ise 

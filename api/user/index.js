@@ -3,13 +3,12 @@ const router = express.Router()
 const path = require("path")
 const fs = require("fs")
 const ObjectId = require('mongoose').Types.ObjectId //Buradaki işlem agregate de kullanmak için gerekli
-const signupModel = require("../singnup/model") //Kullanıcı kayıt olurken kullanılan model
+const {SignUpModel} = require("../singnup/model") //Kullanıcı kayıt olurken kullanılan model
 const authControl = require("../middleware/auth") //Kullanıcı token bilgisi ile giriş yapıp yapmadığını tespit etme.
 const {TweetModel,TweetLikeListModel,TweetCommentListModel,TweetCommentModel,TaskModel} = require("./model")
 const {UserContactModel} = require("../contact/model")
 const uuid = require("uuid")
 const { default: axios } = require("axios")
-const SignUpModel = require("../singnup/model")
 
 
 // Kullanıcı Profil resmini güncelleme işlemi .
@@ -43,7 +42,7 @@ const getUserProfile = async (req,res) => {
     try{
         const id = req.headers.id
         
-        const userProfile = await signupModel.findOne({_id:id})
+        const userProfile = await SignUpModel.findOne({_id:id})
 
         if(userProfile){
             
@@ -64,7 +63,7 @@ const updateUserProfile = async (req,res) => {
         const id = req.headers.id
         const body = req.body
 
-        const user = await signupModel.findByIdAndUpdate(id,body)        
+        const user = await SignUpModel.findByIdAndUpdate(id,body)        
 
         res.status(201).json({message:"succes",succes:true})
 
@@ -951,7 +950,7 @@ const userShortProfile = async (req,res) => {
         // console.log("Kullanıcı id:",loginUserId != "undefined");
         let userData = null
         if(loginUserId != "undefined"){
-            userData = await signupModel.findById(loginUserId).select("name surname description image email profilePrivate createdAt")
+            userData = await SignUpModel.findById(loginUserId).select("name surname description image email profilePrivate createdAt")
         }
         res.status(201).json({message:"Succes",succes:true,data:userData,isUserProfile:loginUserId == id})
     }catch(err) {

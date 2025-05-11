@@ -1,6 +1,6 @@
 const express = require("express");
 const authControl = require("../middleware/auth");
-const SignUpModel = require("../singnup/model");
+const {SignUpModel} = require("../singnup/model");
 const { MessageModel } = require("./model");
 const router = express.Router()
 

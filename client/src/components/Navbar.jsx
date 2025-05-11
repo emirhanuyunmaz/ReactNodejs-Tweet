@@ -75,7 +75,7 @@ export default function Navbar(){
         {/* {token && !searchControl &&<div>
             <button onClick={ () => {setSearchControl(true); document.body.style.overflow = "hidden" } } className="border-2  hover:bg-blue-400 px-8 py-1 rounded-xl hover:shadow-xl duration-300" >Kullanıcı Ara</button>
         </div>} */}
-        {!token && <a href="/login">Login</a>}
+        {!token && <a href="/login">Giriş Yap</a>}
         
         {/* LEFT BAR EKLENCEK */}
         {/* {token &&<div>

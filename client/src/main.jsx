@@ -22,6 +22,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import TweetTagGroup from './layout/TweetTagGroup.jsx';
 import UserTags from './layout/UserTags.jsx';
 import Message from './layout/Message.jsx';
+import ResetPassword from './layout/ResetPassword.jsx';
 
 
 const router = createBrowserRouter([
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
   {
     path: "/signup",
     element: <Signup/>,
+  },
+  {
+    path: "/resetPassword",
+    element: <ResetPassword/>,
   },
   {
     path: "/tweet",

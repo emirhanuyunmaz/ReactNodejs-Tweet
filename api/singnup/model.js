@@ -15,6 +15,13 @@ const signUpShema = new Schema({
 },{timestamps:true})
 
 
+const resetPasswordCodeSchema = new Schema({
+    email:String,
+    code:Number
+},{timestamps:true})
+
 const SignUpModel = mongoose.model("SignUp",signUpShema)
 
-module.exports = SignUpModel
+const ResetPasswordCodeModel = mongoose.model("ResetPasswordCode",resetPasswordCodeSchema)
+
+module.exports = {SignUpModel,ResetPasswordCodeModel}
