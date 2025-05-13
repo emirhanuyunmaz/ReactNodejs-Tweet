@@ -36,7 +36,7 @@ export default function TaskListScreen() {
 
   return (
     <View style={styles.container} >
-      <Text>TaskListScreen</Text>
+      {/* <Text>TaskListScreen</Text> */}
       <View style={styles.taskListContainerStyle}>
         <FlatList
           style={{flex:1,gap:10}}
@@ -46,7 +46,8 @@ export default function TaskListScreen() {
           keyExtractor={item => item._id}
           refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          } 
+          }
+          ListEmptyComponent={<Text style={styles.emptyTextStyle} >Herhangi Bir Task Kaydedilmemiş</Text>}
         />
         {/* <TaskCard  />
         <TaskCard  /> */}
@@ -64,5 +65,10 @@ const styles = StyleSheet.create({
     // flexDirection:"row",
     flex:1,
     gap:10
+  },
+  emptyTextStyle:{
+    textAlign:"center",
+    fontSize:24,
+    marginVertical:10
   }
 })

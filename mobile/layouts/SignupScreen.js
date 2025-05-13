@@ -58,8 +58,8 @@ export default function SignupScreen() {
 
       if(res.status === 201){
         Toast.show({
-                type: 'success',
-                text1: 'Kullanıcı Kayıt Oldu',
+          type: 'success',
+          text1: 'Kullanıcı Kayıt Oldu',
         });
         navigation.goBack()
     }

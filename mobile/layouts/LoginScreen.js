@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native'
-import React, { useContext } from 'react'
+import React, { useContext, useLayoutEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from 'zod';
@@ -18,6 +18,29 @@ export default function LoginScreen() {
   const user_contex = useContext(context)
   const [login,resLogin] = useUserLoginMutation()
   const navigation = useNavigation()
+
+  const [isLoading,setIsLoading] = useState(false)
+  const [loginControl,setLoginControl] = useState(false)
+
+  async function isLogin(){
+    setIsLoading(true)
+    const data = await AsyncStorage.getItem("access_token")
+    console.log(data);
+    if(data == null ){
+      console.log("Giriş yok");
+      setLoginControl(false)
+    } else{
+      console.log("giriş var");
+      setLoginControl(true)
+      navigation.navigate("Tab")
+    }
+    setIsLoading(false)
+  }
+
+  useLayoutEffect(() => {
+    isLogin()
+  },[])
+
 
   const {
     control,

@@ -92,20 +92,20 @@ function LoggedIn(){
       <Stack.Navigator screenOptions={{contentStyle:{
         backgroundColor:"#fff"
       }}} >
-        <Stack.Screen options={{headerShown:false}}  name="Tab" component={TabNavigate} />
-        <Stack.Screen name="SingleTweet" component={SingleTweetScreen} />
-        <Stack.Screen name="Tasks" component={TaskListScreen} />
-        <Stack.Screen name="AddTweet" component={AddTweetScreen} />
-        <Stack.Screen name="Settings" component={SettingsScreen} />
-        <Stack.Screen name="TaskUpdate" component={TaskUpdateScreen} />
-        <Stack.Screen options={{headerShown:false}} name="Message" component={MessageScreen} />
-        <Stack.Screen name="UserProfile" component={UserProfileScreen} />
-        <Stack.Screen name="Comment" component={CommentScreen} />
-        <Stack.Screen name="TagTweetList" component={TagTweetListScreen} />
-        <Stack.Screen name="UserFollowerList" component={UserFollowerListScreen} />
-        <Stack.Screen name="UserFollowedList" component={UserFollowedListScreen} />
         <Stack.Screen options={{headerShown:false}} name="Login" component={LoginScreen} />
         <Stack.Screen options={{headerShown:false}}  name="Signup" component={SignupScreen} />
+        <Stack.Screen options={{headerShown:false}}  name="Tab" component={TabNavigate} />
+        <Stack.Screen options={{title:"Tweet"}} name="SingleTweet" component={SingleTweetScreen} />
+        <Stack.Screen options={{title:"Task Listesi"}} name="Tasks" component={TaskListScreen} />
+        <Stack.Screen options={{title:"Tweet Ekle"}} name="AddTweet" component={AddTweetScreen} />
+        <Stack.Screen options={{title:"Ayarlar"}} name="Settings" component={SettingsScreen} />
+        <Stack.Screen options={{title:"Task Güncelleme"}} name="TaskUpdate" component={TaskUpdateScreen} />
+        <Stack.Screen options={{headerShown:false}} name="Message" component={MessageScreen} />
+        <Stack.Screen options={{title:"Kullanıcı Profili"}} name="UserProfile" component={UserProfileScreen} />
+        <Stack.Screen options={{title:"Yorum Yap"}} name="Comment" component={CommentScreen} />
+        <Stack.Screen options={{title:"Etiket"}} name="TagTweetList" component={TagTweetListScreen} />
+        <Stack.Screen options={{title:"Kullanıcı Takipçi Listesi"}} name="UserFollowerList" component={UserFollowerListScreen} />
+        <Stack.Screen options={{title:"Kullanıcı Takip Listesi"}} name="UserFollowedList" component={UserFollowedListScreen} />
         <Stack.Screen options={{title:"Şifre Yenile"}}  name="ResetPassword" component={ResetPassword} />
       </Stack.Navigator>
     </NavigationContainer>
@@ -177,11 +177,11 @@ export default function App() {
 
   console.log(baseUrl);
 
-  if(loginControl){
-    return (isLoading ? <LoadingComponent/> :<LoggedIn/>)
-  } else{
-    return ( isLoading ? <LoadingComponent/> : <NotLoggedIn/>)
-  }
+  return ( isLoading ? <LoadingComponent/> : <LoggedIn/>)
+  // if(loginControl){
+  //   return (isLoading ? <LoadingComponent/> :<LoggedIn/>)
+  // } else{
+  // }
 
 }
 

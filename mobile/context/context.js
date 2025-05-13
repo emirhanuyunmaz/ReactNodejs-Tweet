@@ -179,7 +179,7 @@ function ContextProvider({children}){
       },[token])
 
 
-    return (<context.Provider value={{connectSocket,tweetLikeSocket,tweetUnlikeSocket,tweetCommentSocket,userFollowSocket,userUnfollowSocket,notificationLength,setNotificationLength,userDirectFollowSocket,tokenSave,tokenClear}} >
+    return (<context.Provider value={{connectSocket,tweetLikeSocket,tweetUnlikeSocket,tweetCommentSocket,userFollowSocket,userUnfollowSocket,notificationLength,setNotificationLength,userDirectFollowSocket,tokenSave,tokenClear,token}} >
         {children}
     </context.Provider>)
 }
