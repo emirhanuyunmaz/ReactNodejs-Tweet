@@ -3,6 +3,7 @@ import { useGetUserProfileQuery, useUpdateUserProfileMutation } from "../store/u
 import { toast, Zoom } from "react-toastify"
 import axios from "axios"
 import Cookies from "js-cookie"
+import { Eye, EyeOff } from "lucide-react"
 
 
 export default function Profile(){
@@ -19,6 +20,7 @@ export default function Profile(){
     const [newImage,setNewImage] = useState()
     const [changeImage,setChangeImage] = useState(false)
     const [profilePrivate,setProfilePrivate] = useState(false)
+    const [passwordControl,setPasswordControl] = useState(true)
 
     // Metinleri güncelleme sonucu toast mesaj
     const showToastSucces = () => toast.success('Güncelleme Başarılı', {
@@ -160,7 +162,10 @@ export default function Profile(){
             </div>
             <div className="flex flex-col gap-1">
                 <label className="font-bold ms-3">Password</label>
-                <input value={password} onChange={(e) => setPassword(e.target.value)} className="outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="text" placeholder="Password" />
+                <div className="flex px-4 py-2 border-2 mb-5 rounded-xl" >
+                    <input value={password} onChange={(e) => setPassword(e.target.value)}  type={`${passwordControl ? "password":"text"}`} placeholder="Password" className="w-full outline-none" />
+                    <button onClick={() => setPasswordControl(!passwordControl)} >{passwordControl ? <Eye/> : <EyeOff/>}</button>
+                </div>
             </div>
             <div className="flex flex-col gap-1">
                 <label className="font-bold ms-3">Description</label>

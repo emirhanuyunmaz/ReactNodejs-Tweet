@@ -1,5 +1,5 @@
 import axios from "axios"
-import { Camera, RefreshCw, Trash2 } from "lucide-react"
+import { Camera, Eye, EyeOff, RefreshCw, Trash2 } from "lucide-react"
 import { useState } from "react"
 import ReactImageUploading from "react-images-uploading";
 import { useNavigate } from "react-router-dom";
@@ -17,6 +17,8 @@ export default function Signup(){
     const [passwordAgain,setPasswordAgain] = useState("")
     const [description , setDescription] = useState()
     const [image,setImage] = useState([])
+    const [passwordControl,setPasswordControl] = useState(true)
+    const [passwordAgainControl,setPasswordAgainControl] = useState(true)
 
     const maxNumber = 1;
 
@@ -125,12 +127,18 @@ export default function Signup(){
             </div>
             <div className="flex flex-col gap-1">
                 <label className="font-bold ms-3">Password</label>
-                <input value={password} onChange={(e) => setPassword(e.target.value)} className="outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="password" placeholder="Password" />
+                <div className="flex outline-none px-4 py-2 border-2 mb-5 rounded-xl"  >
+                    <input value={password} onChange={(e) => setPassword(e.target.value)} type={`${passwordControl ?"password" : "text"}`} placeholder="Password" className="w-full outline-none" />
+                    <button onClick={() => setPasswordControl(!passwordControl)} >{passwordControl ? <Eye/> : <EyeOff/>}</button>
+                </div>
             </div>
 
             <div className="flex flex-col gap-1">
                 <label className="font-bold ms-3">Password Again</label>
-                <input value={passwordAgain} onChange={(e) => setPasswordAgain(e.target.value)} className="outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="password" placeholder="Password Again" />
+                <div className="flex outline-none px-4 py-2 border-2 mb-5 rounded-xl" >
+                    <input value={passwordAgain} onChange={(e) => setPasswordAgain(e.target.value)}  type={`${passwordAgainControl ? "password":"text"}`} placeholder="Password Again" className="outline-none w-full" />
+                    <button onClick={() => setPasswordAgainControl(!passwordAgainControl)} >{passwordAgainControl ? <Eye/> : <EyeOff/>}</button>
+                </div>
             </div>
             <div className="flex flex-col gap-1">
                 <label className="font-bold ms-3">Description</label>

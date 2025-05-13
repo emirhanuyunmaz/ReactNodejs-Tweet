@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as ImagePicker from "expo-image-picker"
 import axios from 'axios';
 import Toast from 'react-native-toast-message';
+import { Eye, EyeOff } from 'lucide-react-native';
 
 const schema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters long" }),
@@ -33,6 +34,10 @@ export default function SignupScreen() {
   const navigation = useNavigation() 
 
   const [image,setImage] = useState(null)
+
+  const [passwordControl,setPasswordControl] = useState(true)
+  const [passwordAgainControl,setPasswordAgainControl] = useState(true)
+
 
   function loginPage(){
     navigation.goBack();
@@ -166,39 +171,54 @@ export default function SignupScreen() {
 
           <View>
             <Text style={styles.labelStyle} >Password</Text>
-            <Controller
-              control={control}
-              name="password"
-              
-              render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                  style={[styles.inputStyle,errors.password && styles.errorBorderStyle]}
+            <View style={[styles.inputStyle,errors.password && styles.errorBorderStyle,{flexDirection:"row",alignItems:"center"}]}>
+              <Controller
+                control={control}
+                name="password"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                  style={{flex:1}}
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
                   placeholder="Password"
-              />
-              )}
-            />
+                  secureTextEntry={passwordControl}
+                  />
+                )}
+                />
+                <TouchableOpacity onPress={() => setPasswordControl(!passwordControl)} >
+                  <Text>
+                    {passwordControl ? <Eye color={`black`} size={24} />:<EyeOff color={`black`} size={24} />}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             {errors.password && <Text style={styles.errorMessageStyle} >{errors.password.message}</Text>}
           </View>
           
           <View>
             <Text style={styles.labelStyle} >Password Tekrar </Text>
-            <Controller
-              control={control}
-              name="passwordAgain"
-              
-              render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                  style={[styles.inputStyle,errors.passwordAgain && styles.errorBorderStyle]}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  placeholder="Password"
+            <View style={[styles.inputStyle,errors.passwordAgain && styles.errorBorderStyle,{flexDirection:"row",alignItems:"center"}]} >
+              <Controller
+                control={control}
+                name="passwordAgain"
+                
+                render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                    style={{flex:1}}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                    placeholder="Password"
+                    secureTextEntry={passwordAgainControl}
+                />
+                )}
               />
-              )}
-            />
+                <TouchableOpacity onPress={() => setPasswordAgainControl(!passwordAgainControl)} >
+                  <Text>
+                    {passwordAgainControl ? <Eye color={`black`} size={24} />:<EyeOff color={`black`} size={24} />}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             {errors.passwordAgain && <Text style={styles.errorMessageStyle} >{errors.passwordAgain.message}</Text>}
           </View>
           
@@ -278,7 +298,8 @@ const styles = StyleSheet.create({
     backgroundColor:"white",
     borderColor:"gray",
     borderWidth:2,
-    borderRadius:10
+    borderRadius:10,
+    paddingHorizontal:16
   },
   errorMessageStyle:{
     fontSize:12,

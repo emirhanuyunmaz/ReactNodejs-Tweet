@@ -1,10 +1,8 @@
 
 
 export default function TagsCard({tagList}){
-  const totalCount = tagList.reduce((sum, item) => sum + item.count, 0) ;
+    const totalCount = tagList.reduce((sum, item) => sum + item.count, 0) ;
 
-    
-    
     return (<>
         {/* Duygular */}
         <div className=" bg-blue-100 p-5 rounded-xl">

@@ -7,6 +7,7 @@ import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-nativ
 import { z } from 'zod';
 import { useChangePasswordMutation } from '../store/userApi/userApiSlicer';
 import Toast from 'react-native-toast-message';
+import { Eye, EyeOff } from 'lucide-react-native';
 
 const schema = z.object({
   code: z.string().min(2, { message: "Kodu giriniz" }),
@@ -26,6 +27,8 @@ export default function ChangePassword() {
     const navigation = useNavigation()
     const [email,setEmail] = useState("")
     const [changePassword,resChangePassword] = useChangePasswordMutation()
+    const [passwordControl,setPasswordControl] = useState(true)
+    const [passwordAgainControl,setPasswordAgainControl] = useState(true)
     const {
         control,
         handleSubmit,
@@ -89,38 +92,54 @@ export default function ChangePassword() {
    
             <View style={styles.inputContainerStyle} >
                 <Text style={styles.labelStyle} >Şifre</Text>
-                <Controller
-                control={control}
-                name="password"
-                render={({ field: { onChange, onBlur, value } }) => (
-                    <TextInput
-                    style={[styles.inputStyle,errors.password && styles.errorBorderStyle]}
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    value={value}
-                    placeholder="Şifre"
+                <View style={[styles.inputStyle,errors.password && styles.errorBorderStyle,{flexDirection:"row",alignItems:"center"}]}>
+                    <Controller
+                    control={control}
+                    name="password"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                        <TextInput
+                        style={{flex:1}}
+                        onBlur={onBlur}
+                        onChangeText={onChange}
+                        value={value}
+                        placeholder="Şifre"
+                        secureTextEntry={passwordControl}
+                        />
+                    )}
                     />
-                )}
-                />
+
+                    <TouchableOpacity onPress={() => setPasswordControl(!passwordControl)} >
+                        <Text>
+                            {passwordControl ? <Eye color={`black`} size={24} /> : <EyeOff color={`black`} size={24} />} 
+                        </Text>
+                    </TouchableOpacity>
+                </View>
             {errors.password&& <Text style={styles.errorTextStyle} >Şifre Giriniz</Text>}
             </View>
 
             <View style={styles.inputContainerStyle} >
                 <Text style={styles.labelStyle} >Şifre Tekrar</Text>
-
-                <Controller
-                control={control}
-                name="passwordAgain"
-                render={({ field: { onChange, onBlur, value } }) => (
-                    <TextInput
-                    style={[styles.inputStyle,errors.passwordAgain && styles.errorBorderStyle]}
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    value={value}
-                    placeholder="Şifre Tekrar"
+                <View style={[styles.inputStyle,errors.passwordAgain && styles.errorBorderStyle,{flexDirection:"row",alignItems:"center"}]} >
+                    <Controller
+                    control={control}
+                    name="passwordAgain"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                        <TextInput
+                        style={{flex:1}}
+                        onBlur={onBlur}
+                        onChangeText={onChange}
+                        value={value}
+                        placeholder="Şifre Tekrar"
+                        secureTextEntry={passwordAgainControl}
+                        />
+                    )}
                     />
-                )}
-                />
+                    <TouchableOpacity onPress={() => setPasswordAgainControl(!passwordAgainControl)} >
+                        <Text>
+                            {passwordAgainControl ? <Eye color={`black`} size={24} /> : <EyeOff color={`black`} size={24} />}
+                        </Text>
+                    </TouchableOpacity>
+                </View>
             {errors.passwordAgain&& <Text style={styles.errorTextStyle} >{errors.passwordAgain.message}</Text>}
             </View>
             <View>

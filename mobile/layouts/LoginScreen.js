@@ -7,6 +7,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useUserLoginMutation } from '../store/userApi/userApiSlicer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { context } from '../context/context';
+import { Eye, EyeOff } from 'lucide-react-native';
 
 const schema = z.object({
   email: z.string().min(2, { message: "Email must be at least 2 characters long" }),
@@ -21,6 +22,7 @@ export default function LoginScreen() {
 
   const [isLoading,setIsLoading] = useState(false)
   const [loginControl,setLoginControl] = useState(false)
+  const [passwordControl,setPasswordControl] = useState(true)
 
   async function isLogin(){
     setIsLoading(true)
@@ -95,20 +97,27 @@ export default function LoginScreen() {
 
         <View style={styles.inputContainer}>
           <Text style={styles.labelStyle} >Password</Text>
-          <Controller
-            control={control}
-            name="password"
-            render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-                style={[styles.inputStyle,errors.email && styles.errorBorderStyle]}
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                secureTextEntry={true}
-                placeholder='Password'
-            />
-            )}
-        />
+          <View style={[styles.inputStyle,errors.email && styles.errorBorderStyle,{flexDirection:"row",alignItems:"center"}]}>
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                  style={{flex:1}}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  secureTextEntry={passwordControl}
+                  placeholder='Password'
+              />
+              )}
+          />
+          <TouchableOpacity onPress={() => setPasswordControl(!passwordControl)} >
+            <Text>
+              {passwordControl ? <Eye color={`black`} size={24} /> : <EyeOff color={`black`} size={24} />}
+            </Text>
+          </TouchableOpacity>
+        </View>
         {errors.password && <Text style={styles.errorMessageStyle} >Şifre Giriniz</Text>}
 
         </View>

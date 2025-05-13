@@ -2,12 +2,17 @@ import { useForm } from "react-hook-form";
 import { useChangePasswordMutation } from "../store/userApi/userApiSlicer";
 import { useNavigate } from "react-router-dom";
 import { toast, Zoom } from "react-toastify";
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 
 export default function ChangePassword(){
     const navigate = useNavigate()
     const [changePassword,resChangePassword] = useChangePasswordMutation()
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
+
+    const [passwordControl,setPasswordControl] = useState(true)
+    const [passwordAgainControl,setPasswordAgainControl] = useState(true)
 
 
     const showToastSucces = () => toast.success('İşlem Başarılı', {
@@ -68,17 +73,23 @@ export default function ChangePassword(){
             </div>
             <div className="flex flex-col gap-1">
                 <label className="ms-2 font-bold">Şifre</label>
-                <input placeholder="Şifre" {...register("password", { required:"Lütfen yeni şifrenizi giriniz." })} className="outline-none border-2  rounded-xl px-3 py-2" />
+                <div className="flex border-2  rounded-xl px-3 py-2">
+                    <input placeholder="Şifre" type={`${passwordControl ? "password" : "text"}`} {...register("password", { required:"Lütfen yeni şifrenizi giriniz." })} className="outline-none w-full" />
+                    <button onClick={() => setPasswordControl(!passwordControl)} >{passwordControl ? <Eye/> : <EyeOff/>}</button>
+                </div>
                 {errors.password && <p className="text-red-600 ms-2 text-sm ">{errors.password.message}</p>}
 
             </div>
             <div className="flex flex-col gap-1">
                 <label className="ms-2 font-bold">Şifre Tekrar</label>
-                <input placeholder="Şifre Tekrar" {...register("passwordAgain", { required:"Lütfen şifrenizi Tekrar giriniz.",validate: (val) => {
-                    if (watch('password') != val) {
-                        return "Şifreler eşleşmiyor";
-                    }}}
-                )} className="outline-none border-2  rounded-xl px-3 py-2" />
+                <div className="flex border-2  rounded-xl px-3 py-2" > 
+                    <input placeholder="Şifre Tekrar" type={`${passwordAgainControl ? "password":"text"}`} {...register("passwordAgain", { required:"Lütfen şifrenizi Tekrar giriniz.",validate: (val) => {
+                        if (watch('password') != val) {
+                            return "Şifreler eşleşmiyor";
+                        }}}
+                    )} className="outline-none w-full" />
+                    <button onClick={() => setPasswordAgainControl(!passwordAgainControl)} >{passwordAgainControl ? <Eye/> : <EyeOff/>}</button>
+                </div>
                 {errors.passwordAgain && <p className="text-red-600 ms-2 text-sm ">{errors.passwordAgain.message}</p>}
 
             </div>

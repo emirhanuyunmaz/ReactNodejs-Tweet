@@ -183,7 +183,9 @@ const changePassword = async(req,res) => {
         const code = req.body.code
         
         const control = await ResetPasswordCodeModel.find({email:email,code:code})
-        if(control){
+        console.log("CONT::",control);
+        
+        if(control.length > 0){
             console.log("Parola değiştirme ve code kontrol işlemi başarılı.",email);
             console.log("Parola değiştirme ve code kontrol işlemi başarılı.",password);
             console.log("Parola değiştirme ve code kontrol işlemi başarılı.",code);

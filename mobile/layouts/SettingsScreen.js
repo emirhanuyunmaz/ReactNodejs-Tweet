@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import {Picker} from '@react-native-picker/picker';
 import { useGetUserProfileQuery, useUpdateUserProfileMutation } from '../store/userApi/userApiSlicer';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { Eye, EyeOff } from 'lucide-react-native';
 
 export default function SettingsScreen() {
   
@@ -18,6 +19,7 @@ export default function SettingsScreen() {
   const [profilePrivate,setProfilePrivate] = useState(false)
   const [profileImage,setProfileImage] = useState("")
   const [refreshing, setRefreshing] = useState(false);
+  const [passwordControl,setPasswordControl] = useState(true)
 
     const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
@@ -110,7 +112,14 @@ export default function SettingsScreen() {
 
         <View style={styles.inputItemContainerStyle} >
             <Text style={styles.labelStyle} >Password</Text>
-            <TextInput value={userPassword} onChangeText={(e) => setUserPassword(e)} style={styles.inputStyle} placeholder='Password' />
+            <View  style={[styles.inputStyle,{flexDirection:"row",alignItems:"center"}]} >
+              <TextInput secureTextEntry={passwordControl} style={{flex:1}} value={userPassword} onChangeText={(e) => setUserPassword(e)} placeholder='Password' />
+              <TouchableOpacity onPress={() => setPasswordControl(!passwordControl)} >
+                <Text>
+                  {passwordControl ? <Eye color={`black`} size={24} /> : <EyeOff color={`black`} size={24}/>} 
+                </Text>
+              </TouchableOpacity>
+            </View>
         </View>
         
         <View style={styles.inputItemContainerStyle} >
