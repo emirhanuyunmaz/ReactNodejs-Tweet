@@ -184,9 +184,9 @@ const changePassword = async(req,res) => {
         
         const control = await ResetPasswordCodeModel.find({email:email,code:code})
         if(control){
-            console.log("Parola değiştirme ve kode kontrol işlemi başarılı.",email);
-            console.log("Parola değiştirme ve kode kontrol işlemi başarılı.",password);
-            console.log("Parola değiştirme ve kode kontrol işlemi başarılı.",code);
+            console.log("Parola değiştirme ve code kontrol işlemi başarılı.",email);
+            console.log("Parola değiştirme ve code kontrol işlemi başarılı.",password);
+            console.log("Parola değiştirme ve code kontrol işlemi başarılı.",code);
             await SignUpModel.findOneAndUpdate({email:email},{password:password})
             await ResetPasswordCodeModel.deleteMany({email:email})
             res.status(201).json({message:"Succes",succes:true})

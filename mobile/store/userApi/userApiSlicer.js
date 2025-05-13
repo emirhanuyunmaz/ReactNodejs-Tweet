@@ -252,10 +252,24 @@ export const userApiSlice = createApi({
                 invalidatesTags:["Task"]
             }),
 
+            resetPasswordSendEmail:builder.mutation({
+                query:(body) => ({
+                    url:`/signup/resetPasswordSendCode`,
+                    method:"POST",
+                    body:body
+                }),
+            }),
 
+            changePassword:builder.mutation({
+                query:(body) => ({
+                    url:`/signup/changePassword`,
+                    method:"POST",
+                    body:body
+                }),
+            })
 
         }
     },
 })
 
-export const {useGetDemoQuery,useUserLoginMutation,useGetTweetListQuery,useAddTweetMutation,useGetUserProfileQuery,useTweetLikeMutation,useGetUserTweetLikeListQuery,useUserTweetDislikeMutation,useGetSingleTweetQuery,useUserTweetAddCommentMutation, useTweetCommentListQuery,useUserTweetProfileQuery,useGetUserShortProfileQuery,useAddRetweetMutation,useUpdateUserProfileMutation,useGetTagListQuery,useGetUserTagListQuery,useGetSingleUserTagQuery,useAddTaskMutation,useGetTaskListQuery,useDeleteTaskMutation,useTaskToTweetMutation,useTaskUpdateMutation,useDeleteTweetMutation,useTaskImageUpdateMutation,useGetSingleTaskQuery , useGetTweetPostLikeListQuery , useCommentTweetPostListQuery} = userApiSlice
+export const {useGetDemoQuery,useUserLoginMutation,useGetTweetListQuery,useAddTweetMutation,useGetUserProfileQuery,useTweetLikeMutation,useGetUserTweetLikeListQuery,useUserTweetDislikeMutation,useGetSingleTweetQuery,useUserTweetAddCommentMutation, useTweetCommentListQuery,useUserTweetProfileQuery,useGetUserShortProfileQuery,useAddRetweetMutation,useUpdateUserProfileMutation,useGetTagListQuery,useGetUserTagListQuery,useGetSingleUserTagQuery,useAddTaskMutation,useGetTaskListQuery,useDeleteTaskMutation,useTaskToTweetMutation,useTaskUpdateMutation,useDeleteTweetMutation,useTaskImageUpdateMutation,useGetSingleTaskQuery , useGetTweetPostLikeListQuery , useCommentTweetPostListQuery ,useResetPasswordSendEmailMutation ,useChangePasswordMutation} = userApiSlice

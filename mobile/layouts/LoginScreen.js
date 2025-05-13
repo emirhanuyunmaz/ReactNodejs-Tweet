@@ -34,13 +34,15 @@ export default function LoginScreen() {
     // await AsyncStorage.setItem("access_token",res.data.accessToken)
     await user_contex.tokenSave(res.data.accessToken)
     navigation.navigate("Tab")
-};
+  };
 
   function signupPage(){
     navigation.navigate("Signup")
   }
 
- 
+  function resetPassword(){
+    navigation.navigate("ResetPassword")
+  }
 
   
   return (
@@ -64,7 +66,7 @@ export default function LoginScreen() {
             />
             )}
         />
-        {errors.email && <Text style={styles.errorMessageStyle} >{errors.email.message}</Text>}
+        {errors.email && <Text style={styles.errorMessageStyle} >Email Giriniz</Text>}
 
         </View>
 
@@ -84,9 +86,12 @@ export default function LoginScreen() {
             />
             )}
         />
-        {errors.password && <Text style={styles.errorMessageStyle} >{errors.password.message}</Text>}
+        {errors.password && <Text style={styles.errorMessageStyle} >Şifre Giriniz</Text>}
 
         </View>
+        <TouchableOpacity onPress={resetPassword} style={styles.resetPasswordContainer} >
+          <Text style={styles.resetPasswordLink} >Şifremi Unuttum</Text>
+        </TouchableOpacity>
 
         <TouchableOpacity style={styles.buttonStyle} onPress={handleSubmit(onSubmit)} >
           <Text style={styles.buttonTextStyle} >Giriş Yap</Text>
@@ -155,6 +160,13 @@ const styles = StyleSheet.create({
   signupButtonStyle:{
     textAlign:"center",
     fontSize:16
+  },
+  resetPasswordContainer:{
+    marginVertical:10,
+    marginStart:10
+  },
+  resetPasswordLink:{
+    color:"dodgerblue"
   }
 
 })
