@@ -1,7 +1,10 @@
 
 
 export default function TagsCard({tagList}){
+  const totalCount = tagList.reduce((sum, item) => sum + item.count, 0) ;
 
+    
+    
     return (<>
         {/* Duygular */}
         <div className=" bg-blue-100 p-5 rounded-xl">
@@ -13,20 +16,20 @@ export default function TagsCard({tagList}){
                         <p className="border-b-2 border-blue-100 hover:border-white">
                                 Kızgın : 
                             </p>
-                            <p>{tagList?.filter((item) => item._id === "kızgın")[0]!= undefined && tagList?.filter((item) => item._id === "kızgın")[0] ? tagList?.filter((item) => item._id === "kızgın")[0]?.count : 0}</p>
+                            <p>%{Math.floor(tagList?.filter((item) => item._id === "kızgın")[0]!= undefined && tagList?.filter((item) => item._id === "kızgın")[0] ? tagList?.filter((item) => item._id === "kızgın")[0]?.count/totalCount * 100 : 0)}</p>
                         </a>
                     </li>
                     <li className="w-full" ><a href="/tweetTagGroup/korku" className="flex justify-between w-full px-4 py-1 "><p className="border-b-2 border-blue-100 hover:border-white">
                                 Korku : 
                             </p>
-                            <p>{tagList?.filter((item) => item._id === "korku")[0]!= undefined && tagList?.filter((item) => item._id === "korku")[0] ? tagList?.filter((item) => item._id === "korku")[0]?.count : 0}</p>
+                            <p>%{Math.floor(tagList?.filter((item) => item._id === "korku")[0]!= undefined && tagList?.filter((item) => item._id === "korku")[0] ? tagList?.filter((item) => item._id === "korku")[0]?.count/totalCount * 100 : 0)}</p>
                         </a>
                     </li>
                     <li className="w-full" ><a href="/tweetTagGroup/mutlu"className="flex justify-between w-full px-4 py-1 "><p className="border-b-2 border-blue-100 hover:border-white">
                                 Mutlu : 
                             </p>
                             <p>
-                            {tagList?.filter((item) => item._id === "mutlu")[0]!= undefined && tagList?.filter((item) => item._id === "mutlu")[0] ? tagList?.filter((item) => item._id === "mutlu")[0]?.count : 0}
+                            %{Math.floor(tagList?.filter((item) => item._id === "mutlu")[0]!= undefined && tagList?.filter((item) => item._id === "mutlu")[0] ? tagList?.filter((item) => item._id === "mutlu")[0]?.count/totalCount * 100 : 0)}
                             </p>
                         </a>
                     </li>
@@ -34,7 +37,7 @@ export default function TagsCard({tagList}){
                                 Sürpriz : 
                             </p>
                             <p>
-                            {tagList?.filter((item) => item._id === "surpriz")[0]!= undefined && tagList?.filter((item) => item._id === "surpriz")[0] ? tagList?.filter((item) => item._id === "surpriz")[0]?.count : 0}
+                            %{Math.floor(tagList?.filter((item) => item._id === "surpriz")[0]!= undefined && tagList?.filter((item) => item._id === "surpriz")[0] ? tagList?.filter((item) => item._id === "surpriz")[0]?.count/totalCount * 100 : 0)}
                             </p>
                         </a>
                     </li>
@@ -42,7 +45,7 @@ export default function TagsCard({tagList}){
                                 Üzgün : 
                             </p>
                             <p>
-                            {tagList?.filter((item) => item._id === "üzgün")[0]!= undefined && tagList?.filter((item) => item._id === "üzgün")[0] ? tagList?.filter((item) => item._id === "üzgün")[0]?.count : 0}
+                            %{Math.floor(tagList?.filter((item) => item._id === "üzgün")[0]!= undefined && tagList?.filter((item) => item._id === "üzgün")[0] ? tagList?.filter((item) => item._id === "üzgün")[0]?.count/totalCount * 100 : 0)}
                             </p>
                         </a>
                     </li>

@@ -4,7 +4,10 @@ import React from 'react'
 export default function ClassificationTagList({tagList}) {
   tagList = tagList == undefined ? [] : tagList
   console.log("TAG LİST:::",tagList);
-  // console.log(tagList.filter((item) => item._id == "üzgün").length);
+  const totalCount = tagList.reduce((sum, item) => sum + item.count, 0) ;
+  console.log(totalCount);
+  
+  
   return (
     <View style={styles.container} >
       <Text style={styles.titleStyle} >Duygular</Text>
@@ -14,35 +17,35 @@ export default function ClassificationTagList({tagList}) {
         <TouchableOpacity>
           <View style={styles.tagItemContainer} >
             <Text style={styles.tagTextStyle} >Kızgın </Text>
-            <Text>{tagList.filter((item) => item._id == "kızgın").length != 0 ? tagList.filter((item) => item._id == "kızgın")[0].count : 0}</Text>
+            <Text>%{Math.floor(tagList.filter((item) => item._id == "kızgın").length != 0 ? tagList.filter((item) => item._id == "kızgın")[0].count/totalCount * 100 : 0)}</Text>
           </View>
         </TouchableOpacity>
         
         <TouchableOpacity>
           <View style={styles.tagItemContainer} >
             <Text style={styles.tagTextStyle} >Korku </Text>
-            <Text>{tagList.filter((item) => item._id == "korku").length  != 0 ? tagList.filter((item) => item._id == "korku")[0].count : 0}</Text>
+            <Text>%{Math.floor(tagList.filter((item) => item._id == "korku").length  != 0 ? tagList.filter((item) => item._id == "korku")[0].count/totalCount * 100 : 0)}</Text>
           </View>
         </TouchableOpacity>
         
         <TouchableOpacity>
           <View style={styles.tagItemContainer} >
             <Text style={styles.tagTextStyle} >Mutlu</Text>
-            <Text>{tagList.filter((item) => item._id == "mutlu").length != 0 ? tagList.filter((item) => item._id == "mutlu")[0].count : 0 }</Text>
+            <Text>%{Math.floor(tagList.filter((item) => item._id == "mutlu").length != 0 ? tagList.filter((item) => item._id == "mutlu")[0].count/totalCount * 100 : 0 )}</Text>
           </View>
         </TouchableOpacity>
 
         <TouchableOpacity>
           <View style={styles.tagItemContainer} >
             <Text style={styles.tagTextStyle} >Sürpriz </Text>
-            <Text>{tagList.filter((item) => item._id == "surpriz").length != 0 ? tagList.filter((item) => item._id == "surpriz")[0].count : 0 }</Text>
+            <Text>%{Math.floor(tagList.filter((item) => item._id == "surpriz").length != 0 ? tagList.filter((item) => item._id == "surpriz")[0].count/totalCount * 100 : 0) }</Text>
           </View>
         </TouchableOpacity>
 
         <TouchableOpacity>
           <View style={styles.tagItemContainer} >
             <Text style={styles.tagTextStyle} >Üzgün </Text>
-            <Text>{tagList.filter((item) => item._id == "üzgün").length != 0 ? tagList.filter((item) => item._id == "üzgün")[0].count : 0}</Text>
+            <Text>%{Math.floor(tagList.filter((item) => item._id == "üzgün").length != 0 ? tagList.filter((item) => item._id == "üzgün")[0].count/totalCount * 100 : 0)}</Text>
           </View>
         </TouchableOpacity>
       </View>
