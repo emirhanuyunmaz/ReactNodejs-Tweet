@@ -114,37 +114,37 @@ export default function Signup(){
                 
             </div>
             <div className="flex flex-col gap-1">
-                <label className="font-bold ms-3" >Name</label>
-                <input value={name} onChange={(e) => setName(e.target.value)} className="outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="text" placeholder="Name"/>
+                <label className="font-bold ms-3" >Ad</label>
+                <input value={name} onChange={(e) => setName(e.target.value)} className="outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="text" placeholder="Ad"/>
             </div>
             <div className="flex flex-col gap-1">
-                <label className="font-bold ms-3">Surname</label>
-                <input value={surname} onChange={(e) => setSurname(e.target.value)} className="outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="text" placeholder="Surname"/>
+                <label className="font-bold ms-3">Soyad</label>
+                <input value={surname} onChange={(e) => setSurname(e.target.value)} className="outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="text" placeholder="Soyad"/>
             </div>
             <div className="flex flex-col gap-1">
                 <label className="font-bold ms-3">Email</label>
                 <input value={email} onChange={(e) => setEmail(e.target.value)} className="outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="email" placeholder="Email"/>
             </div>
             <div className="flex flex-col gap-1">
-                <label className="font-bold ms-3">Password</label>
+                <label className="font-bold ms-3">Parola</label>
                 <div className="flex outline-none px-4 py-2 border-2 mb-5 rounded-xl"  >
-                    <input value={password} onChange={(e) => setPassword(e.target.value)} type={`${passwordControl ?"password" : "text"}`} placeholder="Password" className="w-full outline-none" />
+                    <input value={password} onChange={(e) => setPassword(e.target.value)} type={`${passwordControl ?"password" : "text"}`} placeholder="Parola" className="w-full outline-none" />
                     <button onClick={() => setPasswordControl(!passwordControl)} >{passwordControl ? <Eye/> : <EyeOff/>}</button>
                 </div>
             </div>
 
             <div className="flex flex-col gap-1">
-                <label className="font-bold ms-3">Password Again</label>
+                <label className="font-bold ms-3">Parola Tekrar</label>
                 <div className="flex outline-none px-4 py-2 border-2 mb-5 rounded-xl" >
-                    <input value={passwordAgain} onChange={(e) => setPasswordAgain(e.target.value)}  type={`${passwordAgainControl ? "password":"text"}`} placeholder="Password Again" className="outline-none w-full" />
+                    <input value={passwordAgain} onChange={(e) => setPasswordAgain(e.target.value)}  type={`${passwordAgainControl ? "password":"text"}`} placeholder="Parola Tekrar" className="outline-none w-full" />
                     <button onClick={() => setPasswordAgainControl(!passwordAgainControl)} >{passwordAgainControl ? <Eye/> : <EyeOff/>}</button>
                 </div>
             </div>
             <div className="flex flex-col gap-1">
-                <label className="font-bold ms-3">Description</label>
-                <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="password" placeholder="Description" />
+                <label className="font-bold ms-3">Açıklama</label>
+                <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="password" placeholder="Açıklama" />
             </div>
-            <button onClick={signupUser} className="bg-blue-500 py-2 rounded-xl text-white hover:bg-blue-600 duration-300 mb-5">Sign Up</button>
+            <button onClick={signupUser} className="bg-blue-500 py-2 rounded-xl text-white hover:bg-blue-600 duration-300 mb-5">Kayı Ol</button>
         </div>
     </div>)
 }

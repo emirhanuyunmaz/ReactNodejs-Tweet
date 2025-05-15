@@ -147,7 +147,7 @@ const resetPasswordSendCode = async (req,res) => {
                     // text: "Hello world?", // plain text body
                     html: sendEmailHTML(code), // html body
                 });
-                console.log(":RESET PASSWORD:");
+                console.log(":RESET PASSWORD:",email);
                 
                 console.log(process.env.EMAIL);
                 console.log(process.env.EMAIL_PASSWORD);

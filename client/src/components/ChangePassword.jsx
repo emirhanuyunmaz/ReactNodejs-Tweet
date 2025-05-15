@@ -64,6 +64,7 @@ export default function ChangePassword(){
         <div className="flex flex-col items-center">
             <h2 className="text-2xl font-bold">Şifre Sıfırlama</h2>
             <p className="text-sm">Email adresinize gelen kodu giriniz ve yeni şifrenizi oluşturunuz.</p>
+            <p className="pt-3 " >Email:<span className="font-bold ms-3" >{localStorage.getItem("email")}</span></p>
         </div>
         <form onSubmit={handleSubmit(onSubmit)} className="md:w-1/3 flex flex-col gap-3">
             <div className="flex flex-col gap-1">
@@ -75,7 +76,7 @@ export default function ChangePassword(){
                 <label className="ms-2 font-bold">Şifre</label>
                 <div className="flex border-2  rounded-xl px-3 py-2">
                     <input placeholder="Şifre" type={`${passwordControl ? "password" : "text"}`} {...register("password", { required:"Lütfen yeni şifrenizi giriniz." })} className="outline-none w-full" />
-                    <button onClick={() => setPasswordControl(!passwordControl)} >{passwordControl ? <Eye/> : <EyeOff/>}</button>
+                    <button onClick={(e) => {e.preventDefault();setPasswordControl(!passwordControl)}} >{passwordControl ? <Eye/> : <EyeOff/>}</button>
                 </div>
                 {errors.password && <p className="text-red-600 ms-2 text-sm ">{errors.password.message}</p>}
 
@@ -88,7 +89,7 @@ export default function ChangePassword(){
                             return "Şifreler eşleşmiyor";
                         }}}
                     )} className="outline-none w-full" />
-                    <button onClick={() => setPasswordAgainControl(!passwordAgainControl)} >{passwordAgainControl ? <Eye/> : <EyeOff/>}</button>
+                    <button onClick={(e) => {e.preventDefault();setPasswordAgainControl(!passwordAgainControl)}} >{passwordAgainControl ? <Eye/> : <EyeOff/>}</button>
                 </div>
                 {errors.passwordAgain && <p className="text-red-600 ms-2 text-sm ">{errors.passwordAgain.message}</p>}
 

@@ -59,7 +59,7 @@ export default function Login(){
     return(
         <div className="min-h-[70vh] flex items-center justify-center">
         <div className="flex flex-col mx-5 md:mx-0 w-full md:w-1/3 ">
-            <h1 className="text-center text-2xl mb-5">Login</h1>
+            <h1 className="text-center text-2xl mb-5">Giriş Yap</h1>
             <div className="outline-none px-4 py-2 border-2 mb-5 rounded-xl"  >
                 <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="Email" className="outline-none w-full" />
             </div>
