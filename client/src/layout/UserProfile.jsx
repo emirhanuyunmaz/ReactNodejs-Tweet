@@ -167,34 +167,36 @@ export default function UserProfile(){
         }
     },[isFollowRequestSent.isSuccess,isFollowRequestSent.isFetching])
 
-    return (<div className="md:w-3/4 md:mx-auto mt-10">
+    return (<div className=" w-full md:w-3/4 md:mx-auto mt-10">
 
         {/* Kullanıcı profili için temel yapı */}
-        <div className="bg-blue-100  md:px-10 py-5 rounded-t-xl">
-            <div className="flex gap-5" >
+        <div className="bg-blue-100 px-5 md:px-10 md:py-5 rounded-t-xl">
+            <div className="flex flex-col justify-center items-center md:flex-row gap-3 md:gap-5" >
                 <img className="w-32 h-32 rounded-full" src={`http://localhost:3000/${userProfile.image}`} alt="" />
                 <div className="mt-5 flex flex-col gap-3">
                     <p className="font-bold" > {userProfile.name} {userProfile.surname}</p>
                     <p>{userProfile.description}</p>
                     <p>{formatDateProfile(userProfile.createdAt)}</p>
+                    <div className="flex gap-10 justify-center mx-auto ">
+                        <button onClick={getFollowerList} className="font-bold hover:underline">{contactList?.data?.follower ? contactList?.data?.follower : 0} takipçi</button>
+                        
+                        <button onClick={getFollowedList} className="font-bold hover:underline">{contactList?.data?.followed ? contactList?.data?.followed :0 } takip</button>
+                    </div>
                 </div>
-                <div className="flex flex-col justify-center mx-auto ">
-                    <button onClick={getFollowerList} className="font-bold hover:underline">{contactList?.data?.follower ? contactList?.data?.follower : 0} takipçi</button>
-                    <button onClick={getFollowedList} className="font-bold hover:underline">{contactList?.data?.followed ? contactList?.data?.followed :0 } takip</button>
-                </div>
-                {!isProfile && <div className="ms-auto flex flex-col justify-center">
-                    {!getUserIsFollow?.data?.data && postIsShow && <button onClick={userFollowOnClick} className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Takip Et</button>}
+                
+                {!isProfile && <div className="md:ms-auto flex flex-col justify-center">
+                    {!getUserIsFollow?.data?.data && postIsShow && <button onClick={userFollowOnClick} className="border-2 px-4 md:px-8 py-1 md:py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Takip Et</button>}
 
-                    {!getUserIsFollow?.data?.data && !postIsShow && !followRequest && <button onClick={UserFollowSocketOnClick} className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Takip İsteği At</button>}
+                    {!getUserIsFollow?.data?.data && !postIsShow && !followRequest && <button onClick={UserFollowSocketOnClick} className="border-2 px-4 md:px-8 py-1 md:py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Takip İsteği At</button>}
 
-                    {!getUserIsFollow?.data?.data && !postIsShow && followRequest && <button onClick={UserUnfollowSocketOnClick} className="border-2 px-8 py-2 rounded-xl bg-blue-200 hover:bg-blue-400 hover:text-white duration-300 " >Takip İsteğini Çek</button>}
+                    {!getUserIsFollow?.data?.data && !postIsShow && followRequest && <button onClick={UserUnfollowSocketOnClick} className="border-2 px-4 md:px-8 py-1 md:py-2 rounded-xl bg-blue-200 hover:bg-blue-400 hover:text-white duration-300 " >Takip İsteğini Çek</button>}
 
-                    {getUserIsFollow?.data?.data && <button onClick={userUnfollowOnClick} className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Takipten Çık</button>}
+                    {getUserIsFollow?.data?.data && <button onClick={userUnfollowOnClick} className="border-2 px-4 md:px-8 py-1 md:py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Takipten Çık</button>}
 
                     <a href={`/message/${params.id}`} className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 text-center" >Mesaj At</a>
                 </div>}
                 {
-                    isProfile &&<div className="ms-auto flex flex-col justify-center"> <a href="/profile" className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Profili Düzenle</a></div>
+                    isProfile &&<div className="mb-1 md:ms-auto flex flex-col justify-center"> <a href="/profile" className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 " >Profili Düzenle</a></div>
                 }
             </div>
         </div>
@@ -205,8 +207,8 @@ export default function UserProfile(){
                     <button onClick={() => setSelectNumber(1)} className={`${selectNumber == 1 && "border-b-2 border-b-black"}`} >Beğeni</button>
                     <button onClick={() => setSelectNumber(2)} className={`${selectNumber == 2 && "border-b-2 border-b-black"}`} >Yorum</button>
                 </div>
-                <div className="flex mx-10 w-full">
-                    <input onChange={(e) => setSearchText(e.target.value)} value={searchText} className="w-1/2 outline-none px-4 py-2 border-2 border-black  rounded-xl" type="text" placeholder="Tweet Ara"/>
+                <div className="flex  px-10 w-full">
+                    <input onChange={(e) => setSearchText(e.target.value)} value={searchText} className="w-full  outline-none px-4 py-2 border-2 border-black  rounded-xl" type="text" placeholder="Tweet Ara"/>
                 </div>
 
             </div>

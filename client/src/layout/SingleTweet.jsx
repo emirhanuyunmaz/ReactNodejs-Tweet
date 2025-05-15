@@ -78,14 +78,14 @@ export default function SingleTweet(){
 
     },[userTweetLikeList.isFetching,userTweetLikeList.isSuccess])
             
-    return(tweet == null ? <div className="text-center font-bold text-xl" >Kullanıcı Profilini Gizlemiş</div> : <div className="flex flex-col mx-5 md:flex-row mt-10">
+    return(tweet == null ? <div className="text-center font-bold text-xl" >Kullanıcı Profilini Gizlemiş</div> : <div className="flex flex-col-reverse mx-5 md:flex-row mt-10">
                  
             <div className="md:w-3/4 flex flex-col">
                 {  tweet.userId && userTweetLike  && <TweetCard tweet={tweet} userTweetLike={userTweetLike} /> } 
 
                 {/* Yeni Yorum Ekleme İşlemi */}
                 <div className=" mt-5 flex md:ms-20 justify-start items-center gap-5">
-                    <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Yorum Yap" className="outline-none border-2 rounded-xl px-3 py-2 min-w-52 min-h-32 md:w-[80%] " />
+                    <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Yorum Yap" className="outline-none border-2 rounded-xl px-3 py-2 min-w-52 min-h-32 w-full md:w-[80%] " />
                     <div>
                         <button onClick={addComment} className=" min-h-full px-8 py-2 bg-blue-300 rounded-xl hover:bg-blue-400 hover:text-white duration-300 " >Yorum Ekle</button>
                     </div>
@@ -105,7 +105,7 @@ export default function SingleTweet(){
                 </div>
             </div>
 
-            <div className="mx-5 md:w-1/4 md:mx-10">
+            <div className="md:mx-5 md:w-1/4  mb-5">
                 {<TagsCard tagList={tagList} />}
             </div>
     </div>)

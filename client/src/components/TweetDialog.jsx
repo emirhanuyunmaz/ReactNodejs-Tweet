@@ -98,7 +98,7 @@ export default function TweetDialog({showModal, setShowModal}){
                   <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                     {/*header*/}
                     <div className="flex items-start justify-between p-3 border-b border-solid border-blueGray-200 rounded-t">
-                      <h3 className="text-3xl font-semibold">
+                      <h3 className="text-black text-xl md:text-3xl font-semibold">
                         Tweet 
                       </h3>
                       <button
@@ -125,8 +125,8 @@ export default function TweetDialog({showModal, setShowModal}){
 
                         <div >
                           {/* Resim yükleme */}
-                          <label htmlFor="imageUpload" className="w-40 h-40 flex justify-center items-center border-2 cursor-pointer">
-                            {image == undefined ? <CameraIcon/>: <img src={`${image}`} className="w-full h-full" />}
+                          <label htmlFor="imageUpload" className="w-full  md:w-40 h-40 flex justify-center items-center border-2 cursor-pointer">
+                            {image == undefined ? <CameraIcon color="black" />: <img src={`${image}`} className="w-full h-full" />}
                           </label>
                           {image != undefined && <div className="w-40 text-center">
                             <button onClick={deleteImage} className="border-2 border-red-500 hover:opacity-80 px-4 py-1 rounded-xl mx-auto">Delete</button>
@@ -136,7 +136,7 @@ export default function TweetDialog({showModal, setShowModal}){
 
                         <div className="flex gap-3">
                           <button
-                            className="border-2 w-full px-4 py-2 rounded-xl hover:border-blue-400 duration-300"
+                            className="text-black border-2 w-full px-4 py-2 rounded-xl hover:border-blue-400 duration-300"
                             type="submit"
                             
                           >

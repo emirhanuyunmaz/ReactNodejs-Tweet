@@ -121,19 +121,14 @@ export default function Message(){
         }
       },[getAllMessage.isSuccess,getAllMessage.isFetching,getAllMessage.isError,id])
 
-    return(<div className="h-[90vh] flex justify-center items-center rounded-xl">
+    return(<div className="w-full h-[90vh] flex justify-center items-center rounded-xl">
         
-        <div className="h-full md:h-[95%] w-full md:w-[90%] bg-blue-200 flex rounded-xl  " >
+        <div className="h-full w-full md:h-[95%] md:w-[90%] bg-blue-200 flex rounded-xl  " >
             
-            <div className="w-1/4 border-r-2 border-gray-200  h-full ">
-                {/* Kullanıcı arama işlemi için input */}
-                <div className="flex flex-col  md:flex-row  justify-center items-center gap-1 px-5 pt-5 pb-5">
-                    {/* <input className="w-full outline-none px-4 py-2 border-2 rounded-xl " type="text" placeholder="Kullanıcı Adı"/> */}
-                    {/* <button className="border-2 px-8 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300  ">Ara</button> */}
-                </div>
-
+            <div className={`${id != undefined && "hidden"} pt-3 md:flex w-full md:w-1/4 border-r-2 border-gray-200  h-full `}>
+                
                 {/* Mesajlaşılan kullanıcı kart tasarımı  */}
-                <div className="w-full flex flex-col gap-3">
+                <div className=" w-full flex flex-col gap-3">
                     {userMessageList?.map((user) => <a href={`/message/${user._id}`} key={user._id} className="bg-blue-300 mx-5 rounded-xl cursor-pointer flex flex-col md:flex-row items-center hover:bg-blue-400 hover:text-white duration-300 ">
                         <img src={`http://localhost:3000/${user.image}`} className="w-16 h-16 my-1 mx-3 rounded-full" alt="" />
                         <p>{user.name} {user.surname}</p>
@@ -143,8 +138,8 @@ export default function Message(){
             </div>
 
             {/* Mesajlaşma kısmı */}
-            {id != undefined ? <div className="w-3/4 h-[full] ">
-                <div className="flex items-center gap-3 bg-blue-400 p-2">
+            {id != undefined ? <div className={` md:w-3/4 h-full w-full `}>
+                <div className=" w-full flex items-center gap-3 bg-blue-400 p-2">
                     <img src={`http://localhost:3000/${userProfile?.image}`} className="w-16 h-16 rounded-full" alt="" />
                     <p className="text-xl">{userProfile?.name} {userProfile?.surname} </p>
                 </div>    
@@ -185,7 +180,7 @@ export default function Message(){
                         <label htmlFor="image_message" className=" border-2 px-2 py-2 rounded-xl bg-blue-300 hover:bg-blue-400 hover:text-white duration-300 cursor-pointer"><ImagePlus /></label>
                         <input  onChange={(e) => imageUpdate(e)} className="hidden" id="image_message" type="file" />
                 </div>
-            </div>:<div className="w-full h-full flex justify-center items-center" > <p className="text-4xl">Mesajlaşma Başlatın</p> </div>}
+            </div>:<div className={`hidden w-full h-full md:flex justify-center items-center`} > <p className="text-4xl">Mesajlaşma Başlatın</p> </div>}
             
         </div>
         

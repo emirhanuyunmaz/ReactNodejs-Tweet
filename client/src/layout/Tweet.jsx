@@ -105,7 +105,7 @@ export default function Tweet(){
                 <p>{userProfile.name} {userProfile.surname}</p>
 
                 <div className="mt-5 flex flex-col gap-3">
-                    <a className="border-2 px-8 py-2 rounded-xl hover:bg-blue-400 hover:text-white duration-300 " href={`/user/${userProfile._id}`}>Profile</a>
+                    <a className="border-2 px-8 py-2 rounded-xl hover:bg-blue-400 hover:text-white duration-300 " href={`/user/${userProfile._id}`}>Profil</a>
                     
                     <button onClick={() => setShowTweetDialog(true)} className="border-2 px-8 py-2 rounded-xl hover:bg-blue-400 hover:text-white duration-300 " >Tweet At</button>
 
@@ -137,13 +137,13 @@ export default function Tweet(){
                 </div>
             </div>
             
-            <div className="flex flex-col w-full  md:w-1/4 px-16 md:px-0 md:p-5">
-                <div>
+            <div className="flex flex-col w-full  md:w-1/4 px-6 md:px-0 md:p-5">
+                <div className="">
                     <div className="border-2 rounded-xl flex items-center justify-center w-full mb-5 p-1 ">
                         <input value={searchText} onChange={(e) => setSearchText(e.target.value)} type="text" placeholder="Kullanıcı ara" className="outline-none px-4 py-2 w-3/4" />
                         <button onClick={searchUserOnClick} ><Search/></button>
                     </div>
-                    {responseSearchUser.isSuccess && searchText!=="" && <div className="w-full h-full">
+                    {responseSearchUser.isSuccess && searchText!=="" && <div className="">
                         <UserSearchList userList={userList} />
                     </div>}
                 </div>

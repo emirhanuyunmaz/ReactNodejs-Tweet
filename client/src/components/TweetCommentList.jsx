@@ -76,7 +76,7 @@ export default function TweetCommentList({tweetCommentList}){
 
         })}</>
         :
-        <p>Gönderi Bulunamadı</p>
+        <p className="mx-auto text-2xl mt-10">Listelenecek Gönderi Yok </p>
 
     }
 
