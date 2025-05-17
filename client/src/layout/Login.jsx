@@ -12,8 +12,6 @@ export default function Login(){
     const [email,setEmail] = useState("")
     const [password,setPassword] = useState("")
     const [passwordControl,setPasswordControl] = useState(true)
-
-    // console.log(token);
     
     
     const showToastError = () => toast.error('Aranan Kullanıcı Bulunamadı', {
@@ -29,26 +27,25 @@ export default function Login(){
     });
     
     async function loginOnSubmit(){
-        const r = await loginOnClick({email,password})
-    }
-    
-    useEffect(() => {
-        if(result.isSuccess){
-            const accessToken = result.data.accessToken
-            const refreshToken = result.data.refreshToken
+        const r = await loginOnClick({email,password}).unwrap()
+        .then((res) => {
+            console.log("RES:",res);
+            const accessToken = res.accessToken
+            const refreshToken = res.refreshToken
             // Tokenlerin kayıt işlemleri.
             Cookies.set("accessToken",accessToken)
             Cookies.set("refreshToken",refreshToken)
-            console.log(result.error);
+            console.log(res.error);
             
             navigate("/tweet",{replace:true})
             window.location.reload()//Sayfa token bilgisi için tekrar yüklenme işlemi yapıldı.
-        }
-        else if(result.isError){
-            console.log(result);
+
+        }).catch((err) => {
+            console.log("HATA:",err);
             showToastError()
-        }
-    },[result.isSuccess,result.isError])
+        })
+    }
+    
     
     useEffect(() => {
         if(token !== undefined){

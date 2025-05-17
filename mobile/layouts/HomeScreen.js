@@ -29,9 +29,9 @@ export default function HomeScreen() {
   const {isFetching,refetch,data,isSuccess} = useGetTweetListQuery({is_followed_data : followedTweet})
 
   const onRefresh = useCallback(async () => {
+    setLoading(true)
     setRefreshing(true);
     setTweetList([])
-    setLoading(true)
     const newData = await refetch()
     // console.log("DATA::",newData.data);
     

@@ -89,10 +89,10 @@ const sendEmailHTML = (code) => {
 //Yeni kullanıcı ekleme işlemi.
 const signup = async (req,res) => {
     console.log("Kullanıcı kayıt için istek atıldı");
-    console.log(req.body);
+    // console.log(req.body);
     const imageName = uuid.v4()
     const filePath =`uploads/${imageName}.png`
-    console.log("File Path:",filePath);
+    // console.log("File Path:",filePath);
     let base64Image = req.body.image.split(';base64,').pop();
 
     fs.writeFile( __dirname + "/../" + filePath ,base64Image , {encoding: 'base64'}, function(err) {

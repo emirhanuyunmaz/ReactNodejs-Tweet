@@ -461,9 +461,12 @@ const getUserLikePostList = async (req,res) => {
                 comments:"$tweet.comments",
                 userTag:"$tweet.userTag",
                 createdAt:"$tweet.createdAt",
-                userIsFollow: true
+                userIsFollow: { $in: [userId, "$tweet.likes"] }
+
                 },
-            }
+            },
+            { $sort: { createdAt: -1 } }, // En yeni tweetler önce gelir
+
             ])
             // console.log("AADD:::",data);
             res.status(200).json({data:data,succes:true})
@@ -535,9 +538,12 @@ const getUserLikePostList = async (req,res) => {
                     comments:"$tweet.comments",
                     userTag:"$tweet.userTag",
                     createdAt:"$tweet.createdAt",
-                    userIsFollow: true
+                    userIsFollow: { $in: [userId, "$tweet.likes"] }
+
                     },
-                }
+                },
+                { $sort: { createdAt: -1 } }, // En yeni tweetler önce gelir
+
                 ])
                 
             res.status(200).json({data:data,succes:true})
@@ -736,7 +742,9 @@ const getUserTweetCommentList = async (req,res) => {
                 },
                  
                 },
-            }
+            },
+            { $sort: { createdAt: -1 } }, // En yeni tweetler önce gelir
+
             ])
 
         res.status(200).json({data:data}) 
@@ -915,8 +923,11 @@ const userTweetProfile = async(req,res) => {
                         else: false
                     }
                 }
-            }  
-        }
+            },
+            
+        },
+        { $sort: { createdAt: -1 } }, // En yeni tweetler önce gelir
+
         ])
 
         // ***************** //

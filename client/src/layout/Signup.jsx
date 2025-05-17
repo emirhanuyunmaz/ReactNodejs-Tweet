@@ -1,22 +1,19 @@
 import axios from "axios"
-import { Camera, Eye, EyeOff, RefreshCw, Trash2 } from "lucide-react"
+import { Camera, CameraIcon, Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
+import { useForm } from "react-hook-form";
 import ReactImageUploading from "react-images-uploading";
 import { useNavigate } from "react-router-dom";
 import { toast, Zoom } from "react-toastify";
+import { getBase64 } from "../utils/imageProcess";
 
 
 export default function Signup(){
 
     const navigate = useNavigate()
-
-    const [name,setName] = useState("")
-    const [surname , setSurname] = useState("")
-    const [email,setEmail] = useState("")
-    const [password,setPassword] = useState("")
-    const [passwordAgain,setPasswordAgain] = useState("")
-    const [description , setDescription] = useState()
-    const [image,setImage] = useState([])
+    const { register, handleSubmit, watch, formState: { errors } } = useForm();
+    const [isImage,setIsImage] = useState(false)
+    const [image,setImage] = useState(undefined)
     const [passwordControl,setPasswordControl] = useState(true)
     const [passwordAgainControl,setPasswordAgainControl] = useState(true)
 
@@ -40,111 +37,96 @@ export default function Signup(){
         transition: Zoom,
         });
 
-    
-    async function signupUser(){        
+        const onSubmit = async (data)=> {
+            const newData = {
+                ...data,
+                image:image
+            }
+            console.log(newData);
+            
+            const res =await axios.post("http://localhost:3000/signup",newData)
 
-        // console.log("İMAGE:::",image[0].data_url);
-        
-        const res =await axios.post("http://localhost:3000/signup",{
-            name:name,
-            surname:surname,
-            email:email,
-            password:password,
-            description:description,
-            image:image[0].data_url
-        })
-        console.log(res)
-        if(res.status === 201){
-            showToastSucces()
-            navigate("/login")
+            if(res.status === 201){
+                showToastSucces()
+                navigate("/login")
+            }
+        };
+
+        async function uploadImage(e) {
+            const file = e.target.files[0]
+            const image = await getBase64(file)
+            setIsImage(true)
+            setImage(image)
+        } 
+
+        function deleteImage(){
+            setImage(undefined)
+            setIsImage(false)
         }
-        
-    }
-
     return(
     <div className="flex w-full md:min-h-[90vh] justify-center items-center">
-        <div className="flex flex-col w-full mx-5 md:mx-0 sm:w-1/2 md:w-1/3">
-            <div className="flex gap-5 mb-5 ">
-            {/* Resim ekleme yapan label */}
-            <label className="hover:cursor-pointer " htmlFor="user_image">
-            <div className="mt-10">
-            {/* Resim yükleme için gereken kütüphane */}
-            <ReactImageUploading
-                multiple
-                value={image}
-                onChange={onChange}
-                maxNumber={maxNumber}
-                dataURLKey="data_url"
-            >
-                {({
-                imageList,
-                onImageUpload,
-                onImageRemoveAll,
-                onImageUpdate,
-                onImageRemove,
-                isDragging,
-                dragProps,
-                }) => (
-                // write your building UI
-                <div className="upload__image-wrapper w-40 h-40 flex items-center justify-center border-2">
-                    <button
-                    className="flex justify-center items-center"
-                    style={isDragging ? { color: 'red' } : undefined}
-                    onClick={onImageUpload}
-                    {...dragProps}
-                    >
-                    {image.length === 0 &&<Camera/>}
-                    </button>
-                    &nbsp;
-                    <button onClick={onImageRemoveAll}></button>
-                    {imageList.map((img, index) => (
-                    <div key={index} className="image-item flex flex-col gap-2">
-                        <img src={img['data_url']} alt="" width="100" className="mx-auto"/>
-                        <div className="image-item__btn-wrapper">
-                        <button className="border-2 px-2 py-1 rounded-xl hover:border-green-400 duration-300" onClick={() => onImageUpdate(index)}>Update</button>
-                        <button className="border-2 px-2 py-1 rounded-xl hover:border-red-400 duration-300" onClick={() => onImageRemove(index)}>Remove</button>
-                    </div>
-                    </div>
-                    ))}
-                </div>
-                )}
-            </ReactImageUploading>
-                </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col w-full mx-5 md:mx-0 sm:w-1/2 md:w-1/3">
+            <div className="flex gap-5 mb-5 mt-5">
+            
+            <div >
+                {/* Resim yükleme */}
+                <label htmlFor="imageUpload" className="w-full  md:w-40 h-40 flex justify-center items-center border-2 cursor-pointer">
+                {image == undefined ? <CameraIcon color="black" />: <img src={`${image}`} className="w-full h-full" />}
                 </label>
+                {image != undefined && <div className="w-40 text-center">
+                <button onClick={deleteImage} className="border-2 border-red-500 hover:opacity-80 px-4 py-1 rounded-xl mx-auto">Delete</button>
+                </div>}
+                <input onChange={(e) => uploadImage(e)} hidden id="imageUpload" type="file" />
+            </div>
+        
+            
                 
             </div>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1 mb-5">
                 <label className="font-bold ms-3" >Ad</label>
-                <input value={name} onChange={(e) => setName(e.target.value)} className="outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="text" placeholder="Ad"/>
+                <input className="outline-none px-4 py-2 border-2 rounded-xl" type="text" placeholder="Ad" {...register("name", { required:"Lütfen bir ad giriniz." })} />
+                {errors.name && <p className="text-red-600 ms-3 text-sm" >{errors.name.message}</p>}
+
             </div>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1 mb-5">
                 <label className="font-bold ms-3">Soyad</label>
-                <input value={surname} onChange={(e) => setSurname(e.target.value)} className="outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="text" placeholder="Soyad"/>
+                <input className="outline-none px-4 py-2 border-2 rounded-xl" type="text" placeholder="Soyad"
+                {...register("surname", { required:"Lütfen bir soyad giriniz." })} />
+                {errors.surname && <p className="text-red-600 ms-3 text-sm" >{errors.surname.message}</p>}
             </div>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1 mb-5">
                 <label className="font-bold ms-3">Email</label>
-                <input value={email} onChange={(e) => setEmail(e.target.value)} className="outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="email" placeholder="Email"/>
+                <input className="outline-none px-4 py-2 border-2  rounded-xl" type="email" placeholder="Email" {...register("email", { required:"Lütfen bir email giriniz." })} />
+                {errors.email && <p className="text-red-600 ms-3 text-sm" >{errors.email.message}</p>}
+
             </div>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1 mb-5">
                 <label className="font-bold ms-3">Parola</label>
-                <div className="flex outline-none px-4 py-2 border-2 mb-5 rounded-xl"  >
-                    <input value={password} onChange={(e) => setPassword(e.target.value)} type={`${passwordControl ?"password" : "text"}`} placeholder="Parola" className="w-full outline-none" />
+                <div className="flex outline-none px-4 py-2 border-2 rounded-xl"  >
+                    <input type={`${passwordControl ?"password" : "text"}`} placeholder="Parola" className="w-full outline-none" {...register("password", { required:"Lütfen bir parola giriniz." })} />
                     <button onClick={() => setPasswordControl(!passwordControl)} >{passwordControl ? <Eye/> : <EyeOff/>}</button>
                 </div>
+                {errors.password && <p className="text-red-600 ms-3 text-sm" >{errors.password.message}</p>}
             </div>
 
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1 mb-5">
                 <label className="font-bold ms-3">Parola Tekrar</label>
-                <div className="flex outline-none px-4 py-2 border-2 mb-5 rounded-xl" >
-                    <input value={passwordAgain} onChange={(e) => setPasswordAgain(e.target.value)}  type={`${passwordAgainControl ? "password":"text"}`} placeholder="Parola Tekrar" className="outline-none w-full" />
+                <div className="flex outline-none px-4 py-2 border-2  rounded-xl" >
+                    <input type={`${passwordAgainControl ? "password":"text"}`} placeholder="Parola Tekrar" className="outline-none w-full" {...register("passwordAgain", { required:"Lütfen bir parola tekrar giriniz." ,validate: (val) => {
+                        if (watch('password') != val) {
+                            return "Şifreler eşleşmiyor";
+                        }}})} />
                     <button onClick={() => setPasswordAgainControl(!passwordAgainControl)} >{passwordAgainControl ? <Eye/> : <EyeOff/>}</button>
                 </div>
+                {errors.passwordAgain && <p className="text-red-600 ms-3 text-sm" >{errors.passwordAgain.message}</p>}
             </div>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1 mb-5">
                 <label className="font-bold ms-3">Açıklama</label>
-                <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="outline-none px-4 py-2 border-2 mb-5 rounded-xl" type="password" placeholder="Açıklama" />
+                <textarea className="outline-none px-4 py-2 border-2  rounded-xl" type="password" placeholder="Açıklama" {...register("description", { required:"Lütfen bir açıklama giriniz." })} />
+                {errors.description && <p className="text-red-600 ms-3 text-sm" >{errors.description.message}</p>}
+
             </div>
-            <button onClick={signupUser} className="bg-blue-500 py-2 rounded-xl text-white hover:bg-blue-600 duration-300 mb-5">Kayı Ol</button>
-        </div>
+            <button type="submit" className="bg-blue-500 py-2 rounded-xl text-white hover:bg-blue-600 duration-300 mb-5">Kayı Ol</button>
+        </form>
     </div>)
 }
