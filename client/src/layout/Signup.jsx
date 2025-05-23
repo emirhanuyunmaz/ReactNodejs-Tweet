@@ -126,7 +126,7 @@ export default function Signup(){
                 {errors.description && <p className="text-red-600 ms-3 text-sm" >{errors.description.message}</p>}
 
             </div>
-            <button type="submit" className="bg-blue-500 py-2 rounded-xl text-white hover:bg-blue-600 duration-300 mb-5">Kayı Ol</button>
+            <button type="submit" className="bg-blue-500 py-2 rounded-xl text-white hover:bg-blue-600 duration-300 mb-5">Kayıt Ol</button>
         </form>
     </div>)
 }

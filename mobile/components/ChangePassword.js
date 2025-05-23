@@ -52,7 +52,10 @@ export default function ChangePassword() {
             navigation.goBack()
         }).catch((err) => {
             console.log("ERR:",err);
-            
+            Toast.show({
+                type: 'error',
+                text1: 'Lütfen Tekrar Deneyin',
+            });
         })
         // navigation.navigate("Tab")
     };
