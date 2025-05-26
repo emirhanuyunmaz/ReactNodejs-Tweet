@@ -169,7 +169,7 @@ const deleteTweet = async (req,res) => {
         if(tweetData.isImage == true){
             const imageName =tweetData.text.split("image/").pop()
 
-            fs.rmSync(__dirname+"/.."+`/uploads/${imageName}`)
+            fs.rmSync(__dirname+"/.."+`${imageName}`)
         }
         
         res.status(201).json({message:"succees",succes:true})
