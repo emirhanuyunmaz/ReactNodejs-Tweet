@@ -35,20 +35,37 @@ export default function Signup(){
         progress: undefined,
         theme: "light",
         transition: Zoom,
-        });
+    });
+    
+    const showToastError = () => toast.error('Bir hata ile karşılaşıldı', {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Zoom,
+    });
 
         const onSubmit = async (data)=> {
-            const newData = {
+            try{
+                const newData = {
                 ...data,
                 image:image
-            }
-            console.log(newData);
-            
-            const res =await axios.post("http://localhost:3000/signup",newData)
+                }
+                console.log(newData);
+                
+                const res =await axios.post("http://localhost:3000/signup",newData)
 
-            if(res.status === 201){
-                showToastSucces()
-                navigate("/login")
+                if(res.status === 201){
+                    showToastSucces()
+                    navigate("/login")
+                }
+            }catch(err){
+                console.log("ERR:",err);
+                showToastError()
             }
         };
 
@@ -104,7 +121,7 @@ export default function Signup(){
                 <label className="font-bold ms-3">Parola</label>
                 <div className="flex outline-none px-4 py-2 border-2 rounded-xl"  >
                     <input type={`${passwordControl ?"password" : "text"}`} placeholder="Parola" className="w-full outline-none" {...register("password", { required:"Lütfen bir parola giriniz." })} />
-                    <button onClick={() => setPasswordControl(!passwordControl)} >{passwordControl ? <Eye/> : <EyeOff/>}</button>
+                    <button onClick={(e) =>{e.preventDefault(); setPasswordControl(!passwordControl)}} >{passwordControl ? <Eye/> : <EyeOff/>}</button>
                 </div>
                 {errors.password && <p className="text-red-600 ms-3 text-sm" >{errors.password.message}</p>}
             </div>
@@ -116,7 +133,7 @@ export default function Signup(){
                         if (watch('password') != val) {
                             return "Şifreler eşleşmiyor";
                         }}})} />
-                    <button onClick={() => setPasswordAgainControl(!passwordAgainControl)} >{passwordAgainControl ? <Eye/> : <EyeOff/>}</button>
+                    <button onClick={(e) => {e.preventDefault();setPasswordAgainControl(!passwordAgainControl)}} >{passwordAgainControl ? <Eye/> : <EyeOff/>}</button>
                 </div>
                 {errors.passwordAgain && <p className="text-red-600 ms-3 text-sm" >{errors.passwordAgain.message}</p>}
             </div>

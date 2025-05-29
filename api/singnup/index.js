@@ -90,16 +90,16 @@ const sendEmailHTML = (code) => {
 const signup = async (req,res) => {
     console.log("Kullanıcı kayıt için istek atıldı");
     // console.log(req.body);
-    const imageName = uuid.v4()
-    const filePath =`uploads/${imageName}.png`
-    // console.log("File Path:",filePath);
-    let base64Image = req.body.image.split(';base64,').pop();
-
-    fs.writeFile( __dirname + "/../" + filePath ,base64Image , {encoding: 'base64'}, function(err) {
-        console.log(`File created ${imageName} `);
-    });
     
     try {
+        const imageName = uuid.v4()
+        const filePath =`uploads/${imageName}.png`
+        // console.log("File Path:",filePath);
+        let base64Image = req.body.image.split(';base64,').pop();
+    
+        fs.writeFile( __dirname + "/../" + filePath ,base64Image , {encoding: 'base64'}, function(err) {
+            console.log(`File created ${imageName} `);
+        });
         const newUser = new SignUpModel({
             name:req.body.name,
             surname:req.body.surname,
@@ -111,6 +111,8 @@ const signup = async (req,res) => {
         await newUser.save().then(() => console.log("Save user"))
         res.status(201).json({"message":"Succes"})
     }catch(err){
+        console.log("Kullanici kayit hatasi ERR:",err);
+        
         res.status(400).json({"message":err})
     }
 }

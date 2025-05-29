@@ -61,16 +61,24 @@ export default function SignupScreen() {
       const res =await axios.post(`${baseUrl}/signup`,newData)
       // console.log(res)
 
-      if(res.status === 201){
+    if(res.status === 201){
         Toast.show({
           type: 'success',
           text1: 'Kullanıcı Kayıt Oldu',
         });
         navigation.goBack()
+    }else{
+      Toast.show({
+          type: 'error',
+          text1: 'Bir Hata ile Karşılaşıldı',
+        });
     }
     }catch(err){
       console.log("HATA:",err);
-      
+      Toast.show({
+          type: 'error',
+          text1: 'Bir Hata ile Karşılaşıldı',
+        });
     }
   };
 

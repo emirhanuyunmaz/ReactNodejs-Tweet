@@ -15,7 +15,7 @@ function ContextProvider({children}){
       console.log(":SOCKET BAĞ:",token);
       
       if(token != null){
-        console.log(":SOCKET BAĞ: active");
+        console.log(":SOCKET BAĞ: active:",baseUrl);
         // const t = await AsyncStorage.getItem("access_token")
         // setToken(t)
         s = io(baseUrl+"/", {query:{token:token}, transports: ['websocket'], reconnection: true });;
@@ -37,7 +37,7 @@ function ContextProvider({children}){
       if(socket !== null){
           
         //   const token = await AsyncStorage.getItem("access_token")
-        //   console.log("SSSSSOCKET TOKEN ::::",token);
+          console.log("Gönderi beğenildi.",token);
           // Sunucuya bildirim gönderme olayı
           try{
               socket.emit('notification', {tweet:tweet,token:token,process})
